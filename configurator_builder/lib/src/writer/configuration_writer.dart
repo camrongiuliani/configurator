@@ -1,0 +1,61 @@
+import 'package:code_builder/code_builder.dart';
+import 'package:configurator_builder/src/writer/writer.dart';
+
+class ConfigWriter extends Writer {
+
+  ConfigWriter();
+
+  @override
+  Spec write() {
+    return Class( ( builder ) {
+      builder
+        ..name = 'BaseConfigScope'
+        ..extend = refer( 'ConfigScope' )
+        ..fields.addAll([
+          _nameField(),
+
+          _mapGetter(
+            name: 'flags',
+            returnType: 'Map<String, bool>',
+            assignment: 'const _Flags().map',
+          ),
+
+          _mapGetter(
+            name: 'images',
+            returnType: 'Map<String, String>',
+            assignment: 'const _Images().map',
+          ),
+
+          _mapGetter(
+            name: 'routes',
+            returnType: 'Map<int, String>',
+            assignment: 'const _Routes().map',
+          ),
+        ]);
+    });
+  }
+
+  Field _nameField() {
+    return Field( ( builder ) {
+      builder
+        ..name = 'name'
+        ..annotations.add( refer( 'override' ) )
+        ..type = refer('String')
+        ..assignment = Code( '\'__GeneratedConfig\'' );
+    });
+  }
+
+  Field _mapGetter({
+    required String name,
+    required String returnType,
+    required String assignment,
+  }) {
+    return Field( ( builder ) {
+      builder
+        ..name = name
+        ..annotations.add( refer( 'override' ) )
+        ..type = refer( returnType )
+        ..assignment = Code( assignment );
+    });
+  }
+}

@@ -1,0 +1,35 @@
+name: example
+description: A new Flutter project.
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.17.6 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  parse_color: ^0.0.1
+
+  configurator:
+    path: ../configurator
+
+  configurator_annotations:
+    path: ../configurator_annotations
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^2.0.0
+  build_runner: ^2.2.1
+
+  configurator_builder:
+    path: ../configurator_builder
+
+flutter:
+
+  uses-material-design: true
