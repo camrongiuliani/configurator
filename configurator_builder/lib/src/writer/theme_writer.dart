@@ -1,27 +1,22 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:configurator/configurator.dart';
 import 'package:configurator_builder/src/misc/string_ext.dart';
-import 'package:configurator_builder/src/model/theme.dart';
-import 'package:configurator_builder/src/writer/theme_color_writer.dart';
-import 'package:configurator_builder/src/writer/theme_size_writer.dart';
 import 'package:configurator_builder/src/writer/writer.dart';
 
 class ThemeWriter extends Writer {
 
-  final ProcessedTheme _theme;
+  final String name;
+  final YamlConfiguration _yamlConfiguration;
 
-  ThemeWriter( this._theme );
+  ThemeWriter( String elementName, this._yamlConfiguration ) : this.name = '${elementName}GeneratedThemeExtension';
 
   @override
   Spec write() {
-
-    LibraryBuilder lb = LibraryBuilder();
-
-    Class themeClass = Class( ( builder ) {
+    return Class( ( builder ) {
       builder
         ..constructors.add( _buildConstructor() )
-        ..name = 'GeneratedConfigTheme'
-        ..extend = refer( 'ThemeExtension<GeneratedConfigTheme>' )
-        ..fields.add( _buildThemeField() )
+        ..name = name
+        ..extend = refer( 'ConfigTheme<$name>' )
         ..methods.addAll([
           ..._buildColorFields(),
           ..._buildSizeFields(),
@@ -29,14 +24,6 @@ class ThemeWriter extends Writer {
           _buildLerp(),
         ]);
     });
-
-    lb..body.addAll([
-      ThemeColorWriter( _theme ).write(),
-      ThemeSizeWriter( _theme ).write(),
-      themeClass,
-    ]);
-
-    return lb.build();
   }
 
   Constructor _buildConstructor() {
@@ -46,43 +33,34 @@ class ThemeWriter extends Writer {
           builder
             ..name = 'themeMap'
             ..required = true
-            ..toThis = true
+            ..toSuper = true
             ..named = true;
         }) );
     });
   }
 
-  Field _buildThemeField() {
-    return Field( ( builder ) {
-      builder
-        ..name = 'themeMap'
-        ..type = refer( 'Map<String, Map<String, dynamic>>' )
-        ..modifier = FieldModifier.final$;
-    });
-  }
-
   List<Method> _buildColorFields() {
-    return _theme.colors.map((e) {
+    return _yamlConfiguration.colors.map((e) {
       return Method( ( builder ) {
         builder
           ..type = MethodType.getter
           ..returns = refer('Color')
-          ..name = e.key.canonicalize
+          ..name = ( e.name as String ).canonicalize
           ..lambda = true
-          ..body = Code( 'ColorUtil.parseColorValue( themeMap[\'colors\']?[\'${e.key.canonicalize}\'] )' );
+          ..body = Code( '_ColorUtil.parseColorValue( themeMap[\'colors\']?[\'${( e.name as String ).canonicalize}\'] )' );
       });
     }).toList();
   }
 
   List<Method> _buildSizeFields() {
-    return _theme.sizes.map((e) {
+    return _yamlConfiguration.sizes.map((e) {
       return Method( ( builder ) {
         builder
           ..type = MethodType.getter
           ..returns = refer('double')
-          ..name = e.key.canonicalize
+          ..name = ( e.name as String ).canonicalize
           ..lambda = true
-          ..body = Code( 'themeMap[\'sizes\']?[\'${e.key.canonicalize}\']' );
+          ..body = Code( 'themeMap[\'sizes\']?[\'${( e.name as String ).canonicalize}\']' );
       });
     }).toList();
   }
@@ -91,7 +69,7 @@ class ThemeWriter extends Writer {
     return Method( ( builder ) {
       builder
         ..name = 'copyWith'
-        ..returns = refer( 'GeneratedConfigTheme' )
+        ..returns = refer( name )
         ..annotations.add( refer( 'override' ) )
         ..optionalParameters.add( Parameter( ( builder ) {
           builder
@@ -102,7 +80,7 @@ class ThemeWriter extends Writer {
         ..body = Block( ( builder ) {
           builder..statements.addAll([
             Code( 'this.themeMap.addAll( themeMap ?? {} );' ),
-            Code( 'return GeneratedConfigTheme( themeMap: this.themeMap );' ),
+            Code( 'return $name( themeMap: this.themeMap );' ),
           ]);
         });
     });
@@ -112,13 +90,13 @@ class ThemeWriter extends Writer {
     return Method( ( builder ) {
       builder
         ..name = 'lerp'
-        ..returns = refer( 'GeneratedConfigTheme' )
+        ..returns = refer( name )
         ..annotations.add( refer( 'override' ) )
         ..requiredParameters.addAll([
           Parameter( ( builder ) {
             builder
               ..name = 'other'
-              ..type = refer( 'ThemeExtension<GeneratedConfigTheme>?' );
+              ..type = refer( 'ThemeExtension<$name>?' );
           }),
 
           Parameter( ( builder ) {
@@ -129,19 +107,19 @@ class ThemeWriter extends Writer {
         ])
         ..body = Block( ( builder ) {
           builder..statements.addAll([
-            Code( 'if ( other is! GeneratedConfigTheme) {' ),
+            Code( 'if ( other is! $name) {' ),
             Code( 'return this;' ),
             Code( '}' ),
 
-            ..._theme.colors.map((e) {
-              return Code( 'themeMap[\'colors\']![\'${e.key.canonicalize}\'] = ColorUtil.colorToString( Color.lerp( ${e.key.canonicalize}, other.${e.key.canonicalize}, t )! );' );
+            ..._yamlConfiguration.colors.map((e) {
+              return Code( 'themeMap[\'colors\']![\'${( e.name as String ).canonicalize}\'] = _ColorUtil.colorToString( Color.lerp( ${( e.name as String ).canonicalize}, other.${( e.name as String ).canonicalize}, t )! );' );
             }),
 
-            ..._theme.sizes.map((e) {
-              return Code( 'themeMap[\'sizes\']![\'${e.key.canonicalize}\'] = lerpDouble( ${e.key.canonicalize}, other.${e.key.canonicalize}, t);' );
+            ..._yamlConfiguration.sizes.map((e) {
+              return Code( 'themeMap[\'sizes\']![\'${( e.name as String ).canonicalize}\'] = lerpDouble( ${( e.name as String ).canonicalize}, other.${( e.name as String ).canonicalize}, t);' );
             }),
 
-            Code( 'return GeneratedConfigTheme( themeMap: themeMap );' ),
+            Code( 'return $name( themeMap: themeMap );' ),
           ]);
         });
     });

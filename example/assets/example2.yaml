@@ -1,11 +1,11 @@
-id: example1
+id: example2
 
 definitions:
   - strings:
       - &defaultHeaderImage
           'https://pub.dev/static/hash-qr9i96gp/img/pub-dev-logo-2x.png'
   - colors:
-      - &defaultPageBg 0000FF
+      - &defaultPageBg CCCCCC
       - &defaultButtonBg CC0000
       - &defaultButtonTextColor '000000'
   - routes:

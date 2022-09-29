@@ -1,4 +1,4 @@
-import 'package:configurator/configurator.dart';
+import 'package:configurator_flutter/configurator_flutter.dart';
 import 'package:flutter/widgets.dart';
 
 class ConfiguredWidget extends StatelessWidget {
@@ -10,7 +10,7 @@ class ConfiguredWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<Configuration>(
-      valueListenable: Configuration.of( context ),
+      valueListenable: ConfigurationProvider.of( context ).config.listenable(),
       builder: ( ctx, config, _) => builder( config ),
     );
   }

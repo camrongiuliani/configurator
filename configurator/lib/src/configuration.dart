@@ -1,66 +1,53 @@
 import 'package:configurator/configurator.dart';
-import 'package:configurator/src/scopes/base.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
+import 'package:configurator/src/utils/change_notifier.dart';
+import 'package:collection/collection.dart';
 
-class Configuration extends ValueListenable<Configuration> {
+typedef VoidCallback = void Function();
 
-  // ignore: avoid_positional_boolean_parameters
-  void throwIf(bool condition, Object error) {
-    if (condition) throw error;
-  }
-
-  // ignore: avoid_positional_boolean_parameters
-  void throwIfNot(bool condition, Object error) {
-    if (!condition) throw error;
-  }
+class Configuration  {
 
   final List<ConfigScope> _scopes;
   List<ConfigScope> get scopes => List.from( _scopes );
 
-  final List<VoidCallback> listeners = [];
-
-  Configuration([ List<ConfigScope> scopes = const [] ]) :
-        _scopes = [
-          RootScope(),
-          ...scopes,
-        ];
-
-  static T of<T extends Configuration>(
-      BuildContext context,
-      {
-        bool listen = true,
-      } ) {
-
-    final ConfigurationProvider? result = context.findAncestorWidgetOfExactType();
-
-    if ( listen ) {
-      context.dependOnInheritedWidgetOfExactType<ConfigurationProvider>();
-    }
-
-    assert(result != null, 'No $T found in context');
-    return result!.configuration as T;
-  }
-
   ConfigScope get _currentScope => _scopes.last;
   String get currentScopeName => _currentScope.name;
 
-  void pushScope( covariant ConfigScope config ) {
-    if ( config != _currentScope ) {
+  final ChangeNotifier changeNotifier;
+
+  Configuration._( this._scopes, this.changeNotifier );
+
+  factory Configuration({ List<ConfigScope> scopes = const [] }) {
+    if ( scopes.isEmpty ) {
+      var now = DateTime.now().millisecondsSinceEpoch;
+      scopes.add(  ConfigScope.empty(name: '$now') );
+    }
+
+    return Configuration._( scopes, ChangeNotifier() );
+  }
+
+  Configuration copyWith({
+    List<ConfigScope>? scopes,
+    ChangeNotifier? changeNotifier,
+  }) {
+    return Configuration._( scopes ?? List.from( _scopes ), changeNotifier ?? this.changeNotifier );
+  }
+
+  void pushScope( covariant ConfigScope config, { bool checkEquality = true } ) {
+    if ( ! checkEquality || config != _currentScope ) {
       _scopes.add( config );
       notifyListeners();
     }
   }
 
   Future<void> popScope() async {
-    if ( _scopes.length > 2 ) {
+    if ( _scopes.length > 1 ) {
       _scopes.removeLast();
       notifyListeners();
     }
   }
 
   Future<void> popScopeUntil( int index ) async {
-    while ( _scopes.length > 2 && _scopes.length != index + 1 ) {
+    while ( _scopes.length > 1 && _scopes.length != index + 1 ) {
       _scopes.removeLast();
     }
 
@@ -68,57 +55,65 @@ class Configuration extends ValueListenable<Configuration> {
   }
 
   bool flag( String id ) {
-    for ( var s in _scopes.reversed ) {
-      if ( s.flags[ id ] != null ) {
-        return s.flags[id]!;
-      }
-    }
+    return _scopes.reversed.firstWhereOrNull( ( s ) {
+      return s.flags.containsKey( id );
+    })?.flags[ id ] ?? false;
+  }
 
-    return false;
+  String color( int id ) {
+    return _scopes.reversed.firstWhereOrNull( ( s ) {
+      return s.colors.containsKey( id );
+    })?.colors[ id ] ?? '';
   }
 
   String route( int id ) {
-    for ( var s in _scopes.reversed ) {
-      if ( s.routes[ id ] != null ) {
-        return s.routes[id]!;
-      }
-    }
-
-    return '';
+    return _scopes.reversed.firstWhereOrNull( ( s ) {
+      return s.routes.containsKey( id );
+    })?.routes[ id ] ?? '';
   }
 
-  Map<String, Map<String, dynamic>> get theme {
-    Map<String, dynamic> colors = {};
-    Map<String, dynamic> sizes = {};
+  String image( String id ) {
+    return _scopes.reversed.firstWhereOrNull( ( s ) {
+      return s.images.containsKey( id );
+    })?.images[ id ] ?? '';
+  }
 
-    for ( var s in _scopes.map((e) => e.theme) ) {
-      colors.addAll( s['colors'] ?? {} );
-      sizes.addAll( s['sizes'] ?? {} );
+  double size( String id ) {
+    return _scopes.reversed.firstWhereOrNull( ( s ) {
+      return s.sizes.containsKey( id );
+    })?.sizes[ id ] ?? 14.0;
+  }
+
+  Map<String, Map<String, dynamic>> get themeMap {
+
+    Map<String, String> colors = {};
+    Map<String, String?> images = {};
+    Map<String, double> sizes = {};
+    Map<String, bool> flags = {};
+    // Map<int, String?> routes = {};
+
+    for ( var s in _scopes ) {
+      images.addAll( s.images );
+      colors.addAll( s.colors );
+      sizes.addAll( s.sizes );
+      flags.addAll( s.flags );
+      // routes.addAll( s.routes );
     }
 
     return {
       'colors': colors,
       'sizes': sizes,
+      'images': images,
+      'flags': flags,
+      // 'routes': routes,
     };
   }
 
-  @override
-  void addListener(VoidCallback listener) {
-    listeners.add( listener );
-  }
-
-  @override
-  void removeListener(VoidCallback listener) {
-    listeners.remove( listener );
-  }
+  /// Not part of public API
+  Stream<Configuration> watch() => changeNotifier.watch();
 
   void notifyListeners() {
-    for ( var l in listeners ) {
-      l();
-    }
+    changeNotifier.notify( this );
   }
-
-  @override
-  Configuration get value => this;
 
 }

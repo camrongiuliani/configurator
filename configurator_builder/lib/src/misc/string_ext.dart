@@ -1,3 +1,4 @@
+
 extension StringExtension on String {
 
   /// Capitalize the first character in a [String]

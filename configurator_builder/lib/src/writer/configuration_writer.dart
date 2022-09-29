@@ -3,13 +3,15 @@ import 'package:configurator_builder/src/writer/writer.dart';
 
 class ConfigWriter extends Writer {
 
-  ConfigWriter();
+  final String name;
+
+  ConfigWriter( this.name );
 
   @override
   Spec write() {
     return Class( ( builder ) {
       builder
-        ..name = 'GeneratedScope'
+        ..name = '${name}GeneratedScope'
         ..extend = refer( 'ConfigScope' )
         ..fields.addAll([
           _nameField(),
@@ -27,15 +29,21 @@ class ConfigWriter extends Writer {
           ),
 
           _mapGetter(
-            name: 'routes',
-            returnType: 'Map<int, String>',
-            assignment: 'const _Routes().map',
+            name: 'colors',
+            returnType: 'Map<String, String>',
+            assignment: 'const _Colors().map',
           ),
 
           _mapGetter(
-            name: 'theme',
-            returnType: 'Map<String, Map<String, dynamic>>',
-            assignment: '{ \'colors\': const _ThemeColors().map, \'sizes\': const _ThemeSizes().map }',
+            name: 'sizes',
+            returnType: 'Map<String, double>',
+            assignment: 'const _Sizes().map',
+          ),
+
+          _mapGetter(
+            name: 'routes',
+            returnType: 'Map<int, String>',
+            assignment: 'const _Routes().map',
           ),
         ]);
     });

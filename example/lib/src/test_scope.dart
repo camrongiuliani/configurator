@@ -17,11 +17,12 @@ class TestScope1 extends ConfigScope {
   Map<int, String> routes = const {};
 
   @override
-  Map<String, Map<String, dynamic>> theme = {
-    'colors': const {
-      'primary': 'FF0000',
-      'secondary': '000000',
-    },
-    'sizes': const {}
+  Map<String, String> get colors => const {
+    'primary': 'FF0000',
+    'secondary': '000000',
   };
+
+  @override
+  Map<String, double> get sizes => const {};
+
 }

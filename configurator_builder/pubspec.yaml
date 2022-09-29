@@ -12,8 +12,12 @@ dependencies:
   yaml: ^3.1.1
   color: ^3.0.0
 
+
   configurator_annotations:
     path: ../configurator_annotations
+
+  configurator:
+    path: ../configurator
 
   meta: ^1.7.0
   source_gen: ^1.2.1
@@ -26,9 +30,7 @@ dev_dependencies:
   json_annotation: ^4.4.0
   test: ^1.16.0
   very_good_analysis: ^2.4.0
-
-  configurator:
-    path: ../configurator
+  build_resolvers: ^2.0.10
 
 import_sorter:
   comments: false

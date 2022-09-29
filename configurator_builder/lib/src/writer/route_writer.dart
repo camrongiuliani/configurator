@@ -1,13 +1,15 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:configurator/configurator.dart';
 import 'package:configurator_builder/src/misc/string_ext.dart';
-import 'package:configurator_builder/src/model/route.dart';
+import 'package:configurator_builder/src/misc/type_ext.dart';
 import 'package:configurator_builder/src/writer/writer.dart';
 
 class RouteWriter extends Writer {
 
-  final List<ProcessedRoute> _routes;
+  final List<YamlSetting<int, String>> _routes;
 
-  RouteWriter( this._routes );
+  RouteWriter( List<YamlSetting> _routes )
+      : _routes = _routes.convert<int, String>();
 
   @override
   Spec write() {
@@ -26,11 +28,11 @@ class RouteWriter extends Writer {
     return _routes.map((e) {
       return Method( ( builder ) {
         builder
-          ..name = e.path.canonicalize
+          ..name = e.value.canonicalize
           ..type = MethodType.getter
           ..returns = refer( 'String' )
           ..lambda = true
-          ..body = Code( 'map[ ConfigKeys.routes.${e.path.canonicalize} ] ?? \'/\'');
+          ..body = Code( 'map[ ConfigKeys.routes.${e.value.canonicalize} ] ?? \'/\'');
       });
     }).toList();
   }
@@ -47,7 +49,7 @@ class RouteWriter extends Writer {
           Map<String, String> map = {};
 
           for ( var f in _routes ) {
-            map['ConfigKeys.routes.${f.path.canonicalize}'] = '\'${f.path}\'';
+            map['ConfigKeys.routes.${f.value.canonicalize}'] = '\'${f.value}\'';
           }
 
           return map.toString();

@@ -1,12 +1,14 @@
 import 'package:code_builder/code_builder.dart';
-import 'package:configurator_builder/src/model/setting.dart';
+import 'package:configurator/configurator.dart';
+import 'package:configurator_builder/src/misc/type_ext.dart';
 import 'package:configurator_builder/src/writer/writer.dart';
 
 class FlagWriter extends Writer {
 
-  final List<ProcessedSetting> _flags;
+  final List<YamlSetting<String, bool>> _flags;
 
-  FlagWriter( this._flags );
+  FlagWriter( List<YamlSetting> _flags )
+      : _flags = _flags.convert<String, bool>();
 
   @override
   Spec write() {

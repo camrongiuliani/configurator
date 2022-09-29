@@ -1,9 +1,9 @@
 import 'package:meta/meta.dart';
 
 @immutable
-class Configurator {
+class ConfiguratorApp {
 
   final List<String> yaml;
 
-  const Configurator({ this.yaml = const [] });
+  const ConfiguratorApp({ this.yaml = const [] });
 }

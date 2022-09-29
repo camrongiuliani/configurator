@@ -1,18 +1,13 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:configurator/configurator.dart';
 import 'package:configurator_builder/src/misc/string_ext.dart';
-import 'package:configurator_builder/src/model/route.dart';
-import 'package:configurator_builder/src/model/setting.dart';
-import 'package:configurator_builder/src/model/theme.dart';
 import 'package:configurator_builder/src/writer/writer.dart';
 
 class KeyWriter extends Writer {
 
-  final List<ProcessedSetting> _flags;
-  final List<ProcessedSetting> _images;
-  final List<ProcessedRoute> _routes;
-  final ProcessedTheme _theme;
+  final YamlConfiguration _yamlConfiguration;
 
-  KeyWriter( this._flags, this._images, this._routes, this._theme );
+  KeyWriter( this._yamlConfiguration );
 
   @override
   Spec write() {
@@ -22,7 +17,7 @@ class KeyWriter extends Writer {
       builder
         ..name = '_FlagKeys'
         ..fields.addAll([
-          ..._flags.map((e) => _buildField( e.name )),
+          ..._yamlConfiguration.flags.map((e) => _buildField( e.name )),
         ]);
     });
 
@@ -30,7 +25,7 @@ class KeyWriter extends Writer {
       builder
         ..name = '_ImageKeys'
         ..fields.addAll([
-          ..._images.map((e) => _buildField( e.name )),
+          ..._yamlConfiguration.images.map((e) => _buildField( e.name )),
         ]);
     });
 
@@ -38,32 +33,23 @@ class KeyWriter extends Writer {
       builder
         ..name = '_RouteKeys'
         ..fields.addAll([
-          ..._routes.map((e) => _buildField2( e.path.canonicalize, '${e.id}' )),
+          ..._yamlConfiguration.routes.map((e) => _buildField2( ( e.value as String ).canonicalize, '${e.name}' )),
         ]);
     });
 
-    Class themeColorKeys = Class( ( builder ) {
+    Class colorKeys = Class( ( builder ) {
       builder
-        ..name = '_ThemeColorKeys'
+        ..name = '_ColorKeys'
         ..fields.addAll([
-          ..._theme.colors.map((e) => _buildField( e.key.canonicalize )),
+          ..._yamlConfiguration.colors.map((e) => _buildField( ( e.name as String ).canonicalize )),
         ]);
     });
 
-    Class themeSizeKeys = Class( ( builder ) {
+    Class sizeKeys = Class( ( builder ) {
       builder
-        ..name = '_ThemeSizeKeys'
+        ..name = '_SizeKeys'
         ..fields.addAll([
-          ..._theme.sizes.map((e) => _buildField( e.key.canonicalize )),
-        ]);
-    });
-
-    Class themeKeysWrapper = Class( ( builder ) {
-      builder
-        ..name = '_ThemeKeys'
-        ..fields.addAll([
-          _buildKeyAccessor( 'color', '_ThemeColorKeys()', static: false ),
-          _buildKeyAccessor( 'size', '_ThemeSizeKeys()', static: false ),
+          ..._yamlConfiguration.sizes.map((e) => _buildField( ( e.name as String ).canonicalize )),
         ]);
     });
 
@@ -73,8 +59,9 @@ class KeyWriter extends Writer {
         ..fields.addAll([
           _buildKeyAccessor( 'routes', '_RouteKeys()' ),
           _buildKeyAccessor( 'flags', '_FlagKeys()' ),
+          _buildKeyAccessor( 'sizes', '_SizeKeys()' ),
+          _buildKeyAccessor( 'colors', '_ColorKeys()' ),
           _buildKeyAccessor( 'images', '_ImageKeys()' ),
-          _buildKeyAccessor( 'theme', '_ThemeKeys()' ),
         ]);
     });
 
@@ -82,9 +69,8 @@ class KeyWriter extends Writer {
       flagKeys,
       imageKeys,
       routeKeys,
-      themeSizeKeys,
-      themeColorKeys,
-      themeKeysWrapper,
+      sizeKeys,
+      colorKeys,
       configKeys,
     ]);
 

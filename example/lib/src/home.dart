@@ -1,14 +1,21 @@
 import 'dart:math';
-import 'package:configurator/configurator.dart';
+import 'package:configurator_annotations/configurator_annotations.dart';
+import 'package:configurator_flutter/configurator_flutter.dart';
 import 'package:example/src/app.config.dart';
 import 'package:example/src/test_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:v_widgets/v_widgets.dart';
 
+@ConfiguratorApp(
+  yaml: [
+    './assets/example2.yaml',
+  ],
+)
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
+
+  const MyHomePage({ required this.title, Key? key, }) : super( key: key );
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -18,61 +25,73 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Random random = Random();
 
+  String colorToString(Color color) {
+    var r = color.red;
+    var g = color.green;
+    var b = color.blue;
+    var o = color.opacity;
+    return 'rgba($r,$g,$b,$o)';
+  }
+
+  String get randomColor => colorToString( Color.fromRGBO(
+    random.nextInt(255),
+    random.nextInt(255),
+    random.nextInt(255),
+    1,
+  ));
+
 
   void _push( BuildContext context ) {
-    if ( Configuration.of(context).scopes.length < 3 ) {
-      Configuration.of(context).pushScope( TestScope1() );
+
+    Configuration config = ConfigurationProvider.of( context, listen: false ).config;
+
+    if ( config.scopes.length < 2 ) {
+      config.pushScope( TestScope1() );
+    } else if ( config.scopes.length < 3 ) {
+
+      DefaultAssetBundle.of(context).loadString('example2.yaml').then((value) {
+        config.pushScope( ConfigScope.fromYaml( value ) );
+      });
+
     } else {
-      Configuration.of(context).pushScope( ProxyScope(
-        name: 'RandomScope_${Configuration.of(context).scopes.length - 2}',
-        theme: {
-          'colors': {
-            ConfigKeys.theme.color.primary: ColorUtil.colorToString( Color.fromRGBO(
-              random.nextInt(255),
-              random.nextInt(255),
-              random.nextInt(255),
-              1,
-            ) ),
-            ConfigKeys.theme.color.secondary: ColorUtil.colorToString( Color.fromRGBO(
-              random.nextInt(255),
-              random.nextInt(255),
-              random.nextInt(255),
-              1,
-            ) ),
-            ConfigKeys.theme.color.tertiary: ColorUtil.colorToString( Color.fromRGBO(
-              random.nextInt(255),
-              random.nextInt(255),
-              random.nextInt(255),
-              1,
-            ) ),
-          },
-          'sizes': {
-            ConfigKeys.theme.size.detailTitleSize: random.nextInt( 24 )
-          }
+      config.pushScope(ProxyScope(
+        name: 'RandomScope_${config.scopes.length - 2}',
+        colors: {
+          ConfigKeys.colors.primary: randomColor,
+          ConfigKeys.colors.secondary: randomColor,
+          ConfigKeys.colors.tertiary: randomColor,
+        },
+        sizes: {
+          ConfigKeys.sizes.detailTitleSize: max(random.nextInt( 24 ).toDouble(), 10)
         },
         flags: {
           ConfigKeys.flags.showTitle: random.nextBool(),
         }
-      ) );
+      ));
     }
   }
 
   void _pop( BuildContext context ) {
-    Configuration.of(context).popScope();
+    ConfigurationProvider.of(context, listen: false).config.popScope();
   }
 
   @override
   Widget build(BuildContext context) {
 
-    final gen = Theme.of(context).extension<GeneratedConfigTheme>()!;
+    final gen = Theme.of(context).extension<MyAppGeneratedThemeExtension>()!;
+
+    Configuration config = ConfigurationProvider.of( context, listen: false ).config;
+
+    Color c = config.colorValue( ConfigKeys.colors.primary );
+    
+    double s = config.size( ConfigKeys.sizes.detailTitleSize );
+    // config.flag(id)
 
     return Scaffold(
       appBar: AppBar(
-        title: ConfiguredWidget(
-          builder: ( config ) => Vif(
-            test: () => config.flag( ConfigKeys.flags.showTitle ),
-            ifTrue: () => Text( widget.title ),
-          ),
+        title: Vif(
+          test: () => config.flag( ConfigKeys.flags.showTitle ),
+          ifTrue: () => Text( widget.title ),
         ),
       ),
       body: Center(
@@ -83,14 +102,14 @@ class _MyHomePageState extends State<MyHomePage> {
               'Current Scope:',
             ),
             Text(
-              Configuration.of(context).currentScopeName,
+              config.currentScopeName,
               style: Theme.of(context).textTheme.headline4?.copyWith(
-                color: gen.secondary,
+                color: c,
               ),
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: Configuration.of(context).scopes.length,
+                itemCount: config.scopes.length,
                 shrinkWrap: true,
                 itemBuilder: ( c, i ) {
                   return SizedBox(
@@ -98,17 +117,17 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 75.0,
                     child: GestureDetector(
                       onTap: () {
-                        Configuration.of(context).popScopeUntil( i );
+                        config.popScopeUntil( i );
                       },
                       child: Card(
                         child: Padding(
                           padding: const EdgeInsets.all( 16.0 ),
                           child: Text(
-                            Configuration.of(context).scopes[i].name,
+                            config.scopes[i].name,
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               color: gen.tertiary,
-                              fontSize: gen.detailTitleSize,
+                              fontSize: s,
                             ),
                           ),
                         ),
@@ -124,16 +143,14 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          ConfiguredWidget(
-            builder: ( _ ) => FloatingActionButton(
-              onPressed: () {
-                _pop( context );
-              },
-              tooltip: 'Decrement',
-              foregroundColor: gen.secondary,
-              backgroundColor: gen.primary,
-              child: const Icon(Icons.remove),
-            ),
+          FloatingActionButton(
+            onPressed: () {
+              _pop( context );
+            },
+            tooltip: 'Decrement',
+            foregroundColor: gen.secondary,
+            backgroundColor: gen.primary,
+            child: const Icon(Icons.remove),
           ),
           FloatingActionButton(
             onPressed: () {

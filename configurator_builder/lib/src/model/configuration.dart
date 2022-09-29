@@ -1,28 +1,25 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
-import 'package:configurator_builder/src/model/route.dart';
-import 'package:configurator_builder/src/model/setting.dart';
-import 'package:configurator_builder/src/model/theme.dart';
+import 'package:configurator/configurator.dart';
 import 'package:configurator_builder/src/writer/color_util_writer.dart';
 import 'package:configurator_builder/src/writer/configuration_writer.dart';
 import 'package:configurator_builder/src/writer/flag_writer.dart';
 import 'package:configurator_builder/src/writer/image_writer.dart';
 import 'package:configurator_builder/src/writer/key_writer.dart';
 import 'package:configurator_builder/src/writer/route_writer.dart';
+import 'package:configurator_builder/src/writer/color_writer.dart';
+import 'package:configurator_builder/src/writer/size_writer.dart';
 import 'package:configurator_builder/src/writer/theme_writer.dart';
 import 'package:configurator_builder/src/writer/title_writer.dart';
 
 class ProcessedConfig {
 
   final ClassElement classElement;
-  final List<ProcessedSetting> flags;
-  final List<ProcessedSetting> images;
-  final List<ProcessedRoute> routes;
-  final ProcessedTheme theme;
+  final YamlConfiguration yamlConfiguration;
 
   late final String frameworkName;
 
-  ProcessedConfig( this.classElement, this.flags, this.images, this.routes, this.theme ) {
+  ProcessedConfig( this.classElement, this.yamlConfiguration ) {
     frameworkName = classElement.displayName;
   }
 
@@ -32,7 +29,7 @@ class ProcessedConfig {
 
     builder..directives.addAll([
       Directive.import( 'package:flutter/material.dart' ),
-      Directive.import( 'package:configurator/configurator.dart' ),
+      Directive.import( 'package:configurator_flutter/configurator_flutter.dart' ),
       Directive.import( 'dart:ui' ),
     ]);
 
@@ -42,23 +39,28 @@ class ProcessedConfig {
       ColorUtilWriter().write(),
 
       TitleWriter( 'Keys' ).write(),
-      KeyWriter( flags, images, routes, theme ).write(),
+      KeyWriter( yamlConfiguration ).write(),
 
       TitleWriter( 'Theme' ).write(),
-      ThemeWriter( theme ).write(),
+      ThemeWriter( frameworkName, yamlConfiguration ).write(),
 
       TitleWriter( 'Flags' ).write(),
-      FlagWriter( flags ).write(),
+      FlagWriter( yamlConfiguration.flags ).write(),
 
       TitleWriter( 'Images' ).write(),
-      ImageWriter( images ).write(),
+      ImageWriter( yamlConfiguration.images ).write(),
 
       TitleWriter( 'Routes' ).write(),
-      RouteWriter( routes ).write(),
+      RouteWriter( yamlConfiguration.routes ).write(),
 
+      TitleWriter( 'Colors' ).write(),
+      ColorWriter( yamlConfiguration.colors ).write(),
+
+      TitleWriter( 'Sizes' ).write(),
+      SizeWriter( yamlConfiguration.sizes ).write(),
 
       TitleWriter( 'Configuration' ).write(),
-      ConfigWriter().write(),
+      ConfigWriter( frameworkName ).write(),
 
     ]);
 

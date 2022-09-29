@@ -1,21 +1,22 @@
 import 'package:code_builder/code_builder.dart';
+import 'package:configurator/configurator.dart';
 import 'package:configurator_builder/src/misc/string_ext.dart';
-import 'package:configurator_builder/src/model/route.dart';
-import 'package:configurator_builder/src/model/theme.dart';
+import 'package:configurator_builder/src/misc/type_ext.dart';
 import 'package:configurator_builder/src/writer/writer.dart';
 
-class ThemeSizeWriter extends Writer {
+class SizeWriter extends Writer {
 
-  final ProcessedTheme _theme;
+  final List<YamlSetting<String, double>> _sizes;
 
-  ThemeSizeWriter( this._theme );
+  SizeWriter( List<YamlSetting> _sizes )
+      : _sizes = _sizes.convert<String, double>();
 
   @override
   Spec write() {
     return Class( ( builder ) {
       builder
         ..constructors.add( Constructor( ( b ) => b..constant = true ) )
-        ..name = '_ThemeSizes'
+        ..name = '_Sizes'
         ..methods.addAll([
           _getSizeValuesMap(),
           ..._getSizeGetters(),
@@ -24,14 +25,14 @@ class ThemeSizeWriter extends Writer {
   }
 
   List<Method> _getSizeGetters() {
-    return _theme.sizes.map((e) {
+    return _sizes.map((e) {
       return Method( ( builder ) {
         builder
-          ..name = e.key.canonicalize
+          ..name = e.name.canonicalize
           ..type = MethodType.getter
           ..returns = refer( 'double' )
           ..lambda = true
-          ..body = Code( 'map[ ConfigKeys.theme.size.${e.key.canonicalize} ] ?? 0.0' );
+          ..body = Code( 'map[ ConfigKeys.sizes.${e.name.canonicalize} ] ?? 0.0' );
       });
     }).toList();
   }
@@ -47,14 +48,12 @@ class ThemeSizeWriter extends Writer {
 
           Map<String, double> map = {};
 
-          for ( var f in _theme.sizes ) {
-            map['ConfigKeys.theme.size.${f.key.canonicalize}'] = f.size;
+          for ( var f in _sizes ) {
+            map['ConfigKeys.sizes.${f.name.canonicalize}'] = f.value;
           }
 
           return map.toString();
         }() );
     });
   }
-
-
 }

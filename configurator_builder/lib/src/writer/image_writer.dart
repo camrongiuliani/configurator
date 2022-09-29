@@ -1,12 +1,14 @@
 import 'package:code_builder/code_builder.dart';
-import 'package:configurator_builder/src/model/setting.dart';
+import 'package:configurator/configurator.dart';
+import 'package:configurator_builder/src/misc/type_ext.dart';
 import 'package:configurator_builder/src/writer/writer.dart';
 
 class ImageWriter extends Writer {
 
-  final List<ProcessedSetting> _images;
+  final List<YamlSetting> _images;
 
-  ImageWriter( this._images );
+  ImageWriter( List<YamlSetting> _images )
+      : _images = _images.convert<String, String>();
 
   @override
   Spec write() {

@@ -9,7 +9,7 @@ class ColorUtilWriter extends Writer {
   Spec write() {
     return Class( ( builder ) {
       builder
-        ..name = 'ColorUtil'
+        ..name = '_ColorUtil'
         ..methods.addAll([
           _buildHexColorConverter(),
           _buildRGBColorConverter(),

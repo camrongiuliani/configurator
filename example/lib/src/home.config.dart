@@ -133,9 +133,9 @@ class ConfigKeys {
 // Theme
 // ********************************
 
-class MyAppGeneratedThemeExtension
-    extends ConfigTheme<MyAppGeneratedThemeExtension> {
-  MyAppGeneratedThemeExtension({required super.themeMap});
+class MyHomePageGeneratedThemeExtension
+    extends ConfigTheme<MyHomePageGeneratedThemeExtension> {
+  MyHomePageGeneratedThemeExtension({required super.themeMap});
 
   Color get primary =>
       _ColorUtil.parseColorValue(themeMap['colors']?['primary']);
@@ -146,18 +146,18 @@ class MyAppGeneratedThemeExtension
   double get homeTitleSize => themeMap['sizes']?['homeTitleSize'];
   double get detailTitleSize => themeMap['sizes']?['detailTitleSize'];
   @override
-  MyAppGeneratedThemeExtension copyWith(
+  MyHomePageGeneratedThemeExtension copyWith(
       {Map<String, Map<String, dynamic>>? themeMap}) {
     this.themeMap.addAll(themeMap ?? {});
-    return MyAppGeneratedThemeExtension(themeMap: this.themeMap);
+    return MyHomePageGeneratedThemeExtension(themeMap: this.themeMap);
   }
 
   @override
-  MyAppGeneratedThemeExtension lerp(
-    ThemeExtension<MyAppGeneratedThemeExtension>? other,
+  MyHomePageGeneratedThemeExtension lerp(
+    ThemeExtension<MyHomePageGeneratedThemeExtension>? other,
     double t,
   ) {
-    if (other is! MyAppGeneratedThemeExtension) {
+    if (other is! MyHomePageGeneratedThemeExtension) {
       return this;
     }
     themeMap['colors']!['primary'] =
@@ -170,7 +170,7 @@ class MyAppGeneratedThemeExtension
         lerpDouble(homeTitleSize, other.homeTitleSize, t);
     themeMap['sizes']!['detailTitleSize'] =
         lerpDouble(detailTitleSize, other.detailTitleSize, t);
-    return MyAppGeneratedThemeExtension(themeMap: themeMap);
+    return MyHomePageGeneratedThemeExtension(themeMap: themeMap);
   }
 }
 
@@ -233,7 +233,7 @@ class _Colors {
   const _Colors();
 
   Map<String, String> get map => {
-        ConfigKeys.colors.primary: '0000FF',
+        ConfigKeys.colors.primary: 'CCCCCC',
         ConfigKeys.colors.secondary: 'CC0000',
         ConfigKeys.colors.tertiary: '000000'
       };
@@ -261,7 +261,7 @@ class _Sizes {
 // Configuration
 // ********************************
 
-class MyAppGeneratedScope extends ConfigScope {
+class MyHomePageGeneratedScope extends ConfigScope {
   @override
   String name = '__GeneratedScope';
 

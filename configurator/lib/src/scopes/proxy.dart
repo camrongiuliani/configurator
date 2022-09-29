@@ -14,13 +14,17 @@ class ProxyScope extends ConfigScope {
   final Map<int, String> routes;
 
   @override
-  final Map<String, Map<String, dynamic>> theme;
+  Map<String, String> colors;
+
+  @override
+  Map<String, double> sizes;
 
   ProxyScope({
     required this.name,
     this.flags = const {},
     this.images = const {},
     this.routes = const {},
-    this.theme = const {},
+    this.colors = const {},
+    this.sizes = const {},
   });
 }

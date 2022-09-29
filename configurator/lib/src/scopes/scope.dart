@@ -1,29 +1,52 @@
-import 'package:flutter/foundation.dart';
+import 'package:collection/collection.dart';
+import 'package:configurator/configurator.dart';
 
 abstract class ConfigScope {
 
   abstract final String name;
 
-  bool _dirty = true;
-
   Map<String, bool> get flags;
   Map<String, String?> get images;
+  Map<String, String> get colors;
+  Map<String, double> get sizes;
   Map<int, String?> get routes;
-  Map<String, Map<String, dynamic>> get theme;
 
-  void markDirty() => _dirty = true;
-  void markClean() => _dirty = false;
-  bool get dirty => _dirty;
+
+  static ConfigScope empty({ required String name }) {
+    return ProxyScope( name: name );
+  }
+
+  static ConfigScope fromYaml( String yamlString ) {
+    final YamlConfiguration config = YamlParser.fromYamlString( yamlString );
+
+    return ProxyScope(
+      name: config.name,
+      flags: { for (var e in config.flags) e.name : e.value },
+      images: { for (var e in config.images) e.name : e.value },
+      routes: { for (var e in config.routes) e.name : e.value },
+      sizes: { for (var e in config.sizes) e.name : e.value },
+      colors: { for (var e in config.colors) e.name : e.value },
+    );
+
+  }
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ConfigScope &&
-          mapEquals( flags, other.flags ) &&
-          mapEquals( images, other.images ) &&
-          mapEquals( routes, other.routes ) &&
-          mapEquals( theme, other.theme );
+          name == other.name &&
+          const MapEquality().equals( flags, other.flags ) &&
+          const MapEquality().equals( images, other.images ) &&
+          const MapEquality().equals( routes, other.routes ) &&
+          const MapEquality().equals( colors, other.colors ) &&
+          const MapEquality().equals( sizes, other.sizes );
 
   @override
-  int get hashCode => flags.hashCode ^ images.hashCode ^ routes.hashCode ^ theme.hashCode;
+  int get hashCode =>
+      name.hashCode
+      ^ flags.hashCode
+      ^ images.hashCode
+      ^ routes.hashCode
+      ^ colors.hashCode
+      ^ sizes.hashCode;
 }
