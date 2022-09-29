@@ -9,7 +9,7 @@ class ConfigWriter extends Writer {
   Spec write() {
     return Class( ( builder ) {
       builder
-        ..name = 'BaseConfigScope'
+        ..name = 'GeneratedScope'
         ..extend = refer( 'ConfigScope' )
         ..fields.addAll([
           _nameField(),
@@ -31,6 +31,12 @@ class ConfigWriter extends Writer {
             returnType: 'Map<int, String>',
             assignment: 'const _Routes().map',
           ),
+
+          _mapGetter(
+            name: 'theme',
+            returnType: 'Map<String, Map<String, dynamic>>',
+            assignment: '{ \'colors\': const _ThemeColors().map, \'sizes\': const _ThemeSizes().map }',
+          ),
         ]);
     });
   }
@@ -41,7 +47,7 @@ class ConfigWriter extends Writer {
         ..name = 'name'
         ..annotations.add( refer( 'override' ) )
         ..type = refer('String')
-        ..assignment = Code( '\'__GeneratedConfig\'' );
+        ..assignment = Code( '\'__GeneratedScope\'' );
     });
   }
 

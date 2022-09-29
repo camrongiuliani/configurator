@@ -5,4 +5,4 @@ import 'src/generator.dart';
 import 'package:source_gen/source_gen.dart';
 
 Builder frameworkBuilder(final BuilderOptions _) =>
-    SharedPartBuilder([ConfiguratorGenerator()], 'config');
+    LibraryBuilder( ConfiguratorGenerator(), generatedExtension:  '.config.dart');

@@ -1,14 +1,6 @@
 import 'package:configurator/configurator.dart';
-import 'package:flutter/widgets.dart' hide Router;
-import 'package:configurator_annotations/configurator_annotations.dart';
+import 'package:flutter/widgets.dart';
 
-part 'provider.g.dart';
-
-@Configurator(
-  yaml: [
-    './assets/example1.yaml',
-  ],
-)
 class ConfigurationProvider extends InheritedWidget {
 
   final Configuration configuration;
@@ -16,23 +8,27 @@ class ConfigurationProvider extends InheritedWidget {
   const ConfigurationProvider._( this.configuration, { required super.child, super.key } );
 
   factory ConfigurationProvider( {
-    required Configuration configuration,
-    Widget widget = const SizedBox(),
-    dynamic arguments,
+    required Configuration config,
+    required Widget child,
     Key? key,
   } ) {
 
-    configuration.pushScope( BaseConfigScope() );
-
     return ConfigurationProvider._(
-      configuration,
+      config,
       key: key ?? UniqueKey(),
-      child: widget,
+      child: child,
     );
   }
 
   @override
   bool updateShouldNotify(covariant InheritedWidget oldWidget) {
-    return false;
+    bool dirt =  configuration.scopes.map( ( e ) => e.dirty ).contains( true );
+    print('Config Dirty: $dirt');
+
+    for ( var scope in configuration.scopes ) {
+      scope.markClean();
+    }
+
+    return dirt;
   }
 }

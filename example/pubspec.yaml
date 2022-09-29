@@ -13,6 +13,7 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   parse_color: ^0.0.1
+  v_widgets: ^0.0.1+1
 
   configurator:
     path: ../configurator

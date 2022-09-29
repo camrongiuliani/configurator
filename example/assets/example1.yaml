@@ -4,9 +4,18 @@ definitions:
   - &defaultHeaderImage
       'https://pub.dev/static/hash-qr9i96gp/img/pub-dev-logo-2x.png'
 colors:
-  - &defaultPageBg FFFFFF
+  - &defaultPageBg 0000FF
   - &defaultButtonBg CC0000
-  - &defaultButtonTextColor FFFFFF
+  - &defaultButtonTextColor '000000'
+
+theme:
+  colors:
+    primary: *defaultPageBg
+    secondary: *defaultButtonBg
+    tertiary: *defaultButtonTextColor
+  sizes:
+    homeTitleSize: 14.0
+    detailTitleSize: 22.0
 
 images:
   loginHeaderImage: *defaultHeaderImage
@@ -24,6 +33,7 @@ flags:
   andThat: true
   orThis: false
   orThat: false
+  showTitle: true
 
 routes:
   - id: 1

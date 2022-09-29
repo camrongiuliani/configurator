@@ -1,4 +1,3 @@
-
 class ProcessedSetting<T> {
 
   final String name;
