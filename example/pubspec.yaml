@@ -7,15 +7,15 @@ version: 1.0.0+1
 environment:
   sdk: ">=2.17.6 <3.0.0"
 
-dependency_overrides:
-  configurator:
-    path: ../configurator
-
-  configurator_flutter:
-    path: ../configurator_flutter
-
-  configurator_annotations:
-    path: ../configurator_annotations
+#dependency_overrides:
+#  configurator:
+#    path: ../configurator
+#
+#  configurator_flutter:
+#    path: ../configurator_flutter
+#
+#  configurator_annotations:
+#    path: ../configurator_annotations
 
 dependencies:
   flutter:

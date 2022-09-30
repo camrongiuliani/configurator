@@ -9,8 +9,9 @@ class ImageWriter extends Writer {
   final String name;
   final List<YamlSetting> _images;
 
-  ImageWriter( this.name, List<YamlSetting> _images )
-      : _images = _images.convert<String, String>();
+  ImageWriter( String name, List<YamlSetting> _images )
+      : name = name.canonicalize,
+        _images = _images.convert<String, String>();
 
   @override
   Spec write() {
@@ -33,7 +34,7 @@ class ImageWriter extends Writer {
           ..type = MethodType.getter
           ..returns = refer( 'String' )
           ..lambda = true
-          ..body = Code( 'map[ ${name.canonicalize}ConfigKeys.images.${e.name} ] ?? \'/\'');
+          ..body = Code( 'map[ ${name}ConfigKeys.images.${e.name} ] ?? \'/\'');
       });
     }).toList();
   }
@@ -50,7 +51,7 @@ class ImageWriter extends Writer {
           Map<String, String> map = {};
 
           for ( var f in _images ) {
-            map['${name.canonicalize}ConfigKeys.images.${f.name}'] = '\'${f.value}\'';
+            map['${name}ConfigKeys.images.${f.name}'] = '\'${f.value}\'';
           }
 
           return map.toString();

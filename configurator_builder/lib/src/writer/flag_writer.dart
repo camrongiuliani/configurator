@@ -9,8 +9,9 @@ class FlagWriter extends Writer {
   final String name;
   final List<YamlSetting<String, bool>> _flags;
 
-  FlagWriter( this.name, List<YamlSetting> _flags )
-      : _flags = _flags.convert<String, bool>();
+  FlagWriter( String name, List<YamlSetting> _flags )
+      : name = name.canonicalize,
+        _flags = _flags.convert<String, bool>();
 
   @override
   Spec write() {
@@ -33,7 +34,7 @@ class FlagWriter extends Writer {
           ..type = MethodType.getter
           ..returns = refer( 'bool' )
           ..lambda = true
-          ..body = Code( 'map[ ${name.canonicalize}ConfigKeys.flags.${e.name} ] == true' );
+          ..body = Code( 'map[ ${name}ConfigKeys.flags.${e.name} ] == true' );
       });
     }).toList();
   }
@@ -50,7 +51,7 @@ class FlagWriter extends Writer {
           Map<String, bool> map = {};
 
           for ( var f in _flags ) {
-            map['${name.canonicalize}ConfigKeys.flags.${f.name}'] = f.value;
+            map['${name}ConfigKeys.flags.${f.name}'] = f.value;
           }
 
           return map.toString();

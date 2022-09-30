@@ -9,8 +9,9 @@ class ColorWriter extends Writer {
   final String name;
   final List<YamlSetting<String, String>> _colors;
 
-  ColorWriter( this.name, List<YamlSetting> _colors )
-      : _colors = _colors.convert<String, String>();
+  ColorWriter( String name, List<YamlSetting> _colors )
+      : name = name.canonicalize,
+        _colors = _colors.convert<String, String>();
 
   @override
   Spec write() {
@@ -33,7 +34,7 @@ class ColorWriter extends Writer {
           ..type = MethodType.getter
           ..returns = refer( 'String' )
           ..lambda = true
-          ..body = Code( 'map[ ${name.canonicalize}ConfigKeys.colors.${e.name.canonicalize} ] ?? \'\'' );
+          ..body = Code( 'map[ ${name}ConfigKeys.colors.${e.name.canonicalize} ] ?? \'\'' );
       });
     }).toList();
   }
@@ -50,7 +51,7 @@ class ColorWriter extends Writer {
           Map<String, String> map = {};
 
           for ( var f in _colors ) {
-            map['${name.canonicalize}ConfigKeys.colors.${f.name.canonicalize}'] = '\'${f.value}\'';
+            map['${name}ConfigKeys.colors.${f.name.canonicalize}'] = '\'${f.value}\'';
           }
 
           return map.toString();
