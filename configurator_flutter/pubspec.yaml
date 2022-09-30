@@ -16,7 +16,9 @@ dependencies:
   yaml: ^3.1.1
 
   configurator:
-    path: ../configurator
+    git:
+      url: git@github.com:camrongiuliani/configurator.git
+      path: configurator
 
 dev_dependencies:
   flutter_test:

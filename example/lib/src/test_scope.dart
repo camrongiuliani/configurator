@@ -3,7 +3,7 @@ import 'package:example/src/app.config.dart';
 
 class TestScope1 extends ConfigScope {
   @override
-  String name = 'RuntimeScope1';
+  String name = 'Dev_Hardcoded_Scope';
 
   @override
   Map<String, bool> flags = {

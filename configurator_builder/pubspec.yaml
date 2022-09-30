@@ -13,11 +13,16 @@ dependencies:
   color: ^3.0.0
 
 
-  configurator_annotations:
-    path: ../configurator_annotations
-
   configurator:
-    path: ../configurator
+    git:
+      url: git@github.com:camrongiuliani/configurator.git
+      path: configurator
+
+
+  configurator_annotations:
+    git:
+      url: git@github.com:camrongiuliani/configurator.git
+      path: configurator_annotations
 
   meta: ^1.7.0
   source_gen: ^1.2.1

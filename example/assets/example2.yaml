@@ -1,4 +1,4 @@
-id: example2
+id: _Loaded_From_Assets
 
 definitions:
   - strings:
@@ -7,7 +7,7 @@ definitions:
   - colors:
       - &defaultPageBg CCCCCC
       - &defaultButtonBg CC0000
-      - &defaultButtonTextColor '000000'
+      - &defaultButtonTextColor '800080'
   - routes:
       - &myVar test
 
