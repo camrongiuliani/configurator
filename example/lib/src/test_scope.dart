@@ -7,7 +7,7 @@ class TestScope1 extends ConfigScope {
 
   @override
   Map<String, bool> flags = {
-    ConfigKeys.flags.showTitle: false,
+    MyAppConfigKeys.flags.showTitle: false,
   };
 
   @override

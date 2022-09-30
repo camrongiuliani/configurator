@@ -57,15 +57,15 @@ class _MyHomePageState extends State<MyHomePage> {
       config.pushScope(ProxyScope(
         name: 'RandomScope_${config.scopes.length - 2}',
         colors: {
-          ConfigKeys.colors.primary: randomColor,
-          ConfigKeys.colors.secondary: randomColor,
-          ConfigKeys.colors.tertiary: randomColor,
+          MyAppConfigKeys.colors.primary: randomColor,
+          MyAppConfigKeys.colors.secondary: randomColor,
+          MyAppConfigKeys.colors.tertiary: randomColor,
         },
         sizes: {
-          ConfigKeys.sizes.detailTitleSize: max(random.nextInt( 24 ).toDouble(), 10)
+          MyAppConfigKeys.sizes.detailTitleSize: max(random.nextInt( 24 ).toDouble(), 10)
         },
         flags: {
-          ConfigKeys.flags.showTitle: random.nextBool(),
+          MyAppConfigKeys.flags.showTitle: random.nextBool(),
         }
       ));
     }
@@ -82,15 +82,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
     Configuration config = ConfigurationProvider.of( context, listen: false ).config;
 
-    Color c = config.colorValue( ConfigKeys.colors.primary );
+    Color c = config.colorValue( MyAppConfigKeys.colors.primary );
     
-    double s = config.size( ConfigKeys.sizes.detailTitleSize );
+    double s = config.size( MyAppConfigKeys.sizes.detailTitleSize );
     // config.flag(id)
 
     return Scaffold(
       appBar: AppBar(
         title: Vif(
-          test: () => config.flag( ConfigKeys.flags.showTitle ),
+          test: () => config.flag( MyAppConfigKeys.flags.showTitle ),
           ifTrue: () => Text( widget.title ),
         ),
       ),
