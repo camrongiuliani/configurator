@@ -27,7 +27,6 @@ abstract class ConfigScope {
       sizes: { for (var e in config.sizes) e.name : e.value },
       colors: { for (var e in config.colors) e.name : e.value },
     );
-
   }
 
   @override

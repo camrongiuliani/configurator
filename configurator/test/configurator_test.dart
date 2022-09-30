@@ -44,7 +44,49 @@ void main() {
     });
   });
 
+  group( 'Scope From Yaml Tests', () {
+    test( 'Scope From Invalid Yaml Throws', () {
+      expect( () => ConfigScope.fromYaml( '' ), invalidYamlMatcher );
+    });
+
+    test( 'Scope From Valid Yaml Returns', () {
+      var m = File( testYaml1 ).readAsStringSync();
+      expect( () => ConfigScope.fromYaml( m ), returnsNormally );
+    });
+
+    test( 'Scope From Valid Yaml Matches Parser', () {
+      var m = File( testYaml1 ).readAsStringSync();
+
+      var scope = ConfigScope.fromYaml( m );
+      var config = YamlParser.fromYamlString( m );
+
+      var scopeMap = {
+        'flags': { for (var e in scope.flags.entries) e.key : e.value },
+        'images': { for (var e in scope.images.entries) e.key : e.value },
+        'routes': { for (var e in scope.routes.entries) e.key : e.value },
+        'sizes': { for (var e in scope.sizes.entries) e.key : e.value },
+        'colors': { for (var e in scope.colors.entries) e.key : e.value },
+      };
+
+      var configMap = {
+        'flags': { for (var e in config.flags) e.name : e.value },
+        'images': { for (var e in config.images) e.name : e.value },
+        'routes': { for (var e in config.routes) e.name : e.value },
+        'sizes': { for (var e in config.sizes) e.name : e.value },
+        'colors': { for (var e in config.colors) e.name : e.value },
+      };
+
+      expect( scopeMap, equals( configMap ) );
+    });
+  });
+
   group( 'Yaml Load Tests', () {
+
+    test( 'tryParse Does Not Throw', () {
+      expect( () {
+        YamlParser.tryParse( null );
+      }, returnsNormally );
+    });
 
     test( 'Invalid Yaml Throws', () {
 
