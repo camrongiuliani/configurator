@@ -1,4 +1,5 @@
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:configurator/configurator.dart';
@@ -41,6 +42,42 @@ void main() {
         var c = Configuration( scopes: [ s1 ] );
         return c.scopes.length == 1 && c.scopes[0].name == 'test';
       }(), equals( true ) );
+    });
+  });
+
+  group( 'Configuration Scope Checks', () {
+
+    test( 'Configuration Add Scope Completes', () {
+      expect( () {
+        var s1 = ProxyScope(name: 'test');
+        var s2 = ProxyScope(name: 'test2');
+        var c = Configuration( scopes: [ s1 ] );
+        assert( c.scopes.length == 1 );
+        c.pushScope( s2 );
+        assert( c.scopes.length == 2 );
+      }, isNot( throwsA(AssertionError) ) );
+    });
+
+    test( 'ChangeNotifier Test Push/Pop Firing', () async {
+      var s1 = ProxyScope(name: 'test');
+      var s2 = ProxyScope(name: 'test2');
+      var c = Configuration( scopes: [ s1 ] );
+
+      Completer<int> completer = Completer();
+
+      c.changeNotifier.watch().first.then((value) {
+
+        expect( value.scopes.length, equals( 2 ) );
+
+        c.changeNotifier.watch().first.then((value) {
+          completer.complete( value.scopes.length );
+        });
+        c.popScope();
+      });
+
+      c.pushScope( s2 );
+
+      await expectLater( completer.future, completion( equals( 1 ) ) );
     });
   });
 

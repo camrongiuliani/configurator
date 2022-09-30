@@ -118,5 +118,4 @@ class Configuration  {
   void notifyListeners() {
     changeNotifier.notify( this );
   }
-
 }
