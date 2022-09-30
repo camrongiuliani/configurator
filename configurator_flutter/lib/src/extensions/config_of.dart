@@ -3,8 +3,8 @@
 import 'package:configurator_flutter/configurator_flutter.dart';
 import 'package:flutter/widgets.dart';
 
-extension OfContextF on Configuration {
-  Configuration of( BuildContext context ) {
-    return ConfigurationProvider.of( context ).config;
+extension Config on Configuration {
+  static Configuration of( BuildContext context, { bool listen = true } ) {
+    return ConfigurationProvider.of( context, listen: listen ).config;
   }
 }
