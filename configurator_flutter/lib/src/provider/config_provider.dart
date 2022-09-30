@@ -7,7 +7,7 @@ final _configProviderKey = GlobalKey<_ConfigurationProviderState>();
 class Configurator extends StatefulWidget {
 
   final Configuration config;
-  final Widget Function( BuildContext ) builder;
+  final Widget Function( BuildContext, Configuration ) builder;
 
   Configurator({
     required this.config,
@@ -19,8 +19,6 @@ class Configurator extends StatefulWidget {
 }
 
 class _ConfigurationProviderState extends State<Configurator> {
-
-  // _ConfigurationProviderState();
 
   @override
   void initState() {
@@ -45,7 +43,7 @@ class _ConfigurationProviderState extends State<Configurator> {
     return ConfigurationProvider(
       config: widget.config,
       child: Builder(
-        builder: ( ctx ) => widget.builder( ctx ),
+        builder: ( ctx ) => widget.builder( ctx, widget.config ),
       ),
     );
   }

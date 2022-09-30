@@ -19,9 +19,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Configurator(
       config: config,
-      builder: ( context ) => MaterialApp(
+      builder: ( context, config ) => MaterialApp(
         title: 'Flutter Demo',
-        theme: ConfigurationProvider.of(context).config.buildTheme(
+        theme: config.buildTheme(
             extensions: [
               MyAppGeneratedThemeExtension(
                 themeMap: config.themeMap,
