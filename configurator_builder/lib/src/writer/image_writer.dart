@@ -1,13 +1,15 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:configurator/configurator.dart';
+import 'package:configurator_builder/src/misc/string_ext.dart';
 import 'package:configurator_builder/src/misc/type_ext.dart';
 import 'package:configurator_builder/src/writer/writer.dart';
 
 class ImageWriter extends Writer {
 
+  final String name;
   final List<YamlSetting> _images;
 
-  ImageWriter( List<YamlSetting> _images )
+  ImageWriter( this.name, List<YamlSetting> _images )
       : _images = _images.convert<String, String>();
 
   @override
@@ -31,7 +33,7 @@ class ImageWriter extends Writer {
           ..type = MethodType.getter
           ..returns = refer( 'String' )
           ..lambda = true
-          ..body = Code( 'map[ ConfigKeys.images.${e.name} ] ?? \'/\'');
+          ..body = Code( 'map[ ${name.canonicalize}ConfigKeys.images.${e.name} ] ?? \'/\'');
       });
     }).toList();
   }
@@ -48,7 +50,7 @@ class ImageWriter extends Writer {
           Map<String, String> map = {};
 
           for ( var f in _images ) {
-            map['ConfigKeys.images.${f.name}'] = '\'${f.value}\'';
+            map['${name.canonicalize}ConfigKeys.images.${f.name}'] = '\'${f.value}\'';
           }
 
           return map.toString();

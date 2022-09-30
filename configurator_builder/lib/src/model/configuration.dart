@@ -39,25 +39,25 @@ class ProcessedConfig {
       ColorUtilWriter().write(),
 
       TitleWriter( 'Keys' ).write(),
-      KeyWriter( yamlConfiguration ).write(),
+      KeyWriter( frameworkName, yamlConfiguration ).write(),
 
       TitleWriter( 'Theme' ).write(),
       ThemeWriter( frameworkName, yamlConfiguration ).write(),
 
       TitleWriter( 'Flags' ).write(),
-      FlagWriter( yamlConfiguration.flags ).write(),
+      FlagWriter( frameworkName, yamlConfiguration.flags ).write(),
 
       TitleWriter( 'Images' ).write(),
-      ImageWriter( yamlConfiguration.images ).write(),
+      ImageWriter( frameworkName, yamlConfiguration.images ).write(),
 
       TitleWriter( 'Routes' ).write(),
-      RouteWriter( yamlConfiguration.routes ).write(),
+      RouteWriter( frameworkName, yamlConfiguration.routes ).write(),
 
       TitleWriter( 'Colors' ).write(),
-      ColorWriter( yamlConfiguration.colors ).write(),
+      ColorWriter( frameworkName, yamlConfiguration.colors ).write(),
 
       TitleWriter( 'Sizes' ).write(),
-      SizeWriter( yamlConfiguration.sizes ).write(),
+      SizeWriter( frameworkName, yamlConfiguration.sizes ).write(),
 
       TitleWriter( 'Configuration' ).write(),
       ConfigWriter( frameworkName ).write(),

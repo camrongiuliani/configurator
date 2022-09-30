@@ -6,9 +6,10 @@ import 'package:configurator_builder/src/misc/type_ext.dart';
 
 class ColorWriter extends Writer {
 
+  final String name;
   final List<YamlSetting<String, String>> _colors;
 
-  ColorWriter( List<YamlSetting> _colors )
+  ColorWriter( this.name, List<YamlSetting> _colors )
       : _colors = _colors.convert<String, String>();
 
   @override
@@ -32,7 +33,7 @@ class ColorWriter extends Writer {
           ..type = MethodType.getter
           ..returns = refer( 'String' )
           ..lambda = true
-          ..body = Code( 'map[ ConfigKeys.colors.${e.name.canonicalize} ] ?? \'\'' );
+          ..body = Code( 'map[ ${name.canonicalize}ConfigKeys.colors.${e.name.canonicalize} ] ?? \'\'' );
       });
     }).toList();
   }
@@ -49,7 +50,7 @@ class ColorWriter extends Writer {
           Map<String, String> map = {};
 
           for ( var f in _colors ) {
-            map['ConfigKeys.colors.${f.name.canonicalize}'] = '\'${f.value}\'';
+            map['${name.canonicalize}ConfigKeys.colors.${f.name.canonicalize}'] = '\'${f.value}\'';
           }
 
           return map.toString();

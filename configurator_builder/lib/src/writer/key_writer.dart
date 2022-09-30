@@ -5,9 +5,10 @@ import 'package:configurator_builder/src/writer/writer.dart';
 
 class KeyWriter extends Writer {
 
+  String name;
   final YamlConfiguration _yamlConfiguration;
 
-  KeyWriter( this._yamlConfiguration );
+  KeyWriter( this.name, this._yamlConfiguration );
 
   @override
   Spec write() {
@@ -55,7 +56,7 @@ class KeyWriter extends Writer {
 
     Class configKeys = Class( ( builder ) {
       builder
-        ..name = 'ConfigKeys'
+        ..name = '${name.canonicalize}ConfigKeys'
         ..fields.addAll([
           _buildKeyAccessor( 'routes', '_RouteKeys()' ),
           _buildKeyAccessor( 'flags', '_FlagKeys()' ),

@@ -6,9 +6,10 @@ import 'package:configurator_builder/src/writer/writer.dart';
 
 class RouteWriter extends Writer {
 
+  final String name;
   final List<YamlSetting<int, String>> _routes;
 
-  RouteWriter( List<YamlSetting> _routes )
+  RouteWriter( this.name, List<YamlSetting> _routes )
       : _routes = _routes.convert<int, String>();
 
   @override
@@ -32,7 +33,7 @@ class RouteWriter extends Writer {
           ..type = MethodType.getter
           ..returns = refer( 'String' )
           ..lambda = true
-          ..body = Code( 'map[ ConfigKeys.routes.${e.value.canonicalize} ] ?? \'/\'');
+          ..body = Code( 'map[ ${name.canonicalize}ConfigKeys.routes.${e.value.canonicalize} ] ?? \'/\'');
       });
     }).toList();
   }
@@ -49,7 +50,7 @@ class RouteWriter extends Writer {
           Map<String, String> map = {};
 
           for ( var f in _routes ) {
-            map['ConfigKeys.routes.${f.value.canonicalize}'] = '\'${f.value}\'';
+            map['${name.canonicalize}ConfigKeys.routes.${f.value.canonicalize}'] = '\'${f.value}\'';
           }
 
           return map.toString();

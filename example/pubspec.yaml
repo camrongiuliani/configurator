@@ -17,13 +17,19 @@ dependencies:
   v_widgets: ^0.0.1+1
 
   configurator:
-    path: ../configurator
+    git:
+      url: git@github.com:camrongiuliani/configurator.git
+      path: configurator
 
   configurator_flutter:
-    path: ../configurator_flutter
+    git:
+      url: git@github.com:camrongiuliani/configurator.git
+      path: configurator_flutter
 
   configurator_annotations:
-    path: ../configurator_annotations
+    git:
+      url: git@github.com:camrongiuliani/configurator.git
+      path: configurator_annotations
 
 dev_dependencies:
   flutter_test:
@@ -33,7 +39,9 @@ dev_dependencies:
   build_runner: ^2.2.1
 
   configurator_builder:
-    path: ../configurator_builder
+    git:
+      url: git@github.com:camrongiuliani/configurator.git
+      path: configurator_builder
 
 flutter:
   uses-material-design: true

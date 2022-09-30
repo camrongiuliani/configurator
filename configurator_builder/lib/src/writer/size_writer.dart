@@ -6,9 +6,10 @@ import 'package:configurator_builder/src/writer/writer.dart';
 
 class SizeWriter extends Writer {
 
+  final name;
   final List<YamlSetting<String, double>> _sizes;
 
-  SizeWriter( List<YamlSetting> _sizes )
+  SizeWriter( this.name, List<YamlSetting> _sizes )
       : _sizes = _sizes.convert<String, double>();
 
   @override
@@ -32,7 +33,7 @@ class SizeWriter extends Writer {
           ..type = MethodType.getter
           ..returns = refer( 'double' )
           ..lambda = true
-          ..body = Code( 'map[ ConfigKeys.sizes.${e.name.canonicalize} ] ?? 0.0' );
+          ..body = Code( 'map[ ${name.canonicalize}ConfigKeys.sizes.${e.name.canonicalize} ] ?? 0.0' );
       });
     }).toList();
   }
@@ -49,7 +50,7 @@ class SizeWriter extends Writer {
           Map<String, double> map = {};
 
           for ( var f in _sizes ) {
-            map['ConfigKeys.sizes.${f.name.canonicalize}'] = f.value;
+            map['${name.canonicalize}ConfigKeys.sizes.${f.name.canonicalize}'] = f.value;
           }
 
           return map.toString();

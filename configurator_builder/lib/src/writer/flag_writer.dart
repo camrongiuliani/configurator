@@ -1,13 +1,15 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:configurator/configurator.dart';
+import 'package:configurator_builder/src/misc/string_ext.dart';
 import 'package:configurator_builder/src/misc/type_ext.dart';
 import 'package:configurator_builder/src/writer/writer.dart';
 
 class FlagWriter extends Writer {
 
+  final String name;
   final List<YamlSetting<String, bool>> _flags;
 
-  FlagWriter( List<YamlSetting> _flags )
+  FlagWriter( this.name, List<YamlSetting> _flags )
       : _flags = _flags.convert<String, bool>();
 
   @override
@@ -31,7 +33,7 @@ class FlagWriter extends Writer {
           ..type = MethodType.getter
           ..returns = refer( 'bool' )
           ..lambda = true
-          ..body = Code( 'map[ ConfigKeys.flags.${e.name} ] == true' );
+          ..body = Code( 'map[ ${name.canonicalize}ConfigKeys.flags.${e.name} ] == true' );
       });
     }).toList();
   }
@@ -48,7 +50,7 @@ class FlagWriter extends Writer {
           Map<String, bool> map = {};
 
           for ( var f in _flags ) {
-            map['ConfigKeys.flags.${f.name}'] = f.value;
+            map['${name.canonicalize}ConfigKeys.flags.${f.name}'] = f.value;
           }
 
           return map.toString();
