@@ -17,12 +17,15 @@ class Configuration  {
   Configuration._( this._scopes, this.changeNotifier );
 
   factory Configuration({ List<ConfigScope> scopes = const [] }) {
-    if ( scopes.isEmpty ) {
+
+    List<ConfigScope> mut = List.from( scopes );
+
+    if ( mut.isEmpty ) {
       var now = DateTime.now().millisecondsSinceEpoch;
-      scopes.add(  ConfigScope.empty(name: '$now') );
+      mut.add(  ConfigScope.empty(name: '$now') );
     }
 
-    return Configuration._( scopes, ChangeNotifier() );
+    return Configuration._( mut, ChangeNotifier() );
   }
 
   Configuration copyWith({

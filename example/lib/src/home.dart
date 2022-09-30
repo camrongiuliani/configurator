@@ -85,7 +85,6 @@ class _MyHomePageState extends State<MyHomePage> {
     Color c = config.colorValue( MyAppConfigKeys.colors.primary );
     
     double s = config.size( MyAppConfigKeys.sizes.detailTitleSize );
-    // config.flag(id)
 
     return Scaffold(
       appBar: AppBar(
