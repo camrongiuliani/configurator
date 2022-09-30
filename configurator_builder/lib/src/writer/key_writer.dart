@@ -8,7 +8,7 @@ class KeyWriter extends Writer {
   final String name;
   final YamlConfiguration _yamlConfiguration;
 
-  KeyWriter( String name, this._yamlConfiguration ) : name = name.canonicalize;
+  KeyWriter( String name, this._yamlConfiguration ) : name = name.canonicalize.capitalized;
 
   @override
   Spec write() {

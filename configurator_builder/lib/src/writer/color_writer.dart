@@ -10,7 +10,7 @@ class ColorWriter extends Writer {
   final List<YamlSetting<String, String>> _colors;
 
   ColorWriter( String name, List<YamlSetting> _colors )
-      : name = name.canonicalize,
+      : name = name.canonicalize.capitalized,
         _colors = _colors.convert<String, String>();
 
   @override

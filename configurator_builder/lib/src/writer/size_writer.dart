@@ -10,7 +10,7 @@ class SizeWriter extends Writer {
   final List<YamlSetting<String, double>> _sizes;
 
   SizeWriter( String name, List<YamlSetting> _sizes )
-      : name = name.canonicalize,
+      : name = name.canonicalize.capitalized.capitalized,
         _sizes = _sizes.convert<String, double>();
 
   @override
@@ -51,7 +51,6 @@ class SizeWriter extends Writer {
           Map<String, double> map = {};
 
           for ( var f in _sizes ) {
-            print('HERE: ${f.name}');
             map['${name}ConfigKeys.sizes.${f.name.canonicalize}'] = f.value;
           }
 

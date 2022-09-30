@@ -10,7 +10,7 @@ class ImageWriter extends Writer {
   final List<YamlSetting> _images;
 
   ImageWriter( String name, List<YamlSetting> _images )
-      : name = name.canonicalize,
+      : name = name.canonicalize.capitalized,
         _images = _images.convert<String, String>();
 
   @override

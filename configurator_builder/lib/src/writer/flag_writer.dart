@@ -10,7 +10,7 @@ class FlagWriter extends Writer {
   final List<YamlSetting<String, bool>> _flags;
 
   FlagWriter( String name, List<YamlSetting> _flags )
-      : name = name.canonicalize,
+      : name = name.canonicalize.capitalized,
         _flags = _flags.convert<String, bool>();
 
   @override

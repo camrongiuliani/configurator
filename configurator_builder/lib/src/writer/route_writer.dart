@@ -10,7 +10,7 @@ class RouteWriter extends Writer {
   final List<YamlSetting<int, String>> _routes;
 
   RouteWriter( String name, List<YamlSetting> _routes )
-      : name = name.canonicalize,
+      : name = name.canonicalize.capitalized,
         _routes = _routes.convert<int, String>();
 
   @override
