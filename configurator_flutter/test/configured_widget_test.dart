@@ -12,9 +12,9 @@ void main() {
     testWidgets('Config.of Test', (tester) async {
 
       await tester.pumpWidget(
-        Configurator(
+        ConfigurationProvider(
           config: Configuration(),
-          builder: ( context, _ ) => ConfiguredWidget(
+          child: ConfiguredWidget(
             builder: ( _ ) =>  Container() ,
           ),
         ),
@@ -34,9 +34,9 @@ void main() {
       int hitCount = 0;
 
       await tester.pumpWidget(
-        Configurator(
+        ConfigurationProvider(
           config: Configuration(),
-          builder: ( context, _ ) => ConfiguredWidget(
+          child: ConfiguredWidget(
             builder: ( config ) {
               hitCount++;
 
