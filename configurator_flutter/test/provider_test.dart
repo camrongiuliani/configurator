@@ -59,6 +59,8 @@ void main() {
               config.pushScope( s1 );
             } else if ( hitCount == 2 ) {
               completer.complete( config );
+            } else {
+              throw Exception( 'Should not be hit a 3rd time.' );
             }
 
             return Container();
