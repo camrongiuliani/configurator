@@ -29,6 +29,16 @@ abstract class ConfigScope {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    return {
+      'flags': { for (var e in flags.entries) e.key: e.value},
+      'images': { for (var e in images.entries) e.key: e.value},
+      'sizes': { for (var e in sizes.entries) e.key: e.value},
+      'colors': { for (var e in colors.entries) e.key: e.value},
+      'routes': { for (var e in routes.entries) e.key : e.value },
+    };
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

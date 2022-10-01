@@ -63,7 +63,7 @@ class Configuration  {
     })?.flags[ id ] ?? false;
   }
 
-  String color( int id ) {
+  String color( String id ) {
     return _scopes.reversed.firstWhereOrNull( ( s ) {
       return s.colors.containsKey( id );
     })?.colors[ id ] ?? '';

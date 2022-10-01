@@ -18,6 +18,16 @@ class YamlConfiguration {
     this.routes = const [],
   });
 
+  Map<dynamic, dynamic> toJson() {
+    return {
+      'flags': { for (var e in flags) e.name: e.value},
+      'images': { for (var e in images) e.name: e.value},
+      'sizes': { for (var e in sizes) e.name: e.value},
+      'colors': { for (var e in colors) e.name: e.value},
+      'routes': { for (var e in routes) e.name : e.value },
+    };
+  }
+
   operator +( YamlConfiguration t ) {
     colors.retainWhere(( e ) => ! t.colors.contains( e ));
     colors.addAll( t.colors );

@@ -9,6 +9,9 @@ import 'package:yaml/yaml.dart';
 Matcher invalidYamlMatcher = throwsA( const TypeMatcher<InvalidYamlException>() );
 
 const String testYaml1 = './test/assets/test_1.yaml';
+const String badIdYaml = './test/assets/bad_id.yaml';
+const String missingIdYaml = './test/assets/bad_id.yaml';
+const String badConfigYaml = './test/assets/bad_config.yaml';
 
 void main() {
 
@@ -42,6 +45,64 @@ void main() {
         var c = Configuration( scopes: [ s1 ] );
         return c.scopes.length == 1 && c.scopes[0].name == 'test';
       }(), equals( true ) );
+    });
+  });
+
+  group( 'Configuration Tests', () {
+
+    test( 'Configuration Get Value Test (Single Scope)', () {
+      var m = File( testYaml1 ).readAsStringSync();
+      var scope = ConfigScope.fromYaml( m );
+      Configuration config = Configuration( scopes: [ scope ] );
+
+      for ( var rootEntry in scope.toJson().entries ) {
+        for ( var v in rootEntry.value.entries ) {
+          if ( rootEntry.key == 'flags' ) {
+            expect( config.flag( v.key ), equals( v.value ) );
+          }
+          if ( rootEntry.key == 'colors' ) {
+            expect( config.color( v.key ), equals( v.value ) );
+          }
+          if ( rootEntry.key == 'routes' ) {
+            expect( config.route( v.key ), equals( v.value ) );
+          }
+          if ( rootEntry.key == 'images' ) {
+            expect( config.image( v.key ), equals( v.value ) );
+          }
+          if ( rootEntry.key == 'sizes' ) {
+            expect( config.size( v.key ), equals( v.value ) );
+          }
+        }
+      }
+    });
+
+    test( 'Configuration Scope Override/Fallthrough Test ', () {
+      var m = File( testYaml1 ).readAsStringSync();
+      var scope = ConfigScope.fromYaml( m );
+
+      var scopeO = ProxyScope(
+        name: 'overrides',
+        colors: {
+          'primary': "FFFFFF"
+        },
+      );
+
+      Configuration config = Configuration( scopes: [ scope, scopeO ] );
+
+      expect( config.color( 'secondary' ), equals( scope.colors['secondary'] ));
+      expect( config.color( 'primary' ), equals( scopeO.colors['primary'] ));
+
+      var scopeO2 = ProxyScope(
+        name: 'overrides',
+        colors: {
+          'secondary': "FFFFFF"
+        },
+      );
+
+      config.pushScope( scopeO2 );
+
+      expect( config.color( 'secondary' ), equals( scopeO2.colors['secondary'] ));
+
     });
   });
 
@@ -97,23 +158,19 @@ void main() {
       var scope = ConfigScope.fromYaml( m );
       var config = YamlParser.fromYamlString( m );
 
-      var scopeMap = {
-        'flags': { for (var e in scope.flags.entries) e.key : e.value },
-        'images': { for (var e in scope.images.entries) e.key : e.value },
-        'routes': { for (var e in scope.routes.entries) e.key : e.value },
-        'sizes': { for (var e in scope.sizes.entries) e.key : e.value },
-        'colors': { for (var e in scope.colors.entries) e.key : e.value },
-      };
+      expect( scope.toJson(), equals( config.toJson() ) );
+    });
 
-      var configMap = {
-        'flags': { for (var e in config.flags) e.name : e.value },
-        'images': { for (var e in config.images) e.name : e.value },
-        'routes': { for (var e in config.routes) e.name : e.value },
-        'sizes': { for (var e in config.sizes) e.name : e.value },
-        'colors': { for (var e in config.colors) e.name : e.value },
-      };
+    test( 'Scope.toJson equals Config.themeMap', () {
+      var m = File( testYaml1 ).readAsStringSync();
 
-      expect( scopeMap, equals( configMap ) );
+      var scope = ConfigScope.fromYaml( m );
+      var scopeJson = scope.toJson();
+      scopeJson.remove( 'routes' ); // TODO: Handle routes
+
+      Configuration config = Configuration( scopes: [ scope ] );
+
+      expect( scopeJson, equals( config.themeMap ) );
     });
   });
 
@@ -147,15 +204,15 @@ void main() {
         YamlParser.fromYamlString( '{}' );
       }, invalidYamlMatcher );
 
-      // Missing ID key throws
+      // Bad ID key throws
       expect( () {
-        var m = File( testYaml1 ).readAsStringSync().replaceAll('id:', 'i:');
+        var m = File( badIdYaml ).readAsStringSync();
         YamlParser.fromYamlString( m );
       }, invalidYamlMatcher );
 
       // Empty ID throws
       expect( () {
-        var m = File( testYaml1 ).readAsStringSync().replaceAll('id: app_scope', 'id: ');
+        var m = File( missingIdYaml ).readAsStringSync();
         YamlParser.fromYamlString( m );
       }, invalidYamlMatcher );
 
@@ -168,6 +225,12 @@ void main() {
       // Missing Configuration key throws
       expect( () {
         var m = File( testYaml1 ).readAsStringSync().replaceAll('configuration:', 'dd:');
+        YamlParser.fromYamlString( m );
+      }, invalidYamlMatcher );
+
+      // Bad Configuration key throws
+      expect( () {
+        var m = File( badConfigYaml ).readAsStringSync().replaceAll('configuration:', 'dd:');
         YamlParser.fromYamlString( m );
       }, invalidYamlMatcher );
 
