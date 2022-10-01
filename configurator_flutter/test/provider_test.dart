@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:configurator_flutter/configurator_flutter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,7 +24,7 @@ void main() {
       expect( cp.updateShouldNotify( cp ), isTrue );
     });
 
-    testWidgets('Config Exists Test', (tester) async {
+    testWidgets('Config.of Test', (tester) async {
 
       await tester.pumpWidget(
         Configurator(
@@ -36,6 +38,38 @@ void main() {
         isNotNull,
         reason: 'Configuration should not be null.',
       );
+    });
+
+    testWidgets('Add Scope Rebuilds Test', (tester) async {
+
+      Completer<Configuration> completer = Completer();
+
+      var config = Configuration();
+
+      int hitCount = 0;
+
+      await tester.pumpWidget(
+        Configurator(
+          config: config,
+          builder: ( context, config ) {
+            hitCount++;
+
+            if ( hitCount == 1 ) {
+              var s1 = ProxyScope(name: 'test');
+              config.pushScope( s1 );
+            } else if ( hitCount == 2 ) {
+              completer.complete( config );
+            }
+
+            return Container();
+          }
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      await expectLater( completer.future, completion( isNotNull ) ).timeout( const Duration( seconds: 1 ) );
+
     });
   });
 }
