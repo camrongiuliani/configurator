@@ -43,6 +43,3 @@ configuration:
     base:
       title: Hello, World!
       scope: Scope
-    de:
-      title: Hallo, Welt!
-      scope: Umfang

@@ -144,19 +144,6 @@ void main() {
     });
   });
 
-  group( 'Localization Tests', () {
-    test( 'Split Yaml String Test', () {
-      // var m1 = File( testYaml1 ).readAsStringSync();
-      var m2 = File( testYaml1de ).readAsStringSync();
-
-      // var scope1 = ConfigScope.fromYaml( m1 );
-      // var scope2 = ConfigScope.fromYaml( m2 );
-      var config = YamlParser.fromYamlString( m2 );
-
-    });
-
-  });
-
   group( 'Scope From Yaml Tests', () {
     test( 'Scope From Invalid Yaml Throws', () {
       expect( () => ConfigScope.fromYaml( '' ), invalidYamlMatcher );
@@ -195,6 +182,17 @@ void main() {
       expect( () {
         YamlParser.tryParse( null );
       }, returnsNormally );
+    });
+
+    test( 'Split Yaml Reduce Test', () {
+      expect( () {
+        var m1 = File( testYaml1 ).readAsStringSync();
+        var m2 = File( testYaml1de ).readAsStringSync();
+
+        List<YamlConfiguration> configs = [m1, m2].map((e) => YamlParser.fromYamlString( e ) ).toList();
+
+        return configs.reduce((value, element) => value + element );
+      }, isNotNull );
     });
 
     test( 'Invalid Yaml Throws', () {

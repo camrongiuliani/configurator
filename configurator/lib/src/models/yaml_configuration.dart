@@ -50,5 +50,7 @@ class YamlConfiguration {
 
     strings.retainWhere(( e ) => ! t.strings.contains( e ));
     strings.addAll( t.strings );
+
+    return this;
   }
 }
