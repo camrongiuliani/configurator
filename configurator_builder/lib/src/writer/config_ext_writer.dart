@@ -13,6 +13,7 @@ class ConfigExtWriter extends Writer {
     return Extension( ( b ) {
       b
         ..name = 'ConfigAccessor'
+        ..on = refer( 'Configuration' )
         ..methods.addAll([
           _buildGetter( '_FlagAccessor', 'flags' ),
           _buildGetter( '_ColorAccessor', 'colors' ),

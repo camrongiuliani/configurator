@@ -253,7 +253,7 @@ double get detailTitleSize => config.size( MyHomePageConfigKeys.sizes.detailTitl
 /// Locales: 2
 /// Strings: 2 (1 per locale)
 ///
-/// Built on 2022-10-03 at 19:19 UTC
+/// Built on 2022-10-03 at 19:34 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -472,9 +472,9 @@ class MyHomePageGeneratedScope extends ConfigScope {@override String name = '__G
 // Configuration Extension
 // ********************************
 
-extension ConfigAccessor {_FlagAccessor get flags { _FlagAccessor( this ) } 
-_ColorAccessor get colors { _ColorAccessor( this ) } 
-_ImageAccessor get images { _ImageAccessor( this ) } 
-_SizeAccessor get sizes { _SizeAccessor( this ) } 
-_RouteAccessor get routes { _RouteAccessor( this ) } 
+extension ConfigAccessor {_FlagAccessor get flags => _FlagAccessor( this );
+_ColorAccessor get colors => _ColorAccessor( this );
+_ImageAccessor get images => _ImageAccessor( this );
+_SizeAccessor get sizes => _SizeAccessor( this );
+_RouteAccessor get routes => _RouteAccessor( this );
  }
