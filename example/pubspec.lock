@@ -146,7 +146,7 @@ packages:
     description:
       path: configurator
       ref: HEAD
-      resolved-ref: d40874d5848bb3f2a7a79e19313ad8a052e1c541
+      resolved-ref: "5c3fdea4150ab46b54be92dcf99ce7cbff82fe68"
       url: "git@github.com:camrongiuliani/configurator.git"
     source: git
     version: "0.0.1"
@@ -155,7 +155,7 @@ packages:
     description:
       path: configurator_annotations
       ref: HEAD
-      resolved-ref: d40874d5848bb3f2a7a79e19313ad8a052e1c541
+      resolved-ref: "5c3fdea4150ab46b54be92dcf99ce7cbff82fe68"
       url: "git@github.com:camrongiuliani/configurator.git"
     source: git
     version: "0.1.0+1"
@@ -164,7 +164,7 @@ packages:
     description:
       path: configurator_builder
       ref: HEAD
-      resolved-ref: d40874d5848bb3f2a7a79e19313ad8a052e1c541
+      resolved-ref: "5c3fdea4150ab46b54be92dcf99ce7cbff82fe68"
       url: "git@github.com:camrongiuliani/configurator.git"
     source: git
     version: "0.0.1+2"
@@ -173,7 +173,7 @@ packages:
     description:
       path: configurator_flutter
       ref: HEAD
-      resolved-ref: d40874d5848bb3f2a7a79e19313ad8a052e1c541
+      resolved-ref: "5c3fdea4150ab46b54be92dcf99ce7cbff82fe68"
       url: "git@github.com:camrongiuliani/configurator.git"
     source: git
     version: "0.0.1"
@@ -191,6 +191,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.2"
+  csv:
+    dependency: transitive
+    description:
+      name: csv
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.0.1"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -409,6 +416,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  slang:
+    dependency: transitive
+    description:
+      name: slang
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
   source_gen:
     dependency: transitive
     description:

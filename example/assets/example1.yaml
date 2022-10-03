@@ -1,11 +1,11 @@
-id: example1
+id: app_scope
 
 definitions:
   - strings:
       - &defaultHeaderImage
           'https://pub.dev/static/hash-qr9i96gp/img/pub-dev-logo-2x.png'
   - colors:
-      - &defaultPageBg 0000FF
+      - &defaultPageBg EFF1F3
       - &defaultButtonBg CC0000
       - &defaultButtonTextColor '000000'
   - routes:
@@ -16,6 +16,7 @@ configuration:
     primary: *defaultPageBg
     secondary: *defaultButtonBg
     tertiary: *defaultButtonTextColor
+    storeFrontBg: *defaultPageBg
   sizes:
     homeTitleSize: 14.0
     detailTitleSize: 22.0
@@ -39,4 +40,7 @@ configuration:
       path: *myVar
 
   strings:
-    - Hello, World!
+    base:
+      title: Hello, World!
+    de:
+      title: Hallo, Welt!

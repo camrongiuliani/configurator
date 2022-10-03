@@ -7,3 +7,4 @@ export 'src/extensions/config_listenable.dart';
 export 'src/extensions/config_of.dart';
 export 'src/extensions/config_theme.dart';
 export 'package:configurator/configurator.dart';
+export 'package:slang_flutter/slang_flutter.dart';
