@@ -31,7 +31,14 @@ class SlangUtil {
       translationMap: translationMap,
     );
 
-    return result.joinAsSingleOutput();
+    final String output = result.joinAsSingleOutput();
+
+    final parts = output.split( '\n' );
+
+    parts.removeWhere((e) => e.startsWith('import'));
+    parts.removeWhere((e) => e.startsWith('export'));
+
+    return parts.join('\n');
   }
 
   static Future<TranslationMap> _buildTranslationMap({

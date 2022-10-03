@@ -233,7 +233,7 @@ class MyAppGeneratedScope extends ConfigScope {@override String name = '__Genera
 /// Locales: 2
 /// Strings: 4 (2 per locale)
 ///
-/// Built on 2022-10-03 at 15:34 UTC
+/// Built on 2022-10-03 at 16:41 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
