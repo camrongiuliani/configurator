@@ -200,18 +200,18 @@ class _Flags {
 }
 
 class _FlagAccessor {
-  const _FlagAccessor(this.config);
+  const _FlagAccessor(this._config);
 
-  final Configuration config;
+  final Configuration _config;
 
   bool get isEnabled =>
-      config.flag(MyHomePageConfigKeys.flags.isEnabled) == true;
-  bool get andThis => config.flag(MyHomePageConfigKeys.flags.andThis) == true;
-  bool get andThat => config.flag(MyHomePageConfigKeys.flags.andThat) == true;
-  bool get orThis => config.flag(MyHomePageConfigKeys.flags.orThis) == true;
-  bool get orThat => config.flag(MyHomePageConfigKeys.flags.orThat) == true;
+      _config.flag(MyHomePageConfigKeys.flags.isEnabled) == true;
+  bool get andThis => _config.flag(MyHomePageConfigKeys.flags.andThis) == true;
+  bool get andThat => _config.flag(MyHomePageConfigKeys.flags.andThat) == true;
+  bool get orThis => _config.flag(MyHomePageConfigKeys.flags.orThis) == true;
+  bool get orThat => _config.flag(MyHomePageConfigKeys.flags.orThat) == true;
   bool get showTitle =>
-      config.flag(MyHomePageConfigKeys.flags.showTitle) == true;
+      _config.flag(MyHomePageConfigKeys.flags.showTitle) == true;
 }
 
 // ********************************
@@ -234,14 +234,14 @@ class _Images {
 }
 
 class _ImageAccessor {
-  const _ImageAccessor(this.config);
+  const _ImageAccessor(this._config);
 
-  final Configuration config;
+  final Configuration _config;
 
   String get loginHeaderImage =>
-      config.image(MyHomePageConfigKeys.images.loginHeaderImage);
+      _config.image(MyHomePageConfigKeys.images.loginHeaderImage);
   String get storeFrontHeaderImage =>
-      config.image(MyHomePageConfigKeys.images.storeFrontHeaderImage);
+      _config.image(MyHomePageConfigKeys.images.storeFrontHeaderImage);
 }
 
 // ********************************
@@ -255,9 +255,9 @@ class _Routes {
 }
 
 class _RouteAccessor {
-  const _RouteAccessor(this.config);
+  const _RouteAccessor(this._config);
 
-  final Configuration config;
+  final Configuration _config;
 }
 
 // ********************************
@@ -278,14 +278,15 @@ class _Colors {
 }
 
 class _ColorAccessor {
-  const _ColorAccessor(this.config);
+  const _ColorAccessor(this._config);
 
-  final Configuration config;
+  final Configuration _config;
 
-  Color get primary => config.colorValue(MyHomePageConfigKeys.colors.primary);
+  Color get primary => _config.colorValue(MyHomePageConfigKeys.colors.primary);
   Color get secondary =>
-      config.colorValue(MyHomePageConfigKeys.colors.secondary);
-  Color get tertiary => config.colorValue(MyHomePageConfigKeys.colors.tertiary);
+      _config.colorValue(MyHomePageConfigKeys.colors.secondary);
+  Color get tertiary =>
+      _config.colorValue(MyHomePageConfigKeys.colors.tertiary);
 }
 
 // ********************************
@@ -306,14 +307,14 @@ class _Sizes {
 }
 
 class _SizeAccessor {
-  const _SizeAccessor(this.config);
+  const _SizeAccessor(this._config);
 
-  final Configuration config;
+  final Configuration _config;
 
   double get homeTitleSize =>
-      config.size(MyHomePageConfigKeys.sizes.homeTitleSize);
+      _config.size(MyHomePageConfigKeys.sizes.homeTitleSize);
   double get detailTitleSize =>
-      config.size(MyHomePageConfigKeys.sizes.detailTitleSize);
+      _config.size(MyHomePageConfigKeys.sizes.detailTitleSize);
 }
 
 // ********************************
@@ -325,7 +326,7 @@ class _SizeAccessor {
 /// Locales: 2
 /// Strings: 2 (1 per locale)
 ///
-/// Built on 2022-10-03 at 19:40 UTC
+/// Built on 2022-10-03 at 19:45 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint

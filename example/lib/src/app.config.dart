@@ -206,16 +206,16 @@ class _Flags {
 }
 
 class _FlagAccessor {
-  const _FlagAccessor(this.config);
+  const _FlagAccessor(this._config);
 
-  final Configuration config;
+  final Configuration _config;
 
-  bool get isEnabled => config.flag(MyAppConfigKeys.flags.isEnabled) == true;
-  bool get andThis => config.flag(MyAppConfigKeys.flags.andThis) == true;
-  bool get andThat => config.flag(MyAppConfigKeys.flags.andThat) == true;
-  bool get orThis => config.flag(MyAppConfigKeys.flags.orThis) == true;
-  bool get orThat => config.flag(MyAppConfigKeys.flags.orThat) == true;
-  bool get showTitle => config.flag(MyAppConfigKeys.flags.showTitle) == true;
+  bool get isEnabled => _config.flag(MyAppConfigKeys.flags.isEnabled) == true;
+  bool get andThis => _config.flag(MyAppConfigKeys.flags.andThis) == true;
+  bool get andThat => _config.flag(MyAppConfigKeys.flags.andThat) == true;
+  bool get orThis => _config.flag(MyAppConfigKeys.flags.orThis) == true;
+  bool get orThat => _config.flag(MyAppConfigKeys.flags.orThat) == true;
+  bool get showTitle => _config.flag(MyAppConfigKeys.flags.showTitle) == true;
 }
 
 // ********************************
@@ -238,14 +238,14 @@ class _Images {
 }
 
 class _ImageAccessor {
-  const _ImageAccessor(this.config);
+  const _ImageAccessor(this._config);
 
-  final Configuration config;
+  final Configuration _config;
 
   String get loginHeaderImage =>
-      config.image(MyAppConfigKeys.images.loginHeaderImage);
+      _config.image(MyAppConfigKeys.images.loginHeaderImage);
   String get storeFrontHeaderImage =>
-      config.image(MyAppConfigKeys.images.storeFrontHeaderImage);
+      _config.image(MyAppConfigKeys.images.storeFrontHeaderImage);
 }
 
 // ********************************
@@ -259,9 +259,9 @@ class _Routes {
 }
 
 class _RouteAccessor {
-  const _RouteAccessor(this.config);
+  const _RouteAccessor(this._config);
 
-  final Configuration config;
+  final Configuration _config;
 }
 
 // ********************************
@@ -284,15 +284,15 @@ class _Colors {
 }
 
 class _ColorAccessor {
-  const _ColorAccessor(this.config);
+  const _ColorAccessor(this._config);
 
-  final Configuration config;
+  final Configuration _config;
 
-  Color get primary => config.colorValue(MyAppConfigKeys.colors.primary);
-  Color get secondary => config.colorValue(MyAppConfigKeys.colors.secondary);
-  Color get tertiary => config.colorValue(MyAppConfigKeys.colors.tertiary);
+  Color get primary => _config.colorValue(MyAppConfigKeys.colors.primary);
+  Color get secondary => _config.colorValue(MyAppConfigKeys.colors.secondary);
+  Color get tertiary => _config.colorValue(MyAppConfigKeys.colors.tertiary);
   Color get storeFrontBg =>
-      config.colorValue(MyAppConfigKeys.colors.storeFrontBg);
+      _config.colorValue(MyAppConfigKeys.colors.storeFrontBg);
 }
 
 // ********************************
@@ -312,13 +312,13 @@ class _Sizes {
 }
 
 class _SizeAccessor {
-  const _SizeAccessor(this.config);
+  const _SizeAccessor(this._config);
 
-  final Configuration config;
+  final Configuration _config;
 
-  double get homeTitleSize => config.size(MyAppConfigKeys.sizes.homeTitleSize);
+  double get homeTitleSize => _config.size(MyAppConfigKeys.sizes.homeTitleSize);
   double get detailTitleSize =>
-      config.size(MyAppConfigKeys.sizes.detailTitleSize);
+      _config.size(MyAppConfigKeys.sizes.detailTitleSize);
 }
 
 // ********************************
@@ -330,7 +330,7 @@ class _SizeAccessor {
 /// Locales: 2
 /// Strings: 4 (2 per locale)
 ///
-/// Built on 2022-10-03 at 19:40 UTC
+/// Built on 2022-10-03 at 19:45 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint

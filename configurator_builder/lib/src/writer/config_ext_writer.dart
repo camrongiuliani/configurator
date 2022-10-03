@@ -20,16 +20,17 @@ class ConfigExtWriter extends Writer {
           _buildGetter( '_ImageAccessor', 'images' ),
           _buildGetter( '_SizeAccessor', 'sizes' ),
           _buildGetter( '_RouteAccessor', 'routes' ),
+          _buildGetter( '_I18nDartEn', 'strings', 't' ),
         ]);
     });
   }
 
-  Method _buildGetter( String className, String fieldName ) {
+  Method _buildGetter( String className, String fieldName, [ String? body ] ) {
     return Method( ( b ) {
       b
         ..name = fieldName
         ..returns = refer( className )
-        ..body = Code( '$className( this )' )
+        ..body = Code( body ?? '$className( this )' )
         ..lambda = true
         ..type = MethodType.getter;
     });
