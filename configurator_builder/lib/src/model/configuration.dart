@@ -2,6 +2,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:configurator/configurator.dart';
 import 'package:configurator_builder/src/writer/color_util_writer.dart';
+import 'package:configurator_builder/src/writer/config_ext_writer.dart';
 import 'package:configurator_builder/src/writer/configuration_writer.dart';
 import 'package:configurator_builder/src/writer/flag_writer.dart';
 import 'package:configurator_builder/src/writer/image_writer.dart';
@@ -62,11 +63,14 @@ class ProcessedConfig {
       TitleWriter( 'Sizes' ).write(),
       SizeWriter( frameworkName, yamlConfiguration.sizes ).write(),
 
+      TitleWriter( 'Slang (i18n)' ).write(),
+      SlangWriter( yamlConfiguration.strings ).write(),
+
       TitleWriter( 'Configuration' ).write(),
       ConfigWriter( frameworkName ).write(),
 
-      TitleWriter( 'Slang (i18n)' ).write(),
-      SlangWriter( yamlConfiguration.strings ).write(),
+      TitleWriter( 'Configuration Extension' ).write(),
+      ConfigExtWriter().write(),
 
     ]);
 

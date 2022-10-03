@@ -91,7 +91,7 @@ class FlagWriter extends Writer {
               }),
             ]);
         }) )
-        ..name = '_FlagsAccessor'
+        ..name = '_FlagAccessor'
         ..fields.addAll([
           Field( ( b ) {
             b

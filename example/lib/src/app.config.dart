@@ -237,6 +237,17 @@ class _Images {
       map[MyAppConfigKeys.images.storeFrontHeaderImage] ?? '/';
 }
 
+class _ImageAccessor {
+  const _ImageAccessor(this.config);
+
+  final Configuration config;
+
+  String get loginHeaderImage =>
+      config.image(MyAppConfigKeys.images.loginHeaderImage);
+  String get storeFrontHeaderImage =>
+      config.image(MyAppConfigKeys.images.storeFrontHeaderImage);
+}
+
 // ********************************
 // Routes
 // ********************************
@@ -245,6 +256,12 @@ class _Routes {
   const _Routes();
 
   Map<int, String> get map => {};
+}
+
+class _RouteAccessor {
+  const _RouteAccessor(this.config);
+
+  final Configuration config;
 }
 
 // ********************************
@@ -265,10 +282,7 @@ class _Colors {
   String get tertiary => map[MyAppConfigKeys.colors.tertiary] ?? '';
   String get storeFrontBg => map[MyAppConfigKeys.colors.storeFrontBg] ?? '';
 }
-extension ConfigAccesor on Configuration {
-  _ColorAccessor get colors => _ColorAccessor( this );
-  _FlagsAccessor get flags => _FlagsAccessor( this );
-}
+
 class _ColorAccessor {
   const _ColorAccessor(this.config);
 
@@ -295,6 +309,16 @@ class _Sizes {
   double get homeTitleSize => map[MyAppConfigKeys.sizes.homeTitleSize] ?? 0.0;
   double get detailTitleSize =>
       map[MyAppConfigKeys.sizes.detailTitleSize] ?? 0.0;
+}
+
+class _SizeAccessor {
+  const _SizeAccessor(this.config);
+
+  final Configuration config;
+
+  double get homeTitleSize => config.size(MyAppConfigKeys.sizes.homeTitleSize);
+  double get detailTitleSize =>
+      config.size(MyAppConfigKeys.sizes.detailTitleSize);
 }
 
 // ********************************
@@ -330,7 +354,7 @@ class MyAppGeneratedScope extends ConfigScope {
 /// Locales: 2
 /// Strings: 4 (2 per locale)
 ///
-/// Built on 2022-10-03 at 18:45 UTC
+/// Built on 2022-10-03 at 18:58 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint

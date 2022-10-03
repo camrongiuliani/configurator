@@ -233,6 +233,17 @@ class _Images {
       map[MyHomePageConfigKeys.images.storeFrontHeaderImage] ?? '/';
 }
 
+class _ImageAccessor {
+  const _ImageAccessor(this.config);
+
+  final Configuration config;
+
+  String get loginHeaderImage =>
+      config.image(MyHomePageConfigKeys.images.loginHeaderImage);
+  String get storeFrontHeaderImage =>
+      config.image(MyHomePageConfigKeys.images.storeFrontHeaderImage);
+}
+
 // ********************************
 // Routes
 // ********************************
@@ -241,6 +252,12 @@ class _Routes {
   const _Routes();
 
   Map<int, String> get map => {};
+}
+
+class _RouteAccessor {
+  const _RouteAccessor(this.config);
+
+  final Configuration config;
 }
 
 // ********************************
@@ -288,6 +305,17 @@ class _Sizes {
       map[MyHomePageConfigKeys.sizes.detailTitleSize] ?? 0.0;
 }
 
+class _SizeAccessor {
+  const _SizeAccessor(this.config);
+
+  final Configuration config;
+
+  double get homeTitleSize =>
+      config.size(MyHomePageConfigKeys.sizes.homeTitleSize);
+  double get detailTitleSize =>
+      config.size(MyHomePageConfigKeys.sizes.detailTitleSize);
+}
+
 // ********************************
 // Configuration
 // ********************************
@@ -321,7 +349,7 @@ class MyHomePageGeneratedScope extends ConfigScope {
 /// Locales: 2
 /// Strings: 2 (1 per locale)
 ///
-/// Built on 2022-10-03 at 18:45 UTC
+/// Built on 2022-10-03 at 18:58 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
