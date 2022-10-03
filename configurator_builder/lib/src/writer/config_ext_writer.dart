@@ -29,6 +29,7 @@ class ConfigExtWriter extends Writer {
         ..name = fieldName
         ..returns = refer( className )
         ..body = Code( '$className( this )' )
+        ..lambda = true
         ..type = MethodType.getter;
     });
   }
