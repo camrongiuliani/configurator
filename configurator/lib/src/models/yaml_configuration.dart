@@ -1,4 +1,4 @@
-import 'package:configurator/src/models/YamlI18nString.dart';
+import 'package:configurator/src/models/yaml_i18n_string.dart';
 import 'package:configurator/src/models/yaml_setting.dart';
 
 class YamlConfiguration {

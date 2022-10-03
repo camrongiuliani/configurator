@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:collection/collection.dart';
-import 'package:configurator/src/models/YamlI18nString.dart';
+import 'package:configurator/src/models/yaml_i18n_string.dart';
 import 'package:configurator/src/models/yaml_configuration.dart';
 import 'package:configurator/src/models/yaml_setting.dart';
 import 'package:yaml/yaml.dart';

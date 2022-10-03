@@ -1,4 +1,4 @@
-import 'package:configurator/src/models/YamlI18nString.dart';
+import 'package:configurator/src/models/yaml_i18n_string.dart';
 import 'package:slang/builder/builder/raw_config_builder.dart';
 import 'package:slang/builder/generator_facade.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
@@ -24,7 +24,6 @@ class SlangUtil {
       verbose: verbose,
     );
 
-    // STEP 3: generate .g.dart content
     final result = GeneratorFacade.generate(
       rawConfig: config,
       baseName:'i18n.dart',
