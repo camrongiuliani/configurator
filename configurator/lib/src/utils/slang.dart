@@ -8,17 +8,17 @@ import 'package:slang/builder/utils/regex_utils.dart';
 
 class SlangUtil {
 
-  static Future<String> generateTranslations({
+  static String generateTranslations({
     required Map<String, dynamic> rawConfig,
     required List<YamlI18n> i18nNodes,
     required bool verbose,
     Stopwatch? stopwatch,
     bool statsMode = false,
-  }) async {
+  }) {
 
     RawConfig config = RawConfigBuilder.fromMap( rawConfig );
 
-    final translationMap = await _buildTranslationMap(
+    final translationMap = _buildTranslationMap(
       rawConfig: config,
       i18nNodes: i18nNodes,
       verbose: verbose,
@@ -40,11 +40,11 @@ class SlangUtil {
     return parts.join('\n');
   }
 
-  static Future<TranslationMap> _buildTranslationMap({
+  static TranslationMap _buildTranslationMap({
     required RawConfig rawConfig,
     required List<YamlI18n> i18nNodes,
     required bool verbose,
-  }) async {
+  }) {
     final translationMap = TranslationMap();
 
     Map<String, Map<String, dynamic>> conv = {};
@@ -92,12 +92,8 @@ class SlangUtil {
     if (translationMap
         .getEntries()
         .every((locale) => locale.key != rawConfig.baseLocale)) {
-      if (verbose) {
-        print('');
-      }
       throw 'Translation file for base locale "${rawConfig.baseLocale.languageTag}" not found.';
     }
-    print('k');
 
     return translationMap;
   }
