@@ -47,7 +47,7 @@ class ImageWriter extends Writer {
           ..lambda = true
           ..body = Code( () {
             if ( useConfig ) {
-              return 'config.image( ${name}ConfigKeys.images.${e.name} )';
+              return '_config.image( ${name}ConfigKeys.images.${e.name} )';
             }
 
             return 'map[ ${name}ConfigKeys.images.${e.name} ] ?? \'/\'';
@@ -85,7 +85,7 @@ class ImageWriter extends Writer {
             ..requiredParameters.addAll([
               Parameter( ( b ) {
                 b
-                  ..name = 'config'
+                  ..name = '_config'
                   ..toThis = true;
               }),
             ]);
@@ -94,7 +94,7 @@ class ImageWriter extends Writer {
         ..fields.addAll([
           Field( ( b ) {
             b
-              ..name = 'config'
+              ..name = '_config'
               ..type = refer( 'Configuration' )
               ..modifier = FieldModifier.final$;
           }),

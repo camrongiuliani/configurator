@@ -46,7 +46,7 @@ class SizeWriter extends Writer {
           ..lambda = true
           ..body = Code( () {
             if ( useConfig ) {
-              return 'config.size( ${name}ConfigKeys.sizes.${e.name} )';
+              return '_config.size( ${name}ConfigKeys.sizes.${e.name} )';
             }
 
             return 'map[ ${name}ConfigKeys.sizes.${e.name} ] ?? 0.0';
@@ -84,7 +84,7 @@ class SizeWriter extends Writer {
             ..requiredParameters.addAll([
               Parameter( ( b ) {
                 b
-                  ..name = 'config'
+                  ..name = '_config'
                   ..toThis = true;
               }),
             ]);
@@ -93,7 +93,7 @@ class SizeWriter extends Writer {
         ..fields.addAll([
           Field( ( b ) {
             b
-              ..name = 'config'
+              ..name = '_config'
               ..type = refer( 'Configuration' )
               ..modifier = FieldModifier.final$;
           }),

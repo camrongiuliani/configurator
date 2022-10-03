@@ -46,7 +46,7 @@ class RouteWriter extends Writer {
           ..lambda = true
           ..body = Code( () {
             if ( useConfig ) {
-              return 'config.route( ${name}ConfigKeys.routes.${e.name} )';
+              return '_config.route( ${name}ConfigKeys.routes.${e.name} )';
             }
 
             return 'map[ ${name}ConfigKeys.routes.${e.name} ] ?? \'/\'';
@@ -84,7 +84,7 @@ class RouteWriter extends Writer {
             ..requiredParameters.addAll([
               Parameter( ( b ) {
                 b
-                  ..name = 'config'
+                  ..name = '_config'
                   ..toThis = true;
               }),
             ]);
@@ -93,7 +93,7 @@ class RouteWriter extends Writer {
         ..fields.addAll([
           Field( ( b ) {
             b
-              ..name = 'config'
+              ..name = '_config'
               ..type = refer( 'Configuration' )
               ..modifier = FieldModifier.final$;
           }),

@@ -47,7 +47,7 @@ class ColorWriter extends Writer {
           ..lambda = true
           ..body = Code( () {
             if ( useConfig ) {
-              return 'config.colorValue( ${name}ConfigKeys.colors.${e.name} )';
+              return '_config.colorValue( ${name}ConfigKeys.colors.${e.name} )';
             }
 
             return 'map[ ${name}ConfigKeys.colors.${e.name.canonicalize} ] ?? \'\'';
@@ -85,7 +85,7 @@ class ColorWriter extends Writer {
             ..requiredParameters.addAll([
               Parameter( ( b ) {
                 b
-                  ..name = 'config'
+                  ..name = '_config'
                   ..toThis = true;
               }),
             ]);
@@ -94,7 +94,7 @@ class ColorWriter extends Writer {
         ..fields.addAll([
           Field( ( b ) {
             b
-              ..name = 'config'
+              ..name = '_config'
               ..type = refer( 'Configuration' )
               ..modifier = FieldModifier.final$;
           }),

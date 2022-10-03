@@ -48,7 +48,7 @@ class FlagWriter extends Writer {
           ..lambda = true
           ..body = Code( () {
             if ( useConfig ) {
-              return 'config.flag( ${name}ConfigKeys.flags.${e.name} ) == true';
+              return '_config.flag( ${name}ConfigKeys.flags.${e.name} ) == true';
             }
 
             return 'map[ ${name}ConfigKeys.flags.${e.name} ] == true';
@@ -86,7 +86,7 @@ class FlagWriter extends Writer {
             ..requiredParameters.addAll([
               Parameter( ( b ) {
                 b
-                  ..name = 'config'
+                  ..name = '_config'
                   ..toThis = true;
               }),
             ]);
@@ -95,7 +95,7 @@ class FlagWriter extends Writer {
         ..fields.addAll([
           Field( ( b ) {
             b
-              ..name = 'config'
+              ..name = '_config'
               ..type = refer( 'Configuration' )
               ..modifier = FieldModifier.final$;
           }),
