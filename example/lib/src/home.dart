@@ -91,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Vif(
-          test: () => config.flag( MyAppConfigKeys.flags.showTitle ),
+          test: () => config.flags.showTitle,
           ifTrue: () => Text( widget.title ),
         ),
       ),

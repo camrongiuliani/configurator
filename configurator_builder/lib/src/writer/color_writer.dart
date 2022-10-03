@@ -15,7 +15,9 @@ class ColorWriter extends Writer {
 
   @override
   Spec write() {
-    return Class( ( builder ) {
+    LibraryBuilder lb = LibraryBuilder();
+
+    Class scope = Class( ( builder ) {
       builder
         ..constructors.add( Constructor( ( b ) => b..constant = true ) )
         ..name = '_Colors'
@@ -24,17 +26,32 @@ class ColorWriter extends Writer {
           ..._getColorGetters(),
         ]);
     });
+
+    lb.body.add( scope );
+
+    Class config = _buildAccessor();
+
+    lb.body.add( config );
+
+    return lb.build();
+
   }
 
-  List<Method> _getColorGetters() {
+  List<Method> _getColorGetters([ bool useConfig = false ]) {
     return _colors.map((e) {
       return Method( ( builder ) {
         builder
           ..name = e.name.canonicalize
           ..type = MethodType.getter
-          ..returns = refer( 'String' )
+          ..returns = refer( useConfig ? 'Color' : 'String' )
           ..lambda = true
-          ..body = Code( 'map[ ${name}ConfigKeys.colors.${e.name.canonicalize} ] ?? \'\'' );
+          ..body = Code( () {
+            if ( useConfig ) {
+              return 'config.colorValue( ${name}ConfigKeys.colors.${e.name} )';
+            }
+
+            return 'map[ ${name}ConfigKeys.colors.${e.name.canonicalize} ] ?? \'\'';
+          }() );
       });
     }).toList();
   }
@@ -59,5 +76,33 @@ class ColorWriter extends Writer {
     });
   }
 
+  Class _buildAccessor() {
+    return Class( ( builder ) {
+      builder
+        ..constructors.add( Constructor( ( b ) {
+          b
+            ..constant = true
+            ..requiredParameters.addAll([
+              Parameter( ( b ) {
+                b
+                  ..name = 'config'
+                  ..toThis = true;
+              }),
+            ]);
+        }) )
+        ..name = '_ColorAccessor'
+        ..fields.addAll([
+          Field( ( b ) {
+            b
+              ..name = 'config'
+              ..type = refer( 'Configuration' )
+              ..modifier = FieldModifier.final$;
+          }),
+        ])
+        ..methods.addAll([
+          ..._getColorGetters( true ),
+        ]);
+    });
+  }
 
 }

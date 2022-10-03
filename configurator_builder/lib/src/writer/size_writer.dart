@@ -15,7 +15,9 @@ class SizeWriter extends Writer {
 
   @override
   Spec write() {
-    return Class( ( builder ) {
+    LibraryBuilder lb = LibraryBuilder();
+
+    Class scope =  Class( ( builder ) {
       builder
         ..constructors.add( Constructor( ( b ) => b..constant = true ) )
         ..name = '_Sizes'
@@ -24,9 +26,17 @@ class SizeWriter extends Writer {
           ..._getSizeGetters(),
         ]);
     });
+
+    lb.body.add( scope );
+
+    Class config = _buildAccessor();
+
+    lb.body.add( config );
+
+    return lb.build();
   }
 
-  List<Method> _getSizeGetters() {
+  List<Method> _getSizeGetters([ bool useConfig = false ]) {
     return _sizes.map((e) {
       return Method( ( builder ) {
         builder
@@ -34,7 +44,13 @@ class SizeWriter extends Writer {
           ..type = MethodType.getter
           ..returns = refer( 'double' )
           ..lambda = true
-          ..body = Code( 'map[ ${name}ConfigKeys.sizes.${e.name.canonicalize} ] ?? 0.0' );
+          ..body = Code( () {
+            if ( useConfig ) {
+              return 'config.size( ${name}ConfigKeys.sizes.${e.name} )';
+            }
+
+            return 'map[ ${name}ConfigKeys.sizes.${e.name} ] ?? 0.0';
+          }() );
       });
     }).toList();
   }
@@ -56,6 +72,35 @@ class SizeWriter extends Writer {
 
           return map.toString();
         }() );
+    });
+  }
+
+  Class _buildAccessor() {
+    return Class( ( builder ) {
+      builder
+        ..constructors.add( Constructor( ( b ) {
+          b
+            ..constant = true
+            ..requiredParameters.addAll([
+              Parameter( ( b ) {
+                b
+                  ..name = 'config'
+                  ..toThis = true;
+              }),
+            ]);
+        }) )
+        ..name = '_SizeAccessor'
+        ..fields.addAll([
+          Field( ( b ) {
+            b
+              ..name = 'config'
+              ..type = refer( 'Configuration' )
+              ..modifier = FieldModifier.final$;
+          }),
+        ])
+        ..methods.addAll([
+          ..._getSizeGetters( true ),
+        ]);
     });
   }
 }

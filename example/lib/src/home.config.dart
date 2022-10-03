@@ -199,6 +199,21 @@ class _Flags {
   bool get showTitle => map[MyHomePageConfigKeys.flags.showTitle] == true;
 }
 
+class _FlagsAccessor {
+  const _FlagsAccessor(this.config);
+
+  final Configuration config;
+
+  bool get isEnabled =>
+      config.flag(MyHomePageConfigKeys.flags.isEnabled) == true;
+  bool get andThis => config.flag(MyHomePageConfigKeys.flags.andThis) == true;
+  bool get andThat => config.flag(MyHomePageConfigKeys.flags.andThat) == true;
+  bool get orThis => config.flag(MyHomePageConfigKeys.flags.orThis) == true;
+  bool get orThat => config.flag(MyHomePageConfigKeys.flags.orThat) == true;
+  bool get showTitle =>
+      config.flag(MyHomePageConfigKeys.flags.showTitle) == true;
+}
+
 // ********************************
 // Images
 // ********************************
@@ -243,6 +258,17 @@ class _Colors {
   String get primary => map[MyHomePageConfigKeys.colors.primary] ?? '';
   String get secondary => map[MyHomePageConfigKeys.colors.secondary] ?? '';
   String get tertiary => map[MyHomePageConfigKeys.colors.tertiary] ?? '';
+}
+
+class _ColorAccessor {
+  const _ColorAccessor(this.config);
+
+  final Configuration config;
+
+  Color get primary => config.colorValue(MyHomePageConfigKeys.colors.primary);
+  Color get secondary =>
+      config.colorValue(MyHomePageConfigKeys.colors.secondary);
+  Color get tertiary => config.colorValue(MyHomePageConfigKeys.colors.tertiary);
 }
 
 // ********************************
@@ -295,7 +321,7 @@ class MyHomePageGeneratedScope extends ConfigScope {
 /// Locales: 2
 /// Strings: 2 (1 per locale)
 ///
-/// Built on 2022-10-03 at 17:36 UTC
+/// Built on 2022-10-03 at 18:45 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint

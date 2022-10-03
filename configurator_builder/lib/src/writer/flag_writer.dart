@@ -15,7 +15,10 @@ class FlagWriter extends Writer {
 
   @override
   Spec write() {
-    return Class( ( builder ) {
+
+    LibraryBuilder lb = LibraryBuilder();
+
+    Class scope = Class( ( builder ) {
       builder
         ..constructors.add( Constructor( ( b ) => b..constant = true ) )
         ..name = '_Flags'
@@ -24,9 +27,18 @@ class FlagWriter extends Writer {
           ..._getGetters(),
         ]);
     });
+
+    lb.body.add( scope );
+
+    Class config = _buildAccessor();
+
+    lb.body.add( config );
+
+    return lb.build();
+
   }
 
-  List<Method> _getGetters() {
+  List<Method> _getGetters([ bool useConfig = false ]) {
     return _flags.map((e) {
       return Method( ( builder ) {
         builder
@@ -34,7 +46,13 @@ class FlagWriter extends Writer {
           ..type = MethodType.getter
           ..returns = refer( 'bool' )
           ..lambda = true
-          ..body = Code( 'map[ ${name}ConfigKeys.flags.${e.name} ] == true' );
+          ..body = Code( () {
+            if ( useConfig ) {
+              return 'config.flag( ${name}ConfigKeys.flags.${e.name} ) == true';
+            }
+
+            return 'map[ ${name}ConfigKeys.flags.${e.name} ] == true';
+          }() );
       });
     }).toList();
   }
@@ -56,6 +74,35 @@ class FlagWriter extends Writer {
 
           return map.toString();
         }() );
+    });
+  }
+
+  Class _buildAccessor() {
+    return Class( ( builder ) {
+      builder
+        ..constructors.add( Constructor( ( b ) {
+          b
+            ..constant = true
+            ..requiredParameters.addAll([
+              Parameter( ( b ) {
+                b
+                  ..name = 'config'
+                  ..toThis = true;
+              }),
+            ]);
+        }) )
+        ..name = '_FlagsAccessor'
+        ..fields.addAll([
+          Field( ( b ) {
+            b
+              ..name = 'config'
+              ..type = refer( 'Configuration' )
+              ..modifier = FieldModifier.final$;
+          }),
+        ])
+        ..methods.addAll([
+          ..._getGetters( true ),
+        ]);
     });
   }
 }

@@ -205,6 +205,19 @@ class _Flags {
   bool get showTitle => map[MyAppConfigKeys.flags.showTitle] == true;
 }
 
+class _FlagsAccessor {
+  const _FlagsAccessor(this.config);
+
+  final Configuration config;
+
+  bool get isEnabled => config.flag(MyAppConfigKeys.flags.isEnabled) == true;
+  bool get andThis => config.flag(MyAppConfigKeys.flags.andThis) == true;
+  bool get andThat => config.flag(MyAppConfigKeys.flags.andThat) == true;
+  bool get orThis => config.flag(MyAppConfigKeys.flags.orThis) == true;
+  bool get orThat => config.flag(MyAppConfigKeys.flags.orThat) == true;
+  bool get showTitle => config.flag(MyAppConfigKeys.flags.showTitle) == true;
+}
+
 // ********************************
 // Images
 // ********************************
@@ -251,6 +264,21 @@ class _Colors {
   String get secondary => map[MyAppConfigKeys.colors.secondary] ?? '';
   String get tertiary => map[MyAppConfigKeys.colors.tertiary] ?? '';
   String get storeFrontBg => map[MyAppConfigKeys.colors.storeFrontBg] ?? '';
+}
+extension ConfigAccesor on Configuration {
+  _ColorAccessor get colors => _ColorAccessor( this );
+  _FlagsAccessor get flags => _FlagsAccessor( this );
+}
+class _ColorAccessor {
+  const _ColorAccessor(this.config);
+
+  final Configuration config;
+
+  Color get primary => config.colorValue(MyAppConfigKeys.colors.primary);
+  Color get secondary => config.colorValue(MyAppConfigKeys.colors.secondary);
+  Color get tertiary => config.colorValue(MyAppConfigKeys.colors.tertiary);
+  Color get storeFrontBg =>
+      config.colorValue(MyAppConfigKeys.colors.storeFrontBg);
 }
 
 // ********************************
@@ -302,7 +330,7 @@ class MyAppGeneratedScope extends ConfigScope {
 /// Locales: 2
 /// Strings: 4 (2 per locale)
 ///
-/// Built on 2022-10-03 at 17:36 UTC
+/// Built on 2022-10-03 at 18:45 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
