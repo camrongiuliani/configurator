@@ -146,7 +146,7 @@ packages:
     description:
       path: configurator
       ref: HEAD
-      resolved-ref: "090bc9d0e873a66e4285ca25b7d6d4b1a1089473"
+      resolved-ref: "13ce8423dc709ae3312475c2d5b17fed35a180fe"
       url: "git@github.com:camrongiuliani/configurator.git"
     source: git
     version: "0.0.1"
@@ -155,7 +155,7 @@ packages:
     description:
       path: configurator_annotations
       ref: HEAD
-      resolved-ref: "090bc9d0e873a66e4285ca25b7d6d4b1a1089473"
+      resolved-ref: "13ce8423dc709ae3312475c2d5b17fed35a180fe"
       url: "git@github.com:camrongiuliani/configurator.git"
     source: git
     version: "0.1.0+1"
@@ -164,7 +164,7 @@ packages:
     description:
       path: configurator_builder
       ref: HEAD
-      resolved-ref: "090bc9d0e873a66e4285ca25b7d6d4b1a1089473"
+      resolved-ref: "13ce8423dc709ae3312475c2d5b17fed35a180fe"
       url: "git@github.com:camrongiuliani/configurator.git"
     source: git
     version: "0.0.1+2"
@@ -173,7 +173,7 @@ packages:
     description:
       path: configurator_flutter
       ref: HEAD
-      resolved-ref: "090bc9d0e873a66e4285ca25b7d6d4b1a1089473"
+      resolved-ref: "13ce8423dc709ae3312475c2d5b17fed35a180fe"
       url: "git@github.com:camrongiuliani/configurator.git"
     source: git
     version: "0.0.1"

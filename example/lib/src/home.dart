@@ -82,9 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final gen = Theme.of(context).extension<MyAppGeneratedThemeExtension>()!;
 
-    Configuration config = ConfigurationProvider.of( context, listen: false ).config;
-
-    Color c = config.colorValue( MyAppConfigKeys.colors.primary );
+    Configuration config = Config.of( context, listen: false );
 
     return Scaffold(
       appBar: AppBar(
@@ -98,12 +96,12 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              '${t.currentScope}:',
+              '${config.strings.currentScope}:',
             ),
             Text(
               config.currentScopeName,
               style: Theme.of(context).textTheme.headline4?.copyWith(
-                color: c,
+                color: config.colors.primary,
               ),
             ),
             Expanded(

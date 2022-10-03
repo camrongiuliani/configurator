@@ -43,6 +43,3 @@ configuration:
     base:
       title: Hello, World!
       currentScope: Current Scope
-    de:
-      title: Hallo, Welt!
-      currentScope: Aktuellen Umfang

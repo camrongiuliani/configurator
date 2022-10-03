@@ -117,9 +117,11 @@ class _ColorKeys {
   final secondary = 'secondary';
 
   final tertiary = 'tertiary';
+
+  final storeFrontBg = 'storeFrontBg';
 }
 
-class MyHomePageConfigKeys {
+class MyAppConfigKeys {
   static final routes = _RouteKeys();
 
   static final flags = _FlagKeys();
@@ -135,9 +137,9 @@ class MyHomePageConfigKeys {
 // Theme
 // ********************************
 
-class MyHomePageGeneratedThemeExtension
-    extends ConfigTheme<MyHomePageGeneratedThemeExtension> {
-  MyHomePageGeneratedThemeExtension({required super.themeMap});
+class MyAppGeneratedThemeExtension
+    extends ConfigTheme<MyAppGeneratedThemeExtension> {
+  MyAppGeneratedThemeExtension({required super.themeMap});
 
   Color get primary =>
       _ColorUtil.parseColorValue(themeMap['colors']?['primary']);
@@ -145,21 +147,23 @@ class MyHomePageGeneratedThemeExtension
       _ColorUtil.parseColorValue(themeMap['colors']?['secondary']);
   Color get tertiary =>
       _ColorUtil.parseColorValue(themeMap['colors']?['tertiary']);
+  Color get storeFrontBg =>
+      _ColorUtil.parseColorValue(themeMap['colors']?['storeFrontBg']);
   double get homeTitleSize => themeMap['sizes']?['homeTitleSize'];
   double get detailTitleSize => themeMap['sizes']?['detailTitleSize'];
   @override
-  MyHomePageGeneratedThemeExtension copyWith(
+  MyAppGeneratedThemeExtension copyWith(
       {Map<String, Map<String, dynamic>>? themeMap}) {
     this.themeMap.addAll(themeMap ?? {});
-    return MyHomePageGeneratedThemeExtension(themeMap: this.themeMap);
+    return MyAppGeneratedThemeExtension(themeMap: this.themeMap);
   }
 
   @override
-  MyHomePageGeneratedThemeExtension lerp(
-    ThemeExtension<MyHomePageGeneratedThemeExtension>? other,
+  MyAppGeneratedThemeExtension lerp(
+    ThemeExtension<MyAppGeneratedThemeExtension>? other,
     double t,
   ) {
-    if (other is! MyHomePageGeneratedThemeExtension) {
+    if (other is! MyAppGeneratedThemeExtension) {
       return this;
     }
     themeMap['colors']!['primary'] =
@@ -168,11 +172,13 @@ class MyHomePageGeneratedThemeExtension
         _ColorUtil.colorToString(Color.lerp(secondary, other.secondary, t)!);
     themeMap['colors']!['tertiary'] =
         _ColorUtil.colorToString(Color.lerp(tertiary, other.tertiary, t)!);
+    themeMap['colors']!['storeFrontBg'] = _ColorUtil.colorToString(
+        Color.lerp(storeFrontBg, other.storeFrontBg, t)!);
     themeMap['sizes']!['homeTitleSize'] =
         lerpDouble(homeTitleSize, other.homeTitleSize, t);
     themeMap['sizes']!['detailTitleSize'] =
         lerpDouble(detailTitleSize, other.detailTitleSize, t);
-    return MyHomePageGeneratedThemeExtension(themeMap: themeMap);
+    return MyAppGeneratedThemeExtension(themeMap: themeMap);
   }
 }
 
@@ -184,19 +190,19 @@ class _Flags {
   const _Flags();
 
   Map<String, bool> get map => {
-        MyHomePageConfigKeys.flags.isEnabled: false,
-        MyHomePageConfigKeys.flags.andThis: true,
-        MyHomePageConfigKeys.flags.andThat: true,
-        MyHomePageConfigKeys.flags.orThis: false,
-        MyHomePageConfigKeys.flags.orThat: false,
-        MyHomePageConfigKeys.flags.showTitle: true
+        MyAppConfigKeys.flags.isEnabled: false,
+        MyAppConfigKeys.flags.andThis: true,
+        MyAppConfigKeys.flags.andThat: true,
+        MyAppConfigKeys.flags.orThis: false,
+        MyAppConfigKeys.flags.orThat: false,
+        MyAppConfigKeys.flags.showTitle: true
       };
-  bool get isEnabled => map[MyHomePageConfigKeys.flags.isEnabled] == true;
-  bool get andThis => map[MyHomePageConfigKeys.flags.andThis] == true;
-  bool get andThat => map[MyHomePageConfigKeys.flags.andThat] == true;
-  bool get orThis => map[MyHomePageConfigKeys.flags.orThis] == true;
-  bool get orThat => map[MyHomePageConfigKeys.flags.orThat] == true;
-  bool get showTitle => map[MyHomePageConfigKeys.flags.showTitle] == true;
+  bool get isEnabled => map[MyAppConfigKeys.flags.isEnabled] == true;
+  bool get andThis => map[MyAppConfigKeys.flags.andThis] == true;
+  bool get andThat => map[MyAppConfigKeys.flags.andThat] == true;
+  bool get orThis => map[MyAppConfigKeys.flags.orThis] == true;
+  bool get orThat => map[MyAppConfigKeys.flags.orThat] == true;
+  bool get showTitle => map[MyAppConfigKeys.flags.showTitle] == true;
 }
 
 class _FlagAccessor {
@@ -204,14 +210,12 @@ class _FlagAccessor {
 
   final Configuration _config;
 
-  bool get isEnabled =>
-      _config.flag(MyHomePageConfigKeys.flags.isEnabled) == true;
-  bool get andThis => _config.flag(MyHomePageConfigKeys.flags.andThis) == true;
-  bool get andThat => _config.flag(MyHomePageConfigKeys.flags.andThat) == true;
-  bool get orThis => _config.flag(MyHomePageConfigKeys.flags.orThis) == true;
-  bool get orThat => _config.flag(MyHomePageConfigKeys.flags.orThat) == true;
-  bool get showTitle =>
-      _config.flag(MyHomePageConfigKeys.flags.showTitle) == true;
+  bool get isEnabled => _config.flag(MyAppConfigKeys.flags.isEnabled) == true;
+  bool get andThis => _config.flag(MyAppConfigKeys.flags.andThis) == true;
+  bool get andThat => _config.flag(MyAppConfigKeys.flags.andThat) == true;
+  bool get orThis => _config.flag(MyAppConfigKeys.flags.orThis) == true;
+  bool get orThat => _config.flag(MyAppConfigKeys.flags.orThat) == true;
+  bool get showTitle => _config.flag(MyAppConfigKeys.flags.showTitle) == true;
 }
 
 // ********************************
@@ -222,15 +226,15 @@ class _Images {
   const _Images();
 
   Map<String, String> get map => {
-        MyHomePageConfigKeys.images.loginHeaderImage:
+        MyAppConfigKeys.images.loginHeaderImage:
             'https://pub.dev/static/hash-qr9i96gp/img/pub-dev-logo-2x.png',
-        MyHomePageConfigKeys.images.storeFrontHeaderImage:
+        MyAppConfigKeys.images.storeFrontHeaderImage:
             'https://pub.dev/static/hash-qr9i96gp/img/pub-dev-logo-2x.png'
       };
   String get loginHeaderImage =>
-      map[MyHomePageConfigKeys.images.loginHeaderImage] ?? '/';
+      map[MyAppConfigKeys.images.loginHeaderImage] ?? '/';
   String get storeFrontHeaderImage =>
-      map[MyHomePageConfigKeys.images.storeFrontHeaderImage] ?? '/';
+      map[MyAppConfigKeys.images.storeFrontHeaderImage] ?? '/';
 }
 
 class _ImageAccessor {
@@ -239,9 +243,9 @@ class _ImageAccessor {
   final Configuration _config;
 
   String get loginHeaderImage =>
-      _config.image(MyHomePageConfigKeys.images.loginHeaderImage);
+      _config.image(MyAppConfigKeys.images.loginHeaderImage);
   String get storeFrontHeaderImage =>
-      _config.image(MyHomePageConfigKeys.images.storeFrontHeaderImage);
+      _config.image(MyAppConfigKeys.images.storeFrontHeaderImage);
 }
 
 // ********************************
@@ -268,13 +272,15 @@ class _Colors {
   const _Colors();
 
   Map<String, String> get map => {
-        MyHomePageConfigKeys.colors.primary: 'CCCCCC',
-        MyHomePageConfigKeys.colors.secondary: 'CC0000',
-        MyHomePageConfigKeys.colors.tertiary: '800080'
+        MyAppConfigKeys.colors.primary: 'EFF1F3',
+        MyAppConfigKeys.colors.secondary: 'CC0000',
+        MyAppConfigKeys.colors.tertiary: '000000',
+        MyAppConfigKeys.colors.storeFrontBg: 'EFF1F3'
       };
-  String get primary => map[MyHomePageConfigKeys.colors.primary] ?? '';
-  String get secondary => map[MyHomePageConfigKeys.colors.secondary] ?? '';
-  String get tertiary => map[MyHomePageConfigKeys.colors.tertiary] ?? '';
+  String get primary => map[MyAppConfigKeys.colors.primary] ?? '';
+  String get secondary => map[MyAppConfigKeys.colors.secondary] ?? '';
+  String get tertiary => map[MyAppConfigKeys.colors.tertiary] ?? '';
+  String get storeFrontBg => map[MyAppConfigKeys.colors.storeFrontBg] ?? '';
 }
 
 class _ColorAccessor {
@@ -282,11 +288,11 @@ class _ColorAccessor {
 
   final Configuration _config;
 
-  Color get primary => _config.colorValue(MyHomePageConfigKeys.colors.primary);
-  Color get secondary =>
-      _config.colorValue(MyHomePageConfigKeys.colors.secondary);
-  Color get tertiary =>
-      _config.colorValue(MyHomePageConfigKeys.colors.tertiary);
+  Color get primary => _config.colorValue(MyAppConfigKeys.colors.primary);
+  Color get secondary => _config.colorValue(MyAppConfigKeys.colors.secondary);
+  Color get tertiary => _config.colorValue(MyAppConfigKeys.colors.tertiary);
+  Color get storeFrontBg =>
+      _config.colorValue(MyAppConfigKeys.colors.storeFrontBg);
 }
 
 // ********************************
@@ -297,13 +303,12 @@ class _Sizes {
   const _Sizes();
 
   Map<String, double> get map => {
-        MyHomePageConfigKeys.sizes.homeTitleSize: 14.0,
-        MyHomePageConfigKeys.sizes.detailTitleSize: 22.0
+        MyAppConfigKeys.sizes.homeTitleSize: 14.0,
+        MyAppConfigKeys.sizes.detailTitleSize: 22.0
       };
-  double get homeTitleSize =>
-      map[MyHomePageConfigKeys.sizes.homeTitleSize] ?? 0.0;
+  double get homeTitleSize => map[MyAppConfigKeys.sizes.homeTitleSize] ?? 0.0;
   double get detailTitleSize =>
-      map[MyHomePageConfigKeys.sizes.detailTitleSize] ?? 0.0;
+      map[MyAppConfigKeys.sizes.detailTitleSize] ?? 0.0;
 }
 
 class _SizeAccessor {
@@ -311,10 +316,9 @@ class _SizeAccessor {
 
   final Configuration _config;
 
-  double get homeTitleSize =>
-      _config.size(MyHomePageConfigKeys.sizes.homeTitleSize);
+  double get homeTitleSize => _config.size(MyAppConfigKeys.sizes.homeTitleSize);
   double get detailTitleSize =>
-      _config.size(MyHomePageConfigKeys.sizes.detailTitleSize);
+      _config.size(MyAppConfigKeys.sizes.detailTitleSize);
 }
 
 // ********************************
@@ -324,7 +328,7 @@ class _SizeAccessor {
 /// Generated file. Do not edit.
 ///
 /// Locales: 2
-/// Strings: 2 (1 per locale)
+/// Strings: 4 (2 per locale)
 ///
 /// Built on 2022-10-03 at 20:43 UTC
 
@@ -501,6 +505,7 @@ class _I18nDartEn implements BaseTranslations<AppLocale, _I18nDartEn> {
 
   // Translations
   String get title => 'Hello, World!';
+  String get currentScope => 'Current Scope';
 }
 
 // Path: <root>
@@ -536,6 +541,8 @@ class _I18nDartDe implements _I18nDartEn {
   // Translations
   @override
   String get title => 'Hallo, Welt!';
+  @override
+  String get currentScope => 'Aktuellen Umfang';
 }
 
 /// Flat map(s) containing all translations.
@@ -546,6 +553,8 @@ extension on _I18nDartEn {
     switch (path) {
       case 'title':
         return 'Hello, World!';
+      case 'currentScope':
+        return 'Current Scope';
       default:
         return null;
     }
@@ -557,6 +566,8 @@ extension on _I18nDartDe {
     switch (path) {
       case 'title':
         return 'Hallo, Welt!';
+      case 'currentScope':
+        return 'Aktuellen Umfang';
       default:
         return null;
     }
@@ -567,7 +578,7 @@ extension on _I18nDartDe {
 // Configuration
 // ********************************
 
-class MyHomePageGeneratedScope extends ConfigScope {
+class MyAppGeneratedScope extends ConfigScope {
   @override
   String name = '__GeneratedScope';
 
