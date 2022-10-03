@@ -50,10 +50,9 @@ class SlangUtil {
     Map<String, Map<String, dynamic>> conv = {};
 
     for (final node in i18nNodes) {
-      ( conv[ node.locale ] ??= {}).addAll({
-        'name': node.name,
-        'value': node.value,
-      });
+      conv[ node.locale ] ??= {};
+
+      conv[ node.locale ]![ node.name ] = node.value;
     }
 
     var base = conv['base']!;
