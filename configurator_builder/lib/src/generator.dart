@@ -9,7 +9,7 @@ import 'package:build/build.dart';
 
 class ConfiguratorGenerator extends GeneratorForAnnotation<ConfiguratorApp> {
   @override
-  FutureOr<String> generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) {
+  FutureOr<String> generateForAnnotatedElement(Element element, ConstantReader annotation, BuildStep buildStep) async {
     if (element is! ClassElement) {
       final friendlyName = element.displayName;
       throw InvalidGenerationSourceError(
@@ -20,7 +20,9 @@ class ConfiguratorGenerator extends GeneratorForAnnotation<ConfiguratorApp> {
 
     ProcessedConfig framework = ConfigProcessor( element, annotations.ConfiguratorApp ).process();
 
-    return framework.write();
+    String done = await framework.write();
+
+    return done;
 
   }
 }

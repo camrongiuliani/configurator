@@ -23,7 +23,7 @@ class ProcessedConfig {
     frameworkName = classElement.displayName;
   }
 
-  String write() {
+  Future write() async {
 
     LibraryBuilder builder = LibraryBuilder();
 
@@ -33,11 +33,13 @@ class ProcessedConfig {
       Directive.import( 'dart:ui' ),
     ]);
 
-    // var x = SlangUtil.generateTranslations(
-    //   rawConfig: RawConfigBuilder.fromMap({}),
-    //   i18nNodes: yc.strings,
-    //   verbose: true,
-    // );
+    var x = await SlangUtil.generateTranslations(
+      rawConfig: {},
+      i18nNodes: yamlConfiguration.strings,
+      verbose: true,
+    );
+
+    print('d');
 
     builder..body.addAll([
 
@@ -67,6 +69,8 @@ class ProcessedConfig {
 
       TitleWriter( 'Configuration' ).write(),
       ConfigWriter( frameworkName ).write(),
+
+      Code( x ),
 
     ]);
 
