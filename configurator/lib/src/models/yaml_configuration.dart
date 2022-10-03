@@ -1,5 +1,4 @@
-import 'package:configurator/src/models/yaml_i18n_string.dart';
-import 'package:configurator/src/models/yaml_setting.dart';
+import 'package:configurator/configurator.dart';
 
 class YamlConfiguration {
 
@@ -8,7 +7,7 @@ class YamlConfiguration {
   final List<YamlSetting> colors;
   final List<YamlSetting> images;
   final List<YamlSetting> sizes;
-  final List<YamlSetting> routes;
+  final List<YamlRoute> routes;
   final List<YamlI18n> strings;
 
   YamlConfiguration({
@@ -27,7 +26,7 @@ class YamlConfiguration {
       'images': { for (var e in images) e.name: e.value},
       'sizes': { for (var e in sizes) e.name: e.value},
       'colors': { for (var e in colors) e.name: e.value},
-      'routes': { for (var e in routes) e.name : e.value },
+      'routes': { for (var e in routes) e.id : e.path },
       'strings': { for (var e in strings) e.name : e.value },
     };
   }

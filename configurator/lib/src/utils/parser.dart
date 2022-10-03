@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:collection/collection.dart';
+import 'package:configurator/configurator.dart';
 import 'package:configurator/src/models/yaml_i18n_string.dart';
 import 'package:configurator/src/models/yaml_configuration.dart';
 import 'package:configurator/src/models/yaml_setting.dart';
@@ -47,7 +48,7 @@ class YamlParser {
       colors: _processSettings( configNode, 'colors' ),
       images: _processSettings( configNode, 'images' ),
       sizes: _processSettings( configNode, 'sizes' ),
-      routes: _processSettings( configNode, 'routes' ),
+      routes: _processRoutes( configNode, 'routes' ),
       strings: _processTranslations( configNode, 'strings' ),
     );
   }
@@ -76,6 +77,42 @@ class YamlParser {
     }
 
     return settings;
+
+  }
+
+  static List<YamlRoute> _processRoutes( YamlNode configNode, String type ) {
+    List<YamlRoute> routes = [];
+
+    try {
+
+      final settingsNode = configNode.value[ type ];
+
+      if ( settingsNode is! YamlList ) {
+        return routes;
+      }
+
+      var str = jsonEncode( settingsNode );
+
+      List<dynamic> list = json.decode( str );
+
+      print( '' );
+
+
+      for ( var route in list ) {
+
+        var processed = YamlRoute.fromJson( route );
+
+        routes.add( processed );
+
+        for (var c in processed.children) {
+          routes.add( c );
+        }}
+
+    } catch ( e ) {
+      print( e );
+    }
+
+    return routes;
 
   }
 

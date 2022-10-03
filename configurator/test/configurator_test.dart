@@ -195,6 +195,15 @@ void main() {
       }, isNotNull );
     });
 
+    test( 'Yaml Route Test', () {
+      var m1 = File( testYaml1 ).readAsStringSync();
+
+      var config = YamlParser.fromYamlString( m1 );
+
+      print('');
+
+    });
+
     test( 'Invalid Yaml Throws', () {
 
       // Empty Yaml Throws

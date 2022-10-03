@@ -23,7 +23,7 @@ abstract class ConfigScope {
       name: config.name,
       flags: { for (var e in config.flags) e.name : e.value },
       images: { for (var e in config.images) e.name : e.value },
-      routes: { for (var e in config.routes) e.name : e.value },
+      routes: { for (var e in config.routes) e.id : e.path },
       sizes: { for (var e in config.sizes) e.name : e.value },
       colors: { for (var e in config.colors) e.name : e.value },
     );
