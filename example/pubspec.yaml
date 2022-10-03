@@ -20,11 +20,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   cupertino_icons: ^1.0.2
   parse_color: ^0.0.1
   get_it: ^7.2.0
   v_widgets: ^0.0.1+1
+
 
   configurator:
     git:

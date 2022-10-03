@@ -11,5 +11,9 @@ void main() {
       ]
   );
 
-  runApp( MyApp( config ) );
+  WidgetsFlutterBinding.ensureInitialized();
+  LocaleSettings.useDeviceLocale();
+
+
+  runApp( TranslationProvider(child: MyApp( config )) );
 }

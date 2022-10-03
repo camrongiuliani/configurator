@@ -25,6 +25,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Random random = Random();
 
+  bool translate = false;
+
   String colorToString(Color color) {
     var r = color.red;
     var g = color.green;
@@ -97,8 +99,8 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'Current Scope:',
+            Text(
+              '${t.currentScope}:',
             ),
             Text(
               config.currentScopeName,
@@ -153,6 +155,15 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           FloatingActionButton(
             onPressed: () {
+
+              if ( translate ) {
+                translate = false;
+                LocaleSettings.setLocale( AppLocale.en );
+              } else {
+                translate = true;
+                LocaleSettings.setLocale( AppLocale.de );
+              }
+
               _push( context );
             },
             tooltip: 'Increment',
