@@ -57,7 +57,7 @@ class YamlParser {
 
     try {
 
-      final YamlNode settingsNode = configNode.value[ type ];
+      final settingsNode = configNode.value[ type ];
 
       if ( settingsNode is! YamlMap ) {
         return settings;

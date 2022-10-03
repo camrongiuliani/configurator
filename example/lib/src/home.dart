@@ -85,8 +85,6 @@ class _MyHomePageState extends State<MyHomePage> {
     Configuration config = ConfigurationProvider.of( context, listen: false ).config;
 
     Color c = config.colorValue( MyAppConfigKeys.colors.primary );
-    
-    double s = config.size( MyAppConfigKeys.sizes.detailTitleSize );
 
     return Scaffold(
       appBar: AppBar(
@@ -128,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               color: gen.tertiary,
-                              fontSize: s,
+                              fontSize: config.sizes.detailTitleSize,
                             ),
                           ),
                         ),

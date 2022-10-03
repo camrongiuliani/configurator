@@ -1,0 +1,18 @@
+id: app_scope_de
+
+#definitions:
+#  - strings:
+#      - &defaultHeaderImage
+#          'https://pub.dev/static/hash-qr9i96gp/img/pub-dev-logo-2x.png'
+#  - colors:
+#      - &defaultPageBg EFF1F3
+#      - &defaultButtonBg CC0000
+#      - &defaultButtonTextColor '000000'
+#  - routes:
+#      - &myVar test
+
+configuration:
+  strings:
+    de:
+      title: Hallo, Welt!
+      currentScope: Aktuellen Umfang

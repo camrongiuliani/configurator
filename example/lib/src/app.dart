@@ -8,6 +8,7 @@ import 'package:configurator_annotations/configurator_annotations.dart';
 @ConfiguratorApp(
   yaml: [
     './assets/example1.yaml',
+    './assets/example1_de.yaml',
   ],
 )
 class MyApp extends StatelessWidget {

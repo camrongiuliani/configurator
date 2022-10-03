@@ -9,6 +9,7 @@ import 'package:yaml/yaml.dart';
 Matcher invalidYamlMatcher = throwsA( const TypeMatcher<InvalidYamlException>() );
 
 const String testYaml1 = './test/assets/test_1.yaml';
+const String testYaml1de = './test/assets/test_1_de.yaml';
 const String badIdYaml = './test/assets/bad_id.yaml';
 const String missingIdYaml = './test/assets/bad_id.yaml';
 const String badConfigYaml = './test/assets/bad_config.yaml';
@@ -141,6 +142,19 @@ void main() {
 
       await expectLater( completer.future, completion( equals( 1 ) ) );
     });
+  });
+
+  group( 'Localization Tests', () {
+    test( 'Split Yaml String Test', () {
+      // var m1 = File( testYaml1 ).readAsStringSync();
+      var m2 = File( testYaml1de ).readAsStringSync();
+
+      // var scope1 = ConfigScope.fromYaml( m1 );
+      // var scope2 = ConfigScope.fromYaml( m2 );
+      var config = YamlParser.fromYamlString( m2 );
+
+    });
+
   });
 
   group( 'Scope From Yaml Tests', () {

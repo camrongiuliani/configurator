@@ -326,7 +326,7 @@ class _SizeAccessor {
 /// Locales: 2
 /// Strings: 2 (1 per locale)
 ///
-/// Built on 2022-10-03 at 19:45 UTC
+/// Built on 2022-10-03 at 20:04 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -597,4 +597,5 @@ extension ConfigAccessor on Configuration {
   _ImageAccessor get images => _ImageAccessor(this);
   _SizeAccessor get sizes => _SizeAccessor(this);
   _RouteAccessor get routes => _RouteAccessor(this);
+  _I18nDartEn get strings => t;
 }
