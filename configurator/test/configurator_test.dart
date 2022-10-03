@@ -102,6 +102,7 @@ void main() {
       config.pushScope( scopeO2 );
 
       expect( config.color( 'secondary' ), equals( scopeO2.colors['secondary'] ));
+      expect( config.color( 'primary' ), equals( scopeO.colors['primary'] ));
 
     });
   });

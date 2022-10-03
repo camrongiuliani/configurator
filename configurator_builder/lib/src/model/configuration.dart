@@ -33,6 +33,12 @@ class ProcessedConfig {
       Directive.import( 'dart:ui' ),
     ]);
 
+    // var x = SlangUtil.generateTranslations(
+    //   rawConfig: RawConfigBuilder.fromMap({}),
+    //   i18nNodes: yc.strings,
+    //   verbose: true,
+    // );
+
     builder..body.addAll([
 
       TitleWriter( 'Color Util' ).write(),

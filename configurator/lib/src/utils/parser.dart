@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:collection/collection.dart';
+import 'package:configurator/src/models/YamlI18nString.dart';
 import 'package:configurator/src/models/yaml_configuration.dart';
 import 'package:configurator/src/models/yaml_setting.dart';
 import 'package:yaml/yaml.dart';
@@ -46,6 +48,7 @@ class YamlParser {
       images: _processSettings( configNode, 'images' ),
       sizes: _processSettings( configNode, 'sizes' ),
       routes: _processSettings( configNode, 'routes' ),
+      strings: _processTranslations( configNode, 'strings' ),
     );
   }
 
@@ -73,6 +76,34 @@ class YamlParser {
     }
 
     return settings;
+
+  }
+
+  static List<YamlI18n> _processTranslations( YamlNode configNode, String type ) {
+    List<YamlI18n> translations = [];
+
+    try {
+
+      final YamlNode translationsNode = configNode.value[ type ];
+
+      if ( translationsNode is! YamlMap ) {
+        return translations;
+      }
+
+      var str = jsonEncode( translationsNode );
+
+      Map<String, dynamic> translationsMap = json.decode( str );
+
+      for ( var t in translationsMap.entries ) {
+        var values = t.value.entries.map( ( v ) => YamlI18n( v.key, t.key, v.value) );
+        translations.addAll( List.from(values) );
+      }
+
+    } catch ( e ) {
+      print( e );
+    }
+
+    return translations;
 
   }
 

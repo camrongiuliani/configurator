@@ -27,7 +27,7 @@ void main() {
       );
     });
 
-    testWidgets('Add Scope Rebuilds Test', (tester) async {
+    testWidgets('Add Scope Rebuilds Test', ( WidgetTester tester) async {
 
       Completer<Configuration> completer = Completer();
 
