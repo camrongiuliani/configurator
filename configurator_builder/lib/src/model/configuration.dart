@@ -9,6 +9,7 @@ import 'package:configurator_builder/src/writer/key_writer.dart';
 import 'package:configurator_builder/src/writer/route_writer.dart';
 import 'package:configurator_builder/src/writer/color_writer.dart';
 import 'package:configurator_builder/src/writer/size_writer.dart';
+import 'package:configurator_builder/src/writer/slang_writer.dart';
 import 'package:configurator_builder/src/writer/theme_writer.dart';
 import 'package:configurator_builder/src/writer/title_writer.dart';
 
@@ -32,15 +33,8 @@ class ProcessedConfig {
       Directive.import( 'package:configurator_flutter/configurator_flutter.dart' ),
       Directive.import( 'package:slang/builder/model/node.dart' ),
       Directive.export( 'package:slang_flutter/slang_flutter.dart' ),
+      Directive.export( 'dart:ui' ),
     ]);
-
-    var x = await SlangUtil.generateTranslations(
-      rawConfig: {},
-      i18nNodes: yamlConfiguration.strings,
-      verbose: true,
-    );
-
-    print('d');
 
     builder..body.addAll([
 
@@ -71,7 +65,8 @@ class ProcessedConfig {
       TitleWriter( 'Configuration' ).write(),
       ConfigWriter( frameworkName ).write(),
 
-      Code( x ),
+      TitleWriter( 'Slang (i18n)' ).write(),
+      SlangWriter( yamlConfiguration.strings ).write(),
 
     ]);
 
