@@ -13,12 +13,21 @@ class YamlRoute {
       json['path'],
       ( json['children'] ?? [] ).map( ( e ) {
         e['path'] = '${json['path']}${e['path']}';
-        var child = YamlRoute.fromJson( e, json['id'] );
-
-
-        return child;
+        return YamlRoute.fromJson( e, json['id'] );
       }).toList(),
       parentId,
     );
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is YamlRoute &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          path == other.path &&
+          parentId == other.parentId;
+
+  @override
+  int get hashCode => id.hashCode ^ path.hashCode ^ parentId.hashCode;
 }

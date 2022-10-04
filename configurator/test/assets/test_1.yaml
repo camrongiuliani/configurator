@@ -33,12 +33,6 @@ configuration:
   routes:
     - id: 1
       path: /master
-      children:
-        - id: 2
-          path: /detail
-          children:
-            - id: 3
-              path: /info
     - id: 4
       path: *myVar
 
