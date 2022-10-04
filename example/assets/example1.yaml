@@ -36,10 +36,15 @@ configuration:
       children:
         - id: 2
           path: /detail
-    - id: 2
+          children:
+            - id: 4
+              path: /edit
+    - id: 3
       path: *myVar
 
   strings:
     base:
       title: Hello, World!
       currentScope: Current Scope
+      common:
+        personal: personal

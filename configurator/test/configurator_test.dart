@@ -198,10 +198,13 @@ void main() {
     test( 'Yaml Route Test', () {
       var m1 = File( testYaml1 ).readAsStringSync();
 
-      var config = YamlParser.fromYamlString( m1 );
+      var scope = ConfigScope.fromYaml( m1 );
 
-      print('');
+      Configuration config = Configuration( scopes: [ scope ] );
 
+      expect( config.route( 1 ), equals( '/master' ) );
+      expect( config.route( 2 ), equals( '/master/detail' ) );
+      expect( config.route( 3 ), equals( '/master/detail/info' ) );
     });
 
     test( 'Invalid Yaml Throws', () {

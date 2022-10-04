@@ -95,16 +95,13 @@ class YamlParser {
 
       List<dynamic> list = json.decode( str );
 
-      print( '' );
-
-
       for ( var route in list ) {
 
         var processed = YamlRoute.fromJson( route );
 
         routes.add( processed );
 
-        for (var c in processed.children) {
+        for ( var c in _getChildren( processed, [] ) ) {
           routes.add( c );
         }}
 
@@ -114,6 +111,18 @@ class YamlParser {
 
     return routes;
 
+  }
+
+  static List<YamlRoute> _getChildren( YamlRoute route, List<YamlRoute> result ) {
+    for ( YamlRoute c in route.children ) {
+      result.add( c );
+
+      if ( c.children.isNotEmpty ) {
+        return _getChildren( c, result );
+      }
+    }
+
+    return result;
   }
 
   static List<YamlI18n> _processTranslations( YamlNode configNode, String type ) {

@@ -6,6 +6,16 @@ homepage: https://github.com/camrongiuliani/maestro
 environment:
   sdk: '>=2.15.1 <3.0.0'
 
+dependency_overrides:
+  configurator:
+    path: ../configurator
+
+  configurator_flutter:
+    path: ../configurator_flutter
+
+  configurator_annotations:
+    path: ../configurator_annotations
+
 dependencies:
   analyzer: ^4.1.0
   build: ^2.2.1

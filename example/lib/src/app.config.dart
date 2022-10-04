@@ -103,7 +103,15 @@ class _ImageKeys {
   final storeFrontHeaderImage = 'storeFrontHeaderImage';
 }
 
-class _RouteKeys {}
+class _RouteKeys {
+  final master = 1;
+
+  final masterDetail = 2;
+
+  final masterDetailEdit = 4;
+
+  final test = 3;
+}
 
 class _SizeKeys {
   final homeTitleSize = 'homeTitleSize';
@@ -255,13 +263,29 @@ class _ImageAccessor {
 class _Routes {
   const _Routes();
 
-  Map<int, String> get map => {};
+  Map<int, String> get map => {
+        MyAppConfigKeys.routes.master: '/master',
+        MyAppConfigKeys.routes.masterDetail: '/master/detail',
+        MyAppConfigKeys.routes.masterDetailEdit: '/master/detail/edit',
+        MyAppConfigKeys.routes.test: 'test'
+      };
+  String get master => map[MyAppConfigKeys.routes.master] ?? '/';
+  String get masterDetail => map[MyAppConfigKeys.routes.masterDetail] ?? '/';
+  String get masterDetailEdit =>
+      map[MyAppConfigKeys.routes.masterDetailEdit] ?? '/';
+  String get test => map[MyAppConfigKeys.routes.test] ?? '/';
 }
 
 class _RouteAccessor {
   const _RouteAccessor(this._config);
 
   final Configuration _config;
+
+  String get master => _config.route(MyAppConfigKeys.routes.master);
+  String get masterDetail => _config.route(MyAppConfigKeys.routes.masterDetail);
+  String get masterDetailEdit =>
+      _config.route(MyAppConfigKeys.routes.masterDetailEdit);
+  String get test => _config.route(MyAppConfigKeys.routes.test);
 }
 
 // ********************************
@@ -328,9 +352,9 @@ class _SizeAccessor {
 /// Generated file. Do not edit.
 ///
 /// Locales: 2
-/// Strings: 4 (2 per locale)
+/// Strings: 6 (3 per locale)
 ///
-/// Built on 2022-10-03 at 20:43 UTC
+/// Built on 2022-10-04 at 00:21 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -506,6 +530,17 @@ class _I18nDartEn implements BaseTranslations<AppLocale, _I18nDartEn> {
   // Translations
   String get title => 'Hello, World!';
   String get currentScope => 'Current Scope';
+  late final _I18nDartCommonEn common = _I18nDartCommonEn._(_root);
+}
+
+// Path: common
+class _I18nDartCommonEn {
+  _I18nDartCommonEn._(this._root);
+
+  final _I18nDartEn _root; // ignore: unused_field
+
+  // Translations
+  String get personal => 'personal';
 }
 
 // Path: <root>
@@ -543,6 +578,20 @@ class _I18nDartDe implements _I18nDartEn {
   String get title => 'Hallo, Welt!';
   @override
   String get currentScope => 'Aktuellen Umfang';
+  @override
+  late final _I18nDartCommonDe common = _I18nDartCommonDe._(_root);
+}
+
+// Path: common
+class _I18nDartCommonDe implements _I18nDartCommonEn {
+  _I18nDartCommonDe._(this._root);
+
+  @override
+  final _I18nDartDe _root; // ignore: unused_field
+
+  // Translations
+  @override
+  String get personal => 'persönlich';
 }
 
 /// Flat map(s) containing all translations.
@@ -555,6 +604,8 @@ extension on _I18nDartEn {
         return 'Hello, World!';
       case 'currentScope':
         return 'Current Scope';
+      case 'common.personal':
+        return 'personal';
       default:
         return null;
     }
@@ -568,6 +619,8 @@ extension on _I18nDartDe {
         return 'Hallo, Welt!';
       case 'currentScope':
         return 'Aktuellen Umfang';
+      case 'common.personal':
+        return 'persönlich';
       default:
         return null;
     }

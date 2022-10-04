@@ -34,7 +34,7 @@ class KeyWriter extends Writer {
       builder
         ..name = '_RouteKeys'
         ..fields.addAll([
-          ..._yamlConfiguration.routes.map((e) => _buildField2( ( e.value as String ).canonicalize, '${e.name}' )),
+          ..._yamlConfiguration.routes.map((e) => _buildField2( ( e.path ).canonicalize, '${e.id}' )),
         ]);
     });
 

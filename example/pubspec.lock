@@ -144,38 +144,30 @@ packages:
   configurator:
     dependency: "direct main"
     description:
-      path: configurator
-      ref: HEAD
-      resolved-ref: "13ce8423dc709ae3312475c2d5b17fed35a180fe"
-      url: "git@github.com:camrongiuliani/configurator.git"
-    source: git
+      path: "../configurator"
+      relative: true
+    source: path
     version: "0.0.1"
   configurator_annotations:
     dependency: "direct main"
     description:
-      path: configurator_annotations
-      ref: HEAD
-      resolved-ref: "13ce8423dc709ae3312475c2d5b17fed35a180fe"
-      url: "git@github.com:camrongiuliani/configurator.git"
-    source: git
+      path: "../configurator_annotations"
+      relative: true
+    source: path
     version: "0.1.0+1"
   configurator_builder:
     dependency: "direct dev"
     description:
-      path: configurator_builder
-      ref: HEAD
-      resolved-ref: "13ce8423dc709ae3312475c2d5b17fed35a180fe"
-      url: "git@github.com:camrongiuliani/configurator.git"
-    source: git
+      path: "../configurator_builder"
+      relative: true
+    source: path
     version: "0.0.1+2"
   configurator_flutter:
     dependency: "direct main"
     description:
-      path: configurator_flutter
-      ref: HEAD
-      resolved-ref: "13ce8423dc709ae3312475c2d5b17fed35a180fe"
-      url: "git@github.com:camrongiuliani/configurator.git"
-    source: git
+      path: "../configurator_flutter"
+      relative: true
+    source: path
     version: "0.0.1"
   convert:
     dependency: transitive

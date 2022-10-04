@@ -7,11 +7,10 @@ import 'package:configurator_builder/src/writer/writer.dart';
 class RouteWriter extends Writer {
 
   final String name;
-  final List<YamlSetting<int, String>> _routes;
+  final List<YamlRoute> _routes;
 
-  RouteWriter( String name, List<YamlSetting> _routes )
-      : name = name.canonicalize.capitalized,
-        _routes = _routes.convert<int, String>();
+  RouteWriter( String name, this._routes )
+      : name = name.canonicalize.capitalized;
 
   @override
   Spec write() {
@@ -40,16 +39,16 @@ class RouteWriter extends Writer {
     return _routes.map((e) {
       return Method( ( builder ) {
         builder
-          ..name = e.value.canonicalize
+          ..name = e.path.canonicalize
           ..type = MethodType.getter
           ..returns = refer( 'String' )
           ..lambda = true
           ..body = Code( () {
             if ( useConfig ) {
-              return '_config.route( ${name}ConfigKeys.routes.${e.name} )';
+              return '_config.route( ${name}ConfigKeys.routes.${e.path.canonicalize} )';
             }
 
-            return 'map[ ${name}ConfigKeys.routes.${e.name} ] ?? \'/\'';
+            return 'map[ ${name}ConfigKeys.routes.${e.path.canonicalize} ] ?? \'/\'';
           }() );
       });
     }).toList();
@@ -67,7 +66,13 @@ class RouteWriter extends Writer {
           Map<String, String> map = {};
 
           for ( var f in _routes ) {
-            map['${name}ConfigKeys.routes.${f.value.canonicalize}'] = '\'${f.value}\'';
+
+            // if ( f.parentId != null ) {
+            //   var p = _routes.firstWhere((element) => element.id == f.parentId);
+            //
+            // }
+
+            map['${name}ConfigKeys.routes.${f.path.canonicalize}'] = '\'${f.path}\'';
           }
 
           return map.toString();

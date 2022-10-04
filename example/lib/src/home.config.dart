@@ -103,7 +103,13 @@ class _ImageKeys {
   final storeFrontHeaderImage = 'storeFrontHeaderImage';
 }
 
-class _RouteKeys {}
+class _RouteKeys {
+  final master = 1;
+
+  final masterDetail = 2;
+
+  final test = 2;
+}
 
 class _SizeKeys {
   final homeTitleSize = 'homeTitleSize';
@@ -251,13 +257,26 @@ class _ImageAccessor {
 class _Routes {
   const _Routes();
 
-  Map<int, String> get map => {};
+  Map<int, String> get map => {
+        MyHomePageConfigKeys.routes.master: '/master',
+        MyHomePageConfigKeys.routes.masterDetail: '/master/detail',
+        MyHomePageConfigKeys.routes.test: 'test'
+      };
+  String get master => map[MyHomePageConfigKeys.routes.master] ?? '/';
+  String get masterDetail =>
+      map[MyHomePageConfigKeys.routes.masterDetail] ?? '/';
+  String get test => map[MyHomePageConfigKeys.routes.test] ?? '/';
 }
 
 class _RouteAccessor {
   const _RouteAccessor(this._config);
 
   final Configuration _config;
+
+  String get master => _config.route(MyHomePageConfigKeys.routes.master);
+  String get masterDetail =>
+      _config.route(MyHomePageConfigKeys.routes.masterDetail);
+  String get test => _config.route(MyHomePageConfigKeys.routes.test);
 }
 
 // ********************************
@@ -326,7 +345,7 @@ class _SizeAccessor {
 /// Locales: 2
 /// Strings: 2 (1 per locale)
 ///
-/// Built on 2022-10-03 at 20:43 UTC
+/// Built on 2022-10-04 at 00:21 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint

@@ -36,7 +36,10 @@ configuration:
       children:
         - id: 2
           path: /detail
-    - id: 2
+          children:
+            - id: 3
+              path: /info
+    - id: 4
       path: *myVar
 
   strings:
