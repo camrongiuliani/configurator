@@ -114,7 +114,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 75.0,
                     child: GestureDetector(
                       onTap: () {
-                        config.popScopeUntil( i );
+                        config.popScopeUntil( ( scope ) {
+                          return scope == config.scopes[i];
+                        });
                       },
                       child: Card(
                         child: Padding(

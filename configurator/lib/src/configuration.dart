@@ -55,8 +55,8 @@ class Configuration  {
     }
   }
 
-  Future<void> popScopeUntil( int index ) async {
-    while ( _scopes.length > 1 && _scopes.length != index + 1 ) {
+  Future<void> popScopeUntil( bool Function( ConfigScope ) test ) async {
+    while ( test( _scopes.last ) == false && _scopes.length > 1 ) {
       _scopes.removeLast();
     }
 
