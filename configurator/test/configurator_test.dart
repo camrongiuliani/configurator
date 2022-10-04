@@ -1,6 +1,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:configurator/configurator.dart';
 import 'package:test/test.dart';
@@ -10,6 +11,8 @@ Matcher invalidYamlMatcher = throwsA( const TypeMatcher<InvalidYamlException>() 
 
 const String testYaml1 = './test/assets/test_1.yaml';
 const String testYaml1de = './test/assets/test_1_de.yaml';
+const String testYaml1Dup = './test/assets/test_1_dup.yaml';
+
 const String badIdYaml = './test/assets/bad_id.yaml';
 const String missingIdYaml = './test/assets/bad_id.yaml';
 const String badConfigYaml = './test/assets/bad_config.yaml';
@@ -193,6 +196,22 @@ void main() {
 
         return configs.reduce((value, element) => value + element );
       }, isNotNull );
+    });
+
+    test( 'Split Yaml Reduce Results Unique Test', () {
+      var m1 = File( testYaml1 ).readAsStringSync();
+      var m2 = File( testYaml1Dup ).readAsStringSync();
+
+      List<YamlConfiguration> configs = [m1, m2].map((e) => YamlParser.fromYamlString( e ) ).toList();
+
+      YamlConfiguration config = configs.reduce((value, element) => value + element );
+
+      expect( max( configs[0].colors.length, configs[1].colors.length ) , equals( config.colors.length ) );
+      expect( max( configs[0].flags.length, configs[1].flags.length ) , equals( config.flags.length ) );
+      expect( max( configs[0].routes.length, configs[1].routes.length ) , equals( config.routes.length ) );
+      expect( max( configs[0].images.length, configs[1].images.length ) , equals( config.images.length ) );
+      expect( max( configs[0].strings.length, configs[1].strings.length ) , equals( config.strings.length ) );
+      expect( max( configs[0].sizes.length, configs[1].sizes.length ) , equals( config.sizes.length ) );
     });
 
     test( 'Yaml Route Test', () {

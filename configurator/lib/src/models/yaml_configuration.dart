@@ -32,22 +32,22 @@ class YamlConfiguration {
   }
 
   operator +( YamlConfiguration t ) {
-    colors.retainWhere(( e ) => ! t.colors.contains( e ));
+    colors.removeWhere(( e ) => t.colors.contains( e ));
     colors.addAll( t.colors );
 
-    sizes.retainWhere(( e ) => ! t.sizes.contains( e ));
+    sizes.removeWhere(( e ) => t.sizes.contains( e ));
     sizes.addAll( t.sizes );
 
-    images.retainWhere(( e ) => ! t.images.contains( e ));
+    images.removeWhere(( e ) => t.images.contains( e ));
     images.addAll( t.images );
 
-    flags.retainWhere(( e ) => ! t.flags.contains( e ));
+    flags.removeWhere(( e ) => t.flags.contains( e ));
     flags.addAll( t.flags );
 
-    routes.retainWhere(( e ) => ! t.routes.contains( e ));
+    routes.removeWhere(( e ) => t.routes.contains( e ));
     routes.addAll( t.routes );
 
-    strings.retainWhere(( e ) => ! t.strings.contains( e ));
+    strings.removeWhere(( e ) => t.strings.contains( e ));
     strings.addAll( t.strings );
 
     return this;

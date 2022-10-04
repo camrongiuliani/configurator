@@ -66,12 +66,6 @@ class RouteWriter extends Writer {
           Map<String, String> map = {};
 
           for ( var f in _routes ) {
-
-            // if ( f.parentId != null ) {
-            //   var p = _routes.firstWhere((element) => element.id == f.parentId);
-            //
-            // }
-
             map['${name}ConfigKeys.routes.${f.path.canonicalize}'] = '\'${f.path}\'';
           }
 
