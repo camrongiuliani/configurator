@@ -35,17 +35,23 @@ class Configuration  {
     return Configuration._( scopes ?? List.from( _scopes ), changeNotifier ?? this.changeNotifier );
   }
 
-  void pushScope( covariant ConfigScope config, { bool checkEquality = true } ) {
+  void pushScope( covariant ConfigScope config, { bool checkEquality = true, bool notify = true } ) {
     if ( ! checkEquality || config != _currentScope ) {
       _scopes.add( config );
-      notifyListeners();
+
+      if ( notify ) {
+        notifyListeners();
+      }
     }
   }
 
-  Future<void> popScope() async {
+  Future<void> popScope({ bool notify = true }) async {
     if ( _scopes.length > 1 ) {
       _scopes.removeLast();
-      notifyListeners();
+
+      if ( notify ) {
+        notifyListeners();
+      }
     }
   }
 
