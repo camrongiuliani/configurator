@@ -57,12 +57,25 @@ void main() {
     test ( 'Color Namespace Test', () {
 
       var m = File( testYaml1 ).readAsStringSync();
-      var m2= File( testYaml1Dup ).readAsStringSync();
+      var scope = ConfigScope.fromYaml( m );
+      Configuration config = Configuration( scopes: [ scope ] );
+
+      expect( config.color( 'storeFrontProductCardTextFooter' ), isNotEmpty );
+      expect( config.color( 'footer' ), isEmpty );
+      expect( config.flag( 'detailPageEmbActual' ), isTrue );
+      expect( config.flag( 'actual' ), isFalse );
+
+    });
+
+    test ( 'Color Namespace Test2', () {
+
+      var m = File( testYaml1 ).readAsStringSync();
+      var m2 = File( testYaml1Dup ).readAsStringSync();
       var scope = ConfigScope.fromYaml( m );
       var scope2 = ConfigScope.fromYaml( m2 );
       Configuration config = Configuration( scopes: [ scope, scope2 ] );
 
-      expect( config.color( 'storeFrontDetailOrigColor' ), isNotEmpty );
+      expect( config.color( 'storeFrontProductCardTextBody' ), isNotEmpty );
       expect( config.color( 'origColor' ), isEmpty );
       expect( config.flag( 'detailPageEmbActual' ), isTrue );
       expect( config.flag( 'actual' ), isFalse );

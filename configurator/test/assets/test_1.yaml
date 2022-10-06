@@ -19,9 +19,17 @@ configuration:
     storeFrontBg: *defaultPageBg
     storeFront:
       bg: *defaultPageBg
-      detail:
-        orig:
-          color: *defaultButtonTextColor
+      productSection:
+        text: *defaultPageBg
+      productCard:
+        bg: *defaultPageBg
+        text:
+          title: *defaultPageBg
+          body: *defaultPageBg
+          footer: *defaultPageBg
+      submitBtn:
+        bg: *defaultPageBg
+        text: *defaultPageBg
 
   sizes:
     homeTitleSize: 14.0
