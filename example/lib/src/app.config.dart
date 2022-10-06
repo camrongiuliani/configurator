@@ -354,7 +354,7 @@ class _SizeAccessor {
 /// Locales: 2
 /// Strings: 6 (3 per locale)
 ///
-/// Built on 2022-10-04 at 00:21 UTC
+/// Built on 2022-10-06 at 00:36 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint

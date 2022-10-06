@@ -1,5 +1,5 @@
 builders:
-  maestro_builder:
+  configurator_builder:
     import: "package:configurator_builder/builder.dart"
     # The builder function name, which gets called on build/watch
     builder_factories: ["frameworkBuilder"]
