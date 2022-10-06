@@ -17,6 +17,12 @@ configuration:
     secondary: *defaultButtonBg
     tertiary: *defaultButtonTextColor
     storeFrontBg: *defaultPageBg
+    storeFront:
+      bg: *defaultPageBg
+      detail:
+        orig:
+          color: *defaultButtonTextColor
+
   sizes:
     homeTitleSize: 14.0
     detailTitleSize: 22.0
@@ -27,6 +33,9 @@ configuration:
     orThis: false
     orThat: false
     showTitle: true
+    detailPage:
+      emb:
+        actual: true
   images:
     loginHeaderImage: *defaultHeaderImage
     storeFrontHeaderImage: *defaultHeaderImage

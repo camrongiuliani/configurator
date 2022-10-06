@@ -54,6 +54,21 @@ void main() {
 
   group( 'Configuration Tests', () {
 
+    test ( 'Color Namespace Test', () {
+
+      var m = File( testYaml1 ).readAsStringSync();
+      var m2= File( testYaml1Dup ).readAsStringSync();
+      var scope = ConfigScope.fromYaml( m );
+      var scope2 = ConfigScope.fromYaml( m2 );
+      Configuration config = Configuration( scopes: [ scope, scope2 ] );
+
+      expect( config.color( 'storeFrontDetailOrigColor' ), isNotEmpty );
+      expect( config.color( 'origColor' ), isEmpty );
+      expect( config.flag( 'detailPageEmbActual' ), isTrue );
+      expect( config.flag( 'actual' ), isFalse );
+
+    });
+
     test( 'Configuration Get Value Test (Single Scope)', () {
       var m = File( testYaml1 ).readAsStringSync();
       var scope = ConfigScope.fromYaml( m );

@@ -1,9 +1,7 @@
 import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:configurator/configurator.dart';
-import 'package:configurator/src/models/yaml_i18n_string.dart';
-import 'package:configurator/src/models/yaml_configuration.dart';
-import 'package:configurator/src/models/yaml_setting.dart';
+import 'package:configurator/src/utils/string_ext.dart';
 import 'package:yaml/yaml.dart';
 
 class InvalidYamlException implements Exception {
@@ -69,7 +67,15 @@ class YamlParser {
       Map<String, dynamic> map = json.decode( str );
 
       for ( var setting in map.entries ) {
-        settings.add( YamlSetting( setting.key, setting.value ) );
+        if ( setting.value is Map ) {
+          List<YamlSetting> ns = _getSettingNamespaces( setting.value, [], setting.key );
+
+          if ( ns.isNotEmpty ) {
+            settings.addAll( ns );
+          }
+        } else {
+          settings.add( YamlSetting( setting.key, setting.value ) );
+        }
       }
 
     } catch ( e ) {
@@ -111,6 +117,19 @@ class YamlParser {
 
     return routes;
 
+  }
+
+  static List<YamlSetting> _getSettingNamespaces( Map<String, dynamic> setting, List<YamlSetting> result, String path ) {
+    for ( var es in setting.entries ) {
+
+      if ( es.value is Map ) {
+        return _getSettingNamespaces( es.value, result, '${path.capitalized}_${es.key.capitalized}'.canonicalize );
+      } else {
+        result.add( YamlSetting( '${path.capitalized}_${es.key.capitalized}'.canonicalize, es.value ) );
+      }
+    }
+
+    return result;
   }
 
   static List<YamlRoute> _getChildren( YamlRoute route, List<YamlRoute> result ) {
