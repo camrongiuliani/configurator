@@ -10,6 +10,8 @@ import 'package:yaml/yaml.dart';
 Matcher invalidYamlMatcher = throwsA( const TypeMatcher<InvalidYamlException>() );
 
 const String testYaml1 = './test/assets/test_1.yaml';
+const String testYaml1c = './test/assets/test_1.config.yaml';
+const String testYaml2c = './test/assets/test_2.config.yaml';
 const String testYaml1de = './test/assets/test_1_de.yaml';
 const String testYaml1Dup = './test/assets/test_1_dup.yaml';
 
@@ -53,6 +55,16 @@ void main() {
   });
 
   group( 'Configuration Tests', () {
+
+    test ( 'Gen Test', () {
+
+      var m = File( testYaml1c ).readAsStringSync();
+      var scope = ConfigScope.fromYaml( m );
+      Configuration config = Configuration( scopes: [ scope ] );
+
+      print('d');
+
+    });
 
     test ( 'Color Namespace Test', () {
 

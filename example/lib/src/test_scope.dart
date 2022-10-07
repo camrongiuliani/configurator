@@ -1,5 +1,5 @@
 import 'package:configurator/configurator.dart';
-import 'package:example/src/app.config.dart';
+import 'package:example/src/config/example1.config.dart';
 
 class TestScope1 extends ConfigScope {
   @override
@@ -7,7 +7,7 @@ class TestScope1 extends ConfigScope {
 
   @override
   Map<String, bool> flags = {
-    MyAppConfigKeys.flags.showTitle: false,
+    AppScopeConfigKeys.flags.showTitle: false,
   };
 
   @override

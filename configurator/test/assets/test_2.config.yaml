@@ -1,0 +1,58 @@
+id: app_scope2
+
+definitions:
+  - strings:
+      - &defaultHeaderImage
+          'https://pub.dev/static/hash-qr9i96gp/img/pub-dev-logo-2x.png'
+  - colors:
+      - &defaultPageBg EFF1F3
+      - &defaultButtonBg CC0000
+      - &defaultButtonTextColor '000000'
+  - routes:
+      - &myVar test
+
+configuration:
+  colors:
+    primary: *defaultPageBg
+    secondary: *defaultButtonBg
+    tertiary: *defaultButtonTextColor
+    storeFront:
+      bg: *defaultPageBg
+      productSection:
+        text: *defaultPageBg
+      productCard:
+        bg: *defaultPageBg
+        text:
+          title: *defaultPageBg
+          body: *defaultPageBg
+          footer: *defaultPageBg
+      submitBtn:
+        bg: *defaultPageBg
+        text: *defaultPageBg
+
+  sizes:
+    homeTitleSize: 14.0
+    detailTitleSize: 22.0
+  flags:
+    isEnabled: false
+    andThis: true
+    andThat: true
+    orThis: false
+    orThat: false
+    showTitle: true
+    detailPage:
+      emb:
+        actual: true
+  images:
+    loginHeaderImage: *defaultHeaderImage
+    storeFrontHeaderImage: *defaultHeaderImage
+  routes:
+    - id: 1
+      path: /master
+    - id: 4
+      path: *myVar
+
+  strings:
+    base:
+      title: Hello, World!
+      scope: Scope

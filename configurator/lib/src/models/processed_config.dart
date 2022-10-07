@@ -1,18 +1,17 @@
-import 'package:analyzer/dart/element/element.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:configurator/configurator.dart';
-import 'package:configurator_builder/src/writer/color_util_writer.dart';
-import 'package:configurator_builder/src/writer/config_ext_writer.dart';
-import 'package:configurator_builder/src/writer/configuration_writer.dart';
-import 'package:configurator_builder/src/writer/flag_writer.dart';
-import 'package:configurator_builder/src/writer/image_writer.dart';
-import 'package:configurator_builder/src/writer/key_writer.dart';
-import 'package:configurator_builder/src/writer/route_writer.dart';
-import 'package:configurator_builder/src/writer/color_writer.dart';
-import 'package:configurator_builder/src/writer/size_writer.dart';
-import 'package:configurator_builder/src/writer/slang_writer.dart';
-import 'package:configurator_builder/src/writer/theme_writer.dart';
-import 'package:configurator_builder/src/writer/title_writer.dart';
+import 'package:configurator/src/writers/title_writer.dart';
+import 'package:configurator/src/writers/color_util_writer.dart';
+import 'package:configurator/src/writers/config_ext_writer.dart';
+import 'package:configurator/src/writers/configuration_writer.dart';
+import 'package:configurator/src/writers/flag_writer.dart';
+import 'package:configurator/src/writers/image_writer.dart';
+import 'package:configurator/src/writers/key_writer.dart';
+import 'package:configurator/src/writers/route_writer.dart';
+import 'package:configurator/src/writers/color_writer.dart';
+import 'package:configurator/src/writers/size_writer.dart';
+import 'package:configurator/src/writers/slang_writer.dart';
+import 'package:configurator/src/writers/theme_writer.dart';
 
 class ProcessedConfig {
 
@@ -25,7 +24,7 @@ class ProcessedConfig {
 
     LibraryBuilder builder = LibraryBuilder();
 
-    builder..directives.addAll([
+    builder.directives.addAll([
       Directive.import( 'package:flutter/material.dart' ),
       Directive.import( 'package:configurator_flutter/configurator_flutter.dart' ),
       Directive.import( 'dart:ui' ),
@@ -33,7 +32,7 @@ class ProcessedConfig {
       Directive.export( 'package:slang_flutter/slang_flutter.dart' ),
     ]);
 
-    builder..body.addAll([
+    builder.body.addAll([
 
       TitleWriter( 'Color Util' ).write(),
       ColorUtilWriter().write(),

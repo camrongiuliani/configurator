@@ -3,6 +3,7 @@ import 'package:configurator/configurator.dart';
 class YamlConfiguration {
 
   final String name;
+  final List<String> partFiles;
   final List<YamlSetting> flags;
   final List<YamlSetting> colors;
   final List<YamlSetting> images;
@@ -12,6 +13,7 @@ class YamlConfiguration {
 
   YamlConfiguration({
     required this.name,
+    this.partFiles = const [],
     this.flags = const [],
     this.colors = const [],
     this.images = const [],
@@ -22,6 +24,7 @@ class YamlConfiguration {
 
   Map<dynamic, dynamic> toJson() {
     return {
+      'partFiles': partFiles,
       'flags': { for (var e in flags) e.name: e.value},
       'images': { for (var e in images) e.name: e.value},
       'sizes': { for (var e in sizes) e.name: e.value},
@@ -32,6 +35,9 @@ class YamlConfiguration {
   }
 
   operator +( YamlConfiguration t ) {
+    partFiles.removeWhere(( e ) => t.partFiles.contains( e ));
+    partFiles.addAll( t.partFiles );
+
     colors.removeWhere(( e ) => t.colors.contains( e ));
     colors.addAll( t.colors );
 

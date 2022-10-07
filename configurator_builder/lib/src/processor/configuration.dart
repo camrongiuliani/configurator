@@ -35,7 +35,7 @@ class ConfigProcessor extends Processor<ProcessedConfig> {
     // Combine Configs (last added takes priority).
     final YamlConfiguration reduced = configs.reduce((value, element) => value + element);
 
-    return ProcessedConfig( _frameworkElement, reduced );
+    return ProcessedConfig( _frameworkElement.displayName, reduced );
   }
 
   DartObject? _getConfigAnnotation() {

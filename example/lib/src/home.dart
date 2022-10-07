@@ -1,16 +1,10 @@
 import 'dart:math';
-import 'package:configurator_annotations/configurator_annotations.dart';
 import 'package:configurator_flutter/configurator_flutter.dart';
-import 'package:example/src/app.config.dart';
+import 'package:example/src/config/example1.config.dart';
 import 'package:example/src/test_scope.dart';
 import 'package:flutter/material.dart';
 import 'package:v_widgets/v_widgets.dart';
 
-@ConfiguratorApp(
-  yaml: [
-    './assets/example2.yaml',
-  ],
-)
 class MyHomePage extends StatefulWidget {
 
   final String title;
@@ -59,15 +53,15 @@ class _MyHomePageState extends State<MyHomePage> {
       config.pushScope(ProxyScope(
         name: 'RandomScope_${config.scopes.length - 2}',
         colors: {
-          MyAppConfigKeys.colors.primary: randomColor,
-          MyAppConfigKeys.colors.secondary: randomColor,
-          MyAppConfigKeys.colors.tertiary: randomColor,
+          AppScopeConfigKeys.colors.primary: randomColor,
+          AppScopeConfigKeys.colors.secondary: randomColor,
+          AppScopeConfigKeys.colors.tertiary: randomColor,
         },
         sizes: {
-          MyAppConfigKeys.sizes.detailTitleSize: max(random.nextInt( 24 ).toDouble(), 10)
+          AppScopeConfigKeys.sizes.detailTitleSize: max(random.nextInt( 24 ).toDouble(), 10)
         },
         flags: {
-          MyAppConfigKeys.flags.showTitle: random.nextBool(),
+          AppScopeConfigKeys.flags.showTitle: random.nextBool(),
         }
       ));
     }
@@ -80,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
 
-    final gen = Theme.of(context).extension<MyAppGeneratedThemeExtension>()!;
+    final gen = Theme.of(context).extension<AppScopeGeneratedThemeExtension>()!;
 
     Configuration config = Config.of( context, listen: false );
 

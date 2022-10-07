@@ -1,9 +1,3 @@
-// GENERATED CODE - DO NOT MODIFY BY HAND
-
-// **************************************************************************
-// ConfiguratorGenerator
-// **************************************************************************
-
 import 'package:flutter/material.dart';
 import 'package:configurator_flutter/configurator_flutter.dart';
 import 'dart:ui';
@@ -108,9 +102,7 @@ class _RouteKeys {
 
   final masterDetail = 2;
 
-  final masterDetailEdit = 4;
-
-  final test = 3;
+  final test = 2;
 }
 
 class _SizeKeys {
@@ -125,11 +117,9 @@ class _ColorKeys {
   final secondary = 'secondary';
 
   final tertiary = 'tertiary';
-
-  final storeFrontBg = 'storeFrontBg';
 }
 
-class MyAppConfigKeys {
+class HomeScopeConfigKeys {
   static final routes = _RouteKeys();
 
   static final flags = _FlagKeys();
@@ -145,9 +135,9 @@ class MyAppConfigKeys {
 // Theme
 // ********************************
 
-class MyAppGeneratedThemeExtension
-    extends ConfigTheme<MyAppGeneratedThemeExtension> {
-  MyAppGeneratedThemeExtension({required super.themeMap});
+class HomeScopeGeneratedThemeExtension
+    extends ConfigTheme<HomeScopeGeneratedThemeExtension> {
+  HomeScopeGeneratedThemeExtension({required super.themeMap});
 
   Color get primary =>
       _ColorUtil.parseColorValue(themeMap['colors']?['primary']);
@@ -155,23 +145,21 @@ class MyAppGeneratedThemeExtension
       _ColorUtil.parseColorValue(themeMap['colors']?['secondary']);
   Color get tertiary =>
       _ColorUtil.parseColorValue(themeMap['colors']?['tertiary']);
-  Color get storeFrontBg =>
-      _ColorUtil.parseColorValue(themeMap['colors']?['storeFrontBg']);
   double get homeTitleSize => themeMap['sizes']?['homeTitleSize'];
   double get detailTitleSize => themeMap['sizes']?['detailTitleSize'];
   @override
-  MyAppGeneratedThemeExtension copyWith(
+  HomeScopeGeneratedThemeExtension copyWith(
       {Map<String, Map<String, dynamic>>? themeMap}) {
     this.themeMap.addAll(themeMap ?? {});
-    return MyAppGeneratedThemeExtension(themeMap: this.themeMap);
+    return HomeScopeGeneratedThemeExtension(themeMap: this.themeMap);
   }
 
   @override
-  MyAppGeneratedThemeExtension lerp(
-    ThemeExtension<MyAppGeneratedThemeExtension>? other,
+  HomeScopeGeneratedThemeExtension lerp(
+    ThemeExtension<HomeScopeGeneratedThemeExtension>? other,
     double t,
   ) {
-    if (other is! MyAppGeneratedThemeExtension) {
+    if (other is! HomeScopeGeneratedThemeExtension) {
       return this;
     }
     themeMap['colors']!['primary'] =
@@ -180,13 +168,11 @@ class MyAppGeneratedThemeExtension
         _ColorUtil.colorToString(Color.lerp(secondary, other.secondary, t)!);
     themeMap['colors']!['tertiary'] =
         _ColorUtil.colorToString(Color.lerp(tertiary, other.tertiary, t)!);
-    themeMap['colors']!['storeFrontBg'] = _ColorUtil.colorToString(
-        Color.lerp(storeFrontBg, other.storeFrontBg, t)!);
     themeMap['sizes']!['homeTitleSize'] =
         lerpDouble(homeTitleSize, other.homeTitleSize, t);
     themeMap['sizes']!['detailTitleSize'] =
         lerpDouble(detailTitleSize, other.detailTitleSize, t);
-    return MyAppGeneratedThemeExtension(themeMap: themeMap);
+    return HomeScopeGeneratedThemeExtension(themeMap: themeMap);
   }
 }
 
@@ -198,19 +184,19 @@ class _Flags {
   const _Flags();
 
   Map<String, bool> get map => {
-        MyAppConfigKeys.flags.isEnabled: false,
-        MyAppConfigKeys.flags.andThis: true,
-        MyAppConfigKeys.flags.andThat: true,
-        MyAppConfigKeys.flags.orThis: false,
-        MyAppConfigKeys.flags.orThat: false,
-        MyAppConfigKeys.flags.showTitle: true
+        HomeScopeConfigKeys.flags.isEnabled: false,
+        HomeScopeConfigKeys.flags.andThis: true,
+        HomeScopeConfigKeys.flags.andThat: true,
+        HomeScopeConfigKeys.flags.orThis: false,
+        HomeScopeConfigKeys.flags.orThat: false,
+        HomeScopeConfigKeys.flags.showTitle: true
       };
-  bool get isEnabled => map[MyAppConfigKeys.flags.isEnabled] == true;
-  bool get andThis => map[MyAppConfigKeys.flags.andThis] == true;
-  bool get andThat => map[MyAppConfigKeys.flags.andThat] == true;
-  bool get orThis => map[MyAppConfigKeys.flags.orThis] == true;
-  bool get orThat => map[MyAppConfigKeys.flags.orThat] == true;
-  bool get showTitle => map[MyAppConfigKeys.flags.showTitle] == true;
+  bool get isEnabled => map[HomeScopeConfigKeys.flags.isEnabled] == true;
+  bool get andThis => map[HomeScopeConfigKeys.flags.andThis] == true;
+  bool get andThat => map[HomeScopeConfigKeys.flags.andThat] == true;
+  bool get orThis => map[HomeScopeConfigKeys.flags.orThis] == true;
+  bool get orThat => map[HomeScopeConfigKeys.flags.orThat] == true;
+  bool get showTitle => map[HomeScopeConfigKeys.flags.showTitle] == true;
 }
 
 class _FlagAccessor {
@@ -218,12 +204,14 @@ class _FlagAccessor {
 
   final Configuration _config;
 
-  bool get isEnabled => _config.flag(MyAppConfigKeys.flags.isEnabled) == true;
-  bool get andThis => _config.flag(MyAppConfigKeys.flags.andThis) == true;
-  bool get andThat => _config.flag(MyAppConfigKeys.flags.andThat) == true;
-  bool get orThis => _config.flag(MyAppConfigKeys.flags.orThis) == true;
-  bool get orThat => _config.flag(MyAppConfigKeys.flags.orThat) == true;
-  bool get showTitle => _config.flag(MyAppConfigKeys.flags.showTitle) == true;
+  bool get isEnabled =>
+      _config.flag(HomeScopeConfigKeys.flags.isEnabled) == true;
+  bool get andThis => _config.flag(HomeScopeConfigKeys.flags.andThis) == true;
+  bool get andThat => _config.flag(HomeScopeConfigKeys.flags.andThat) == true;
+  bool get orThis => _config.flag(HomeScopeConfigKeys.flags.orThis) == true;
+  bool get orThat => _config.flag(HomeScopeConfigKeys.flags.orThat) == true;
+  bool get showTitle =>
+      _config.flag(HomeScopeConfigKeys.flags.showTitle) == true;
 }
 
 // ********************************
@@ -234,15 +222,15 @@ class _Images {
   const _Images();
 
   Map<String, String> get map => {
-        MyAppConfigKeys.images.loginHeaderImage:
+        HomeScopeConfigKeys.images.loginHeaderImage:
             'https://pub.dev/static/hash-qr9i96gp/img/pub-dev-logo-2x.png',
-        MyAppConfigKeys.images.storeFrontHeaderImage:
+        HomeScopeConfigKeys.images.storeFrontHeaderImage:
             'https://pub.dev/static/hash-qr9i96gp/img/pub-dev-logo-2x.png'
       };
   String get loginHeaderImage =>
-      map[MyAppConfigKeys.images.loginHeaderImage] ?? '/';
+      map[HomeScopeConfigKeys.images.loginHeaderImage] ?? '/';
   String get storeFrontHeaderImage =>
-      map[MyAppConfigKeys.images.storeFrontHeaderImage] ?? '/';
+      map[HomeScopeConfigKeys.images.storeFrontHeaderImage] ?? '/';
 }
 
 class _ImageAccessor {
@@ -251,9 +239,9 @@ class _ImageAccessor {
   final Configuration _config;
 
   String get loginHeaderImage =>
-      _config.image(MyAppConfigKeys.images.loginHeaderImage);
+      _config.image(HomeScopeConfigKeys.images.loginHeaderImage);
   String get storeFrontHeaderImage =>
-      _config.image(MyAppConfigKeys.images.storeFrontHeaderImage);
+      _config.image(HomeScopeConfigKeys.images.storeFrontHeaderImage);
 }
 
 // ********************************
@@ -264,16 +252,14 @@ class _Routes {
   const _Routes();
 
   Map<int, String> get map => {
-        MyAppConfigKeys.routes.master: '/master',
-        MyAppConfigKeys.routes.masterDetail: '/master/detail',
-        MyAppConfigKeys.routes.masterDetailEdit: '/master/detail/edit',
-        MyAppConfigKeys.routes.test: 'test'
+        HomeScopeConfigKeys.routes.master: '/master',
+        HomeScopeConfigKeys.routes.masterDetail: '/master/detail',
+        HomeScopeConfigKeys.routes.test: 'test'
       };
-  String get master => map[MyAppConfigKeys.routes.master] ?? '/';
-  String get masterDetail => map[MyAppConfigKeys.routes.masterDetail] ?? '/';
-  String get masterDetailEdit =>
-      map[MyAppConfigKeys.routes.masterDetailEdit] ?? '/';
-  String get test => map[MyAppConfigKeys.routes.test] ?? '/';
+  String get master => map[HomeScopeConfigKeys.routes.master] ?? '/';
+  String get masterDetail =>
+      map[HomeScopeConfigKeys.routes.masterDetail] ?? '/';
+  String get test => map[HomeScopeConfigKeys.routes.test] ?? '/';
 }
 
 class _RouteAccessor {
@@ -281,11 +267,10 @@ class _RouteAccessor {
 
   final Configuration _config;
 
-  String get master => _config.route(MyAppConfigKeys.routes.master);
-  String get masterDetail => _config.route(MyAppConfigKeys.routes.masterDetail);
-  String get masterDetailEdit =>
-      _config.route(MyAppConfigKeys.routes.masterDetailEdit);
-  String get test => _config.route(MyAppConfigKeys.routes.test);
+  String get master => _config.route(HomeScopeConfigKeys.routes.master);
+  String get masterDetail =>
+      _config.route(HomeScopeConfigKeys.routes.masterDetail);
+  String get test => _config.route(HomeScopeConfigKeys.routes.test);
 }
 
 // ********************************
@@ -296,15 +281,13 @@ class _Colors {
   const _Colors();
 
   Map<String, String> get map => {
-        MyAppConfigKeys.colors.primary: 'EFF1F3',
-        MyAppConfigKeys.colors.secondary: 'CC0000',
-        MyAppConfigKeys.colors.tertiary: '000000',
-        MyAppConfigKeys.colors.storeFrontBg: 'EFF1F3'
+        HomeScopeConfigKeys.colors.primary: 'CCCCCC',
+        HomeScopeConfigKeys.colors.secondary: 'CC0000',
+        HomeScopeConfigKeys.colors.tertiary: '800080'
       };
-  String get primary => map[MyAppConfigKeys.colors.primary] ?? '';
-  String get secondary => map[MyAppConfigKeys.colors.secondary] ?? '';
-  String get tertiary => map[MyAppConfigKeys.colors.tertiary] ?? '';
-  String get storeFrontBg => map[MyAppConfigKeys.colors.storeFrontBg] ?? '';
+  String get primary => map[HomeScopeConfigKeys.colors.primary] ?? '';
+  String get secondary => map[HomeScopeConfigKeys.colors.secondary] ?? '';
+  String get tertiary => map[HomeScopeConfigKeys.colors.tertiary] ?? '';
 }
 
 class _ColorAccessor {
@@ -312,11 +295,10 @@ class _ColorAccessor {
 
   final Configuration _config;
 
-  Color get primary => _config.colorValue(MyAppConfigKeys.colors.primary);
-  Color get secondary => _config.colorValue(MyAppConfigKeys.colors.secondary);
-  Color get tertiary => _config.colorValue(MyAppConfigKeys.colors.tertiary);
-  Color get storeFrontBg =>
-      _config.colorValue(MyAppConfigKeys.colors.storeFrontBg);
+  Color get primary => _config.colorValue(HomeScopeConfigKeys.colors.primary);
+  Color get secondary =>
+      _config.colorValue(HomeScopeConfigKeys.colors.secondary);
+  Color get tertiary => _config.colorValue(HomeScopeConfigKeys.colors.tertiary);
 }
 
 // ********************************
@@ -327,12 +309,13 @@ class _Sizes {
   const _Sizes();
 
   Map<String, double> get map => {
-        MyAppConfigKeys.sizes.homeTitleSize: 14.0,
-        MyAppConfigKeys.sizes.detailTitleSize: 22.0
+        HomeScopeConfigKeys.sizes.homeTitleSize: 14.0,
+        HomeScopeConfigKeys.sizes.detailTitleSize: 22.0
       };
-  double get homeTitleSize => map[MyAppConfigKeys.sizes.homeTitleSize] ?? 0.0;
+  double get homeTitleSize =>
+      map[HomeScopeConfigKeys.sizes.homeTitleSize] ?? 0.0;
   double get detailTitleSize =>
-      map[MyAppConfigKeys.sizes.detailTitleSize] ?? 0.0;
+      map[HomeScopeConfigKeys.sizes.detailTitleSize] ?? 0.0;
 }
 
 class _SizeAccessor {
@@ -340,9 +323,10 @@ class _SizeAccessor {
 
   final Configuration _config;
 
-  double get homeTitleSize => _config.size(MyAppConfigKeys.sizes.homeTitleSize);
+  double get homeTitleSize =>
+      _config.size(HomeScopeConfigKeys.sizes.homeTitleSize);
   double get detailTitleSize =>
-      _config.size(MyAppConfigKeys.sizes.detailTitleSize);
+      _config.size(HomeScopeConfigKeys.sizes.detailTitleSize);
 }
 
 // ********************************
@@ -352,9 +336,9 @@ class _SizeAccessor {
 /// Generated file. Do not edit.
 ///
 /// Locales: 2
-/// Strings: 6 (3 per locale)
+/// Strings: 2 (1 per locale)
 ///
-/// Built on 2022-10-06 at 00:36 UTC
+/// Built on 2022-10-07 at 14:32 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -529,18 +513,6 @@ class _I18nDartEn implements BaseTranslations<AppLocale, _I18nDartEn> {
 
   // Translations
   String get title => 'Hello, World!';
-  String get currentScope => 'Current Scope';
-  late final _I18nDartCommonEn common = _I18nDartCommonEn._(_root);
-}
-
-// Path: common
-class _I18nDartCommonEn {
-  _I18nDartCommonEn._(this._root);
-
-  final _I18nDartEn _root; // ignore: unused_field
-
-  // Translations
-  String get personal => 'personal';
 }
 
 // Path: <root>
@@ -576,22 +548,6 @@ class _I18nDartDe implements _I18nDartEn {
   // Translations
   @override
   String get title => 'Hallo, Welt!';
-  @override
-  String get currentScope => 'Aktuellen Umfang';
-  @override
-  late final _I18nDartCommonDe common = _I18nDartCommonDe._(_root);
-}
-
-// Path: common
-class _I18nDartCommonDe implements _I18nDartCommonEn {
-  _I18nDartCommonDe._(this._root);
-
-  @override
-  final _I18nDartDe _root; // ignore: unused_field
-
-  // Translations
-  @override
-  String get personal => 'persönlich';
 }
 
 /// Flat map(s) containing all translations.
@@ -602,10 +558,6 @@ extension on _I18nDartEn {
     switch (path) {
       case 'title':
         return 'Hello, World!';
-      case 'currentScope':
-        return 'Current Scope';
-      case 'common.personal':
-        return 'personal';
       default:
         return null;
     }
@@ -617,10 +569,6 @@ extension on _I18nDartDe {
     switch (path) {
       case 'title':
         return 'Hallo, Welt!';
-      case 'currentScope':
-        return 'Aktuellen Umfang';
-      case 'common.personal':
-        return 'persönlich';
       default:
         return null;
     }
@@ -631,7 +579,7 @@ extension on _I18nDartDe {
 // Configuration
 // ********************************
 
-class MyAppGeneratedScope extends ConfigScope {
+class HomeScopeGeneratedScope extends ConfigScope {
   @override
   String name = '__GeneratedScope';
 

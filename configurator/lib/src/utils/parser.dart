@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:configurator/configurator.dart';
 import 'package:configurator/src/utils/string_ext.dart';
+import 'package:configurator/src/utils/type_ext.dart';
 import 'package:yaml/yaml.dart';
 
 class InvalidYamlException implements Exception {
@@ -42,6 +43,7 @@ class YamlParser {
 
     return YamlConfiguration(
       name: id,
+      partFiles: _processParts( rootNode ),
       flags: _processSettings( configNode, 'flags' ),
       colors: _processSettings( configNode, 'colors' ),
       images: _processSettings( configNode, 'images' ),
@@ -49,6 +51,30 @@ class YamlParser {
       routes: _processRoutes( configNode, 'routes' ),
       strings: _processTranslations( configNode, 'strings' ),
     );
+  }
+
+  static List<String> _processParts( YamlNode node ) {
+    List<String> parts = [];
+
+    try {
+
+      final partsNode = node.value[ 'parts' ];
+
+      if ( partsNode is! YamlList ) {
+        return parts;
+      }
+
+      for (var e in partsNode.value) {
+        if ( e is String ) {
+          parts.add( e );
+        }
+      }
+
+    } catch ( e ) {
+      print( e );
+    }
+
+    return parts;
   }
 
   static List<YamlSetting> _processSettings( YamlNode configNode, String type ) {
