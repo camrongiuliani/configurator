@@ -8,7 +8,7 @@ class ThemeWriter extends Writer {
   final String name;
   final YamlConfiguration _yamlConfiguration;
 
-  ThemeWriter( String elementName, this._yamlConfiguration ) : name = '${elementName}GeneratedThemeExtension';
+  ThemeWriter( String elementName, this._yamlConfiguration ) : name = 'Generated${elementName}ThemeExtension';
 
   @override
   Spec write() {
