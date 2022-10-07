@@ -117,9 +117,8 @@ Future<void> watchConfiguration({
   List<String> watchDirs = [];
 
   for ( var file in files ) {
-
     if ( ! watchDirs.contains( file.parent.path ) ) {
-      sc.addStream( file.parent.watch( events: FileSystemEvent.all ) );
+      file.parent.watch( events: FileSystemEvent.all ).listen( sc.sink.add );
       print( 'Watching: ${file.parent.path}' );
     }
   }
