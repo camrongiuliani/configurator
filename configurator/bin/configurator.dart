@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:configurator/configurator.dart';
 import 'package:configurator/src/models/processed_config.dart';
 import 'package:configurator/src/utils/string_ext.dart';
 import 'package:dart_style/dart_style.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 import 'config_file.dart';
@@ -110,28 +112,27 @@ Future<void> watchConfiguration({
   bool verbose = false,
 }) async {
 
-  var watchDir = files.map((e) => e.path).reduce((value, element) {
-    if ( value.length > element.length ) {
-      return element;
+  var dirs = files.map((e) => e.parent).map((e) => e.watch());
+
+  StreamController sc = StreamController<FileSystemEvent>();
+
+  List<String> watchDirs = [];
+
+  for ( var file in files ) {
+
+    if ( ! watchDirs.contains( file.parent.path ) ) {
+      sc.addStream( file.parent.watch( events: FileSystemEvent.all ) );
+      print( 'Watching: ${file.parent.path}' );
     }
-    return value;
-  });
-
-  watchDir = watchDir.replaceAll( watchDir.getFileName() , ' ');
-  print( watchDir );
-
-  final inputDirectory = Directory( watchDir );
-  final stream = inputDirectory.watch(events: FileSystemEvent.all);
+  }
 
   await generateConfigurations(
     files: files,
     verbose: verbose,
   );
 
-  print('Listening to changes in $watchDir');
-
   stdout.write('\r -> Last Updated: $currentTime. \r');
-  await for (final event in stream) {
+  await for (final event in sc.stream) {
     if (event.path.endsWith('.config.yaml')) {
 
       stdout.write('\r -> Generating For ${event.path}\r');
