@@ -11,7 +11,7 @@ class ConfigWriter extends Writer {
   Spec write() {
     return Class( ( builder ) {
       builder
-        ..name = '${name}GeneratedScope'
+        ..name = 'Generated${name}'
         ..extend = refer( 'ConfigScope' )
         ..fields.addAll([
           _nameField(),
