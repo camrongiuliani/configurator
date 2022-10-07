@@ -112,8 +112,6 @@ Future<void> watchConfiguration({
   bool verbose = false,
 }) async {
 
-  var dirs = files.map((e) => e.parent).map((e) => e.watch());
-
   StreamController sc = StreamController<FileSystemEvent>();
 
   List<String> watchDirs = [];
