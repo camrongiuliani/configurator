@@ -78,64 +78,22 @@ Future<void> generateConfigurations({
     );
   }).toList();
 
-  List<String> toRemove = [];
+  List<ConfigFile> merged = [];
+
+  print( '--Configs--' );
 
   for ( var c in configs ) {
-    print( 'Loading -- ${c.config.name}' );
+    print( '        --- ${c.config.name}' );
     for ( var p in c.config.partFiles ) {
-      print( 'Loading ---- $p' );
-    }
-  }
-
-  List<ConfigFile> sortConfigs( List<ConfigFile> configs, List<ConfigFile> sorted ) {
-    for ( var c in configs ) {
-      if ( c.config.partFiles.isEmpty) {
-        sorted.add( c );
-      } else {
-        for ( var part in c.config.partFiles ) {
-          sortConfigs(
-            configs.where(( e ) => e.config.name == part ).toList(),
-            [],
-          );
-        }
-      }
+      print( '        ----- $p' );
+      c.config = c.config + configs.firstWhere((e) => e.config.name == p).config;
     }
 
-    return sorted;
+    merged.add( c );
   }
 
-  List<ConfigFile> sorted = sortConfigs( configs, [] );
 
-  for ( var c in sorted ) {
-    print( '-- ${c.config.name}' );
-  }
-
-  for ( ConfigFile c in List.from( configs ) ) {
-
-    if ( c.config.partFiles.isNotEmpty ) {
-      var parts = configs.where( ( p ) => c.config.partFiles.contains( p.config.name ) );
-
-      if ( parts.isNotEmpty ) {
-        for ( var part in parts ) {
-          c.config = c.config + part.config;
-          toRemove.add( part.config.name );
-          print('Merged Part: ${part.config.name} --> ${c.config.name}');
-        }
-      }
-    }
-  }
-
-  for (var e in toRemove) {
-    configs.removeWhere((element) {
-      bool remove = element.name == e;
-      if ( remove ) {
-        print('Part Gen Skipped: $e');
-      }
-      return remove;
-    });
-  }
-
-  for ( var file in configs ) {
+  for ( var file in merged ) {
 
     String outputFilePath = '${file.directory}${Platform.pathSeparator}${file.name}.config.dart';
 
