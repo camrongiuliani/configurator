@@ -89,7 +89,7 @@ Future<void> generateConfigurations({
         for ( var part in parts ) {
           c.config = c.config + part.config;
           toRemove.add( part.config.name );
-          print('Merged Part: ${part.config.name}');
+          print('Merged Part: ${part.config.name} --> ${c.config.name}');
         }
       }
     }
@@ -99,7 +99,7 @@ Future<void> generateConfigurations({
     configs.removeWhere((element) {
       bool remove = element.name == e;
       if ( remove ) {
-        print('Removed Part: $e');
+        print('Part Gen Skipped: $e');
       }
       return remove;
     });
