@@ -7,5 +7,8 @@ class ConfigFile {
   final String name;
   YamlConfiguration config;
 
+  ConfigFile? parent;
+  List<ConfigFile> children = [];
+
   ConfigFile( this.name, this.directory, this.config );
 }

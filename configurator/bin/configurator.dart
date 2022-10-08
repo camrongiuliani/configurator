@@ -70,7 +70,7 @@ Future<void> generateConfigurations({
   final List<File> yamlFiles = yamlInput.map((e) => File( e )).toList();
 
   // Convert to ConfigFiles (dir & config)
-  final List<ConfigFile> configs = yamlFiles.map((e) {
+  List<ConfigFile> configs = yamlFiles.map((e) {
     return ConfigFile(
       e.path.getFileNameNoExtension(),
       e.parent.path,
@@ -78,42 +78,37 @@ Future<void> generateConfigurations({
     );
   }).toList();
 
-  List<ConfigFile> _getChildren( ConfigFile c, List<ConfigFile> result ) {
-    var children = configs.where((e) => c.config.partFiles.contains( e.config.name ));
+  List<ConfigFile> concat = [];
 
-    for ( ConfigFile c in children ) {
-      result.add( c );
+  List<ConfigFile> mergeConfigs( List<ConfigFile> confs, List<ConfigFile> result, [ ConfigFile? parent ] ) {
 
-      if ( c.config.partFiles.isNotEmpty ) {
-        return _getChildren( c, result );
+    for ( var c in confs ) {
+
+      var children = configs.where((e) => c.config.partFiles.contains( e.config.name )).toList();
+
+      if ( children.isEmpty ) {
+        if ( parent != null ) {
+          parent.config = parent.config + c.config;
+          result.add( parent );
+        } else {
+          result.add( c );
+        }
+      } else {
+
+        result.addAll( mergeConfigs( children , [], c ) );
+
       }
+
     }
 
     return result;
-  }
-
-  List<ConfigFile> handled = [];
-
-
-  for ( var c in configs ) {
-
-    if ( handled.map((e) => e.config.name).contains( c.config.name )) {
-      continue;
-    }
-
-    var children = _getChildren( c, [] );
-
-    for ( var child in children ) {
-      c.config = c.config + child.config;
-
-      print( 'Merged ${child.config.name} --> ${c.config.name}' );
-
-      handled.add( child );
-    }
 
   }
 
-  for ( var file in configs.where((c) => !handled.map((e) => e.config.name).contains( c.config.name )) ) {
+  configs = mergeConfigs( configs, [] );
+
+
+  for ( var file in configs ) {
 
     String outputFilePath = '${file.directory}${Platform.pathSeparator}${file.name}.config.dart';
 
