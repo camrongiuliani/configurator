@@ -11,7 +11,7 @@ class ConfigWriter extends Writer {
   Spec write() {
     return Class( ( builder ) {
       builder
-        ..name = 'Generated${name}'
+        ..name = 'Generated$name'
         ..extend = refer( 'ConfigScope' )
         ..fields.addAll([
           _nameField(),
@@ -38,6 +38,24 @@ class ConfigWriter extends Writer {
             name: 'sizes',
             returnType: 'Map<String, double>',
             assignment: 'const _Sizes().map',
+          ),
+
+          _mapGetter(
+            name: 'padding',
+            returnType: 'Map<String, double>',
+            assignment: 'const _Padding().map',
+          ),
+
+          _mapGetter(
+            name: 'margins',
+            returnType: 'Map<String, double>',
+            assignment: 'const _Margins().map',
+          ),
+
+          _mapGetter(
+            name: 'misc',
+            returnType: 'Map<String, dynamic>',
+            assignment: 'const _Misc().map',
           ),
 
           _mapGetter(

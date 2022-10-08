@@ -20,7 +20,7 @@ class MarginWriter extends Writer {
     Class scope =  Class( ( builder ) {
       builder
         ..constructors.add( Constructor( ( b ) => b..constant = true ) )
-        ..name = '_Margin'
+        ..name = '_Margins'
         ..methods.addAll([
           _getValuesMap(),
           ..._getGetters(),
