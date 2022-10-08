@@ -81,7 +81,7 @@ Future<void> generateConfigurations({
   List<String> toRemove = [];
 
   for ( var c in configs ) {
-    print( 'Loaded -- ${c.config.name}' );
+    print( 'Loaded -- ${c.config.name} ( ${c.config.partFiles.length} parts )' );
   }
 
   List<ConfigFile> sortConfigs( List<ConfigFile> configs, List<ConfigFile> sorted ) {
