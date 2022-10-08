@@ -42,9 +42,6 @@ class YamlParser {
     final String id = rootNode.value['id'];
     final String? ns = rootNode.value['namespace'];
 
-    print('$id - $ns');
-
-
     return YamlConfiguration(
       name: id,
       partFiles: _processParts( rootNode ),

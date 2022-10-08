@@ -32,7 +32,7 @@ void main(List<String> arguments) async {
     verbose = true;
   }
 
-  print('Generating Configurations...\n');
+  print( '\n*****Configurator Starting!*****' );
 
   final stopwatch = Stopwatch();
 
@@ -125,7 +125,7 @@ Future<void> generateConfigurations({
 
       for ( var t in to ) {
         if ( t != null ) {
-          print('Merge ${a.config.name} --> ${t.config.name}');
+          print('Merged ${a.config.name} --> ${t.config.name}');
           t.config = t.config + a.config;
           handled.add( a.config.name );
         }
@@ -138,13 +138,18 @@ Future<void> generateConfigurations({
   var baseGraph = graph.from( null );
   
   graph.delete( null );
-  
+
+  print( '\n---Built Configuration Graph---' );
+  print( graph.toDebugString() );
+
   List<String> track = [];
 
+  print( '\n---Merging Configurations---' );
   for ( var node in baseGraph ) {
     mergeConfigs( graph.from( node ), track );
   }
 
+  print( '\n---Generating Dart Classes---' );
   for ( var file in configs.where(( c ) => ! track.contains( c.config.name )) ) {
 
     String outputFilePath = '${file.directory}${Platform.pathSeparator}${file.name}.config.dart';
@@ -158,8 +163,11 @@ Future<void> generateConfigurations({
       content: DartFormatter().format( await result.write() ),
     );
 
-    print( 'Wrote Config: $outputFilePath' );
+    print( outputFilePath );
   }
+
+  print( '\n*****Configurator Has Configured!*****' );
+
 }
 
 Future<void> watchConfiguration({

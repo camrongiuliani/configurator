@@ -21,11 +21,7 @@ void main() {
     test('add edge', () {
       final graph = Graph<int?>();
 
-      // graph.addEdge(1, 2);
-      graph.addEdge(1, null);
-
-      var a = graph.from(1);
-
+      graph.addEdge(1, 2);
       expect(graph.from(1), {2});
       expect(graph.to(2), {1});
 
@@ -44,7 +40,11 @@ void main() {
       expect(graph.to(3), {1, 2});
     });
 
-    test( 'ext', () {
+    test( 'ext', () async {
+
+      try {
+        File( baseFile.replaceAll('yaml', 'dart') ).deleteSync();
+      } catch ( e ) {}
 
       var base = File( baseFile ).readAsStringSync();
       var part1 = File( partFile1 ).readAsStringSync();
@@ -55,6 +55,12 @@ void main() {
       DartScriptGen.execute([
         '--id-filter=base,part1,part2,part3,part4',
       ]);
+
+      await Future.delayed( const Duration( seconds: 2 ), () {
+        try {
+          File( baseFile.replaceAll('yaml', 'dart') ).deleteSync();
+        } catch ( e ) {}
+      });
 
     });
 
