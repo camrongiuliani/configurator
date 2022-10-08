@@ -127,8 +127,6 @@ class _ColorKeys {
   final tertiary = 'tertiary';
 
   final storeFrontBg = 'storeFrontBg';
-
-  final nsPrimary = 'nsPrimary';
 }
 
 class AppScopeConfigKeys {
@@ -165,8 +163,6 @@ class GeneratedAppScopeThemeExtension
       _ColorUtil.parseColorValue(themeMap['colors']?['tertiary']);
   Color get storeFrontBg =>
       _ColorUtil.parseColorValue(themeMap['colors']?['storeFrontBg']);
-  Color get nsPrimary =>
-      _ColorUtil.parseColorValue(themeMap['colors']?['nsPrimary']);
   double get homeTitleSize => themeMap['sizes']?['homeTitleSize'];
   double get detailTitleSize => themeMap['sizes']?['detailTitleSize'];
   @override
@@ -192,8 +188,6 @@ class GeneratedAppScopeThemeExtension
         _ColorUtil.colorToString(Color.lerp(tertiary, other.tertiary, t)!);
     themeMap['colors']!['storeFrontBg'] = _ColorUtil.colorToString(
         Color.lerp(storeFrontBg, other.storeFrontBg, t)!);
-    themeMap['colors']!['nsPrimary'] =
-        _ColorUtil.colorToString(Color.lerp(nsPrimary, other.nsPrimary, t)!);
     themeMap['sizes']!['homeTitleSize'] =
         lerpDouble(homeTitleSize, other.homeTitleSize, t);
     themeMap['sizes']!['detailTitleSize'] =
@@ -314,14 +308,12 @@ class _Colors {
         AppScopeConfigKeys.colors.primary: 'EFF1F3',
         AppScopeConfigKeys.colors.secondary: 'CC0000',
         AppScopeConfigKeys.colors.tertiary: '000000',
-        AppScopeConfigKeys.colors.storeFrontBg: 'EFF1F3',
-        AppScopeConfigKeys.colors.nsPrimary: 'FFFFFF'
+        AppScopeConfigKeys.colors.storeFrontBg: 'EFF1F3'
       };
   String get primary => map[AppScopeConfigKeys.colors.primary] ?? '';
   String get secondary => map[AppScopeConfigKeys.colors.secondary] ?? '';
   String get tertiary => map[AppScopeConfigKeys.colors.tertiary] ?? '';
   String get storeFrontBg => map[AppScopeConfigKeys.colors.storeFrontBg] ?? '';
-  String get nsPrimary => map[AppScopeConfigKeys.colors.nsPrimary] ?? '';
 }
 
 class _ColorAccessor {
@@ -335,8 +327,6 @@ class _ColorAccessor {
   Color get tertiary => _config.colorValue(AppScopeConfigKeys.colors.tertiary);
   Color get storeFrontBg =>
       _config.colorValue(AppScopeConfigKeys.colors.storeFrontBg);
-  Color get nsPrimary =>
-      _config.colorValue(AppScopeConfigKeys.colors.nsPrimary);
 }
 
 // ********************************
@@ -424,7 +414,7 @@ class _MiscAccessor {
 /// Locales: 2
 /// Strings: 6 (3 per locale)
 ///
-/// Built on 2022-10-08 at 02:43 UTC
+/// Built on 2022-10-08 at 03:08 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint

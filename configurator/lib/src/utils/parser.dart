@@ -56,7 +56,7 @@ class YamlParser {
       margins: _processSettings( configNode, 'margins', ns ),
       misc: _processSettings( configNode, 'misc', ns ),
       routes: _processRoutes( configNode, 'routes' ),
-      strings: _processTranslations( configNode, 'strings' ),
+      strings: _processTranslations( configNode, 'strings', ns ),
     );
   }
 
@@ -167,7 +167,7 @@ class YamlParser {
     return result;
   }
 
-  static List<YamlI18n> _processTranslations( YamlNode configNode, String type ) {
+  static List<YamlI18n> _processTranslations( YamlNode configNode, String type, [ String? namespace ] ) {
     List<YamlI18n> translations = [];
 
     try {
@@ -183,7 +183,7 @@ class YamlParser {
       Map<String, dynamic> translationsMap = json.decode( str );
 
       for ( var t in translationsMap.entries ) {
-        var values = t.value.entries.map( ( v ) => YamlI18n( v.key, t.key, v.value) );
+        var values = t.value.entries.map( ( v ) => YamlI18n( '${namespace ?? ''}_${v.key}'.camelCase, t.key, v.value) );
         translations.addAll( List.from(values) );
       }
 
