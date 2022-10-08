@@ -44,9 +44,6 @@ class YamlConfiguration {
   }
 
   operator +( YamlConfiguration t ) {
-    partFiles.removeWhere(( e ) => t.partFiles.contains( e ));
-    partFiles.addAll( t.partFiles );
-
     misc.removeWhere(( e ) => t.misc.contains( e ));
     misc.addAll( t.misc );
 
