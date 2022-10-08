@@ -48,6 +48,9 @@ class YamlParser {
       colors: _processSettings( configNode, 'colors' ),
       images: _processSettings( configNode, 'images' ),
       sizes: _processSettings( configNode, 'sizes' ),
+      padding: _processSettings( configNode, 'padding' ),
+      margins: _processSettings( configNode, 'margins' ),
+      misc: _processSettings( configNode, 'misc' ),
       routes: _processRoutes( configNode, 'routes' ),
       strings: _processTranslations( configNode, 'strings' ),
     );
