@@ -113,7 +113,7 @@ Future<void> generateConfigurations({
 
   }
 
-  for ( var file in configs ) {
+  for ( var file in configs.where((c) => !handled.map((e) => e.config.name).contains( c.config.name )) ) {
 
     String outputFilePath = '${file.directory}${Platform.pathSeparator}${file.name}.config.dart';
 
