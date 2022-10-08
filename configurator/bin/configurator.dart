@@ -89,6 +89,7 @@ Future<void> generateConfigurations({
       if ( children.isEmpty ) {
         if ( parent != null ) {
           parent.config = parent.config + c.config;
+          print( 'Merged ${c.config.name} --> ${parent.config.name}' );
           result.add( parent );
         } else {
           result.add( c );
