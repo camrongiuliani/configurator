@@ -7,7 +7,7 @@ void main() {
 
   Configuration config = Configuration(
       scopes: [
-        AppScopeGeneratedScope(),
+        GeneratedAppScope(),
       ]
   );
 

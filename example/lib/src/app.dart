@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
 
         theme: config.buildTheme(
             extensions: [
-              AppScopeGeneratedThemeExtension(
+              GeneratedAppScopeThemeExtension(
                 themeMap: config.themeMap,
               ),
             ]

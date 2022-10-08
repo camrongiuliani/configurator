@@ -97,6 +97,8 @@ class _ImageKeys {
   final storeFrontHeaderImage = 'storeFrontHeaderImage';
 }
 
+class _MiscKeys {}
+
 class _RouteKeys {
   final master = 1;
 
@@ -113,6 +115,10 @@ class _SizeKeys {
   final detailTitleSize = 'detailTitleSize';
 }
 
+class _PaddingKeys {}
+
+class _MarginKeys {}
+
 class _ColorKeys {
   final primary = 'primary';
 
@@ -121,6 +127,8 @@ class _ColorKeys {
   final tertiary = 'tertiary';
 
   final storeFrontBg = 'storeFrontBg';
+
+  final nsPrimary = 'nsPrimary';
 }
 
 class AppScopeConfigKeys {
@@ -129,6 +137,12 @@ class AppScopeConfigKeys {
   static final flags = _FlagKeys();
 
   static final sizes = _SizeKeys();
+
+  static final padding = _PaddingKeys();
+
+  static final margins = _MarginKeys();
+
+  static final misc = _MiscKeys();
 
   static final colors = _ColorKeys();
 
@@ -139,9 +153,9 @@ class AppScopeConfigKeys {
 // Theme
 // ********************************
 
-class AppScopeGeneratedThemeExtension
-    extends ConfigTheme<AppScopeGeneratedThemeExtension> {
-  AppScopeGeneratedThemeExtension({required super.themeMap});
+class GeneratedAppScopeThemeExtension
+    extends ConfigTheme<GeneratedAppScopeThemeExtension> {
+  GeneratedAppScopeThemeExtension({required super.themeMap});
 
   Color get primary =>
       _ColorUtil.parseColorValue(themeMap['colors']?['primary']);
@@ -151,21 +165,23 @@ class AppScopeGeneratedThemeExtension
       _ColorUtil.parseColorValue(themeMap['colors']?['tertiary']);
   Color get storeFrontBg =>
       _ColorUtil.parseColorValue(themeMap['colors']?['storeFrontBg']);
+  Color get nsPrimary =>
+      _ColorUtil.parseColorValue(themeMap['colors']?['nsPrimary']);
   double get homeTitleSize => themeMap['sizes']?['homeTitleSize'];
   double get detailTitleSize => themeMap['sizes']?['detailTitleSize'];
   @override
-  AppScopeGeneratedThemeExtension copyWith(
+  GeneratedAppScopeThemeExtension copyWith(
       {Map<String, Map<String, dynamic>>? themeMap}) {
     this.themeMap.addAll(themeMap ?? {});
-    return AppScopeGeneratedThemeExtension(themeMap: this.themeMap);
+    return GeneratedAppScopeThemeExtension(themeMap: this.themeMap);
   }
 
   @override
-  AppScopeGeneratedThemeExtension lerp(
-    ThemeExtension<AppScopeGeneratedThemeExtension>? other,
+  GeneratedAppScopeThemeExtension lerp(
+    ThemeExtension<GeneratedAppScopeThemeExtension>? other,
     double t,
   ) {
-    if (other is! AppScopeGeneratedThemeExtension) {
+    if (other is! GeneratedAppScopeThemeExtension) {
       return this;
     }
     themeMap['colors']!['primary'] =
@@ -176,11 +192,13 @@ class AppScopeGeneratedThemeExtension
         _ColorUtil.colorToString(Color.lerp(tertiary, other.tertiary, t)!);
     themeMap['colors']!['storeFrontBg'] = _ColorUtil.colorToString(
         Color.lerp(storeFrontBg, other.storeFrontBg, t)!);
+    themeMap['colors']!['nsPrimary'] =
+        _ColorUtil.colorToString(Color.lerp(nsPrimary, other.nsPrimary, t)!);
     themeMap['sizes']!['homeTitleSize'] =
         lerpDouble(homeTitleSize, other.homeTitleSize, t);
     themeMap['sizes']!['detailTitleSize'] =
         lerpDouble(detailTitleSize, other.detailTitleSize, t);
-    return AppScopeGeneratedThemeExtension(themeMap: themeMap);
+    return GeneratedAppScopeThemeExtension(themeMap: themeMap);
   }
 }
 
@@ -296,12 +314,14 @@ class _Colors {
         AppScopeConfigKeys.colors.primary: 'EFF1F3',
         AppScopeConfigKeys.colors.secondary: 'CC0000',
         AppScopeConfigKeys.colors.tertiary: '000000',
-        AppScopeConfigKeys.colors.storeFrontBg: 'EFF1F3'
+        AppScopeConfigKeys.colors.storeFrontBg: 'EFF1F3',
+        AppScopeConfigKeys.colors.nsPrimary: 'FFFFFF'
       };
   String get primary => map[AppScopeConfigKeys.colors.primary] ?? '';
   String get secondary => map[AppScopeConfigKeys.colors.secondary] ?? '';
   String get tertiary => map[AppScopeConfigKeys.colors.tertiary] ?? '';
   String get storeFrontBg => map[AppScopeConfigKeys.colors.storeFrontBg] ?? '';
+  String get nsPrimary => map[AppScopeConfigKeys.colors.nsPrimary] ?? '';
 }
 
 class _ColorAccessor {
@@ -315,6 +335,8 @@ class _ColorAccessor {
   Color get tertiary => _config.colorValue(AppScopeConfigKeys.colors.tertiary);
   Color get storeFrontBg =>
       _config.colorValue(AppScopeConfigKeys.colors.storeFrontBg);
+  Color get nsPrimary =>
+      _config.colorValue(AppScopeConfigKeys.colors.nsPrimary);
 }
 
 // ********************************
@@ -346,6 +368,54 @@ class _SizeAccessor {
 }
 
 // ********************************
+// Padding
+// ********************************
+
+class _Padding {
+  const _Padding();
+
+  Map<String, double> get map => {};
+}
+
+class _PaddingAccessor {
+  const _PaddingAccessor(this._config);
+
+  final Configuration _config;
+}
+
+// ********************************
+// Margins
+// ********************************
+
+class _Margins {
+  const _Margins();
+
+  Map<String, double> get map => {};
+}
+
+class _MarginAccessor {
+  const _MarginAccessor(this._config);
+
+  final Configuration _config;
+}
+
+// ********************************
+// Misc
+// ********************************
+
+class _Misc {
+  const _Misc();
+
+  Map<String, dynamic> get map => {};
+}
+
+class _MiscAccessor {
+  const _MiscAccessor(this._config);
+
+  final Configuration _config;
+}
+
+// ********************************
 // Slang (i18n)
 // ********************************
 
@@ -354,7 +424,7 @@ class _SizeAccessor {
 /// Locales: 2
 /// Strings: 6 (3 per locale)
 ///
-/// Built on 2022-10-07 at 14:32 UTC
+/// Built on 2022-10-08 at 02:43 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -631,7 +701,7 @@ extension on _I18nDartDe {
 // Configuration
 // ********************************
 
-class AppScopeGeneratedScope extends ConfigScope {
+class GeneratedAppScope extends ConfigScope {
   @override
   String name = '__GeneratedScope';
 
@@ -648,17 +718,16 @@ class AppScopeGeneratedScope extends ConfigScope {
   Map<String, double> sizes = const _Sizes().map;
 
   @override
+  Map<String, double> padding = const _Padding().map;
+
+  @override
+  Map<String, double> margins = const _Margins().map;
+
+  @override
+  Map<String, dynamic> misc = const _Misc().map;
+
+  @override
   Map<int, String> routes = const _Routes().map;
-
-  @override
-  Map<String, dynamic> get misc => const {};
-
-  @override
-  Map<String, double> get padding => const {};
-
-  @override
-  Map<String, double> get margins => const {};
-
 }
 
 // ********************************
@@ -670,6 +739,9 @@ extension ConfigAccessor on Configuration {
   _ColorAccessor get colors => _ColorAccessor(this);
   _ImageAccessor get images => _ImageAccessor(this);
   _SizeAccessor get sizes => _SizeAccessor(this);
+  _PaddingAccessor get paddings => _PaddingAccessor(this);
+  _MarginAccessor get margins => _MarginAccessor(this);
+  _MiscAccessor get misc => _MiscAccessor(this);
   _RouteAccessor get routes => _RouteAccessor(this);
   _I18nDartEn get strings => t;
 }

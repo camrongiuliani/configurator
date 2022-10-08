@@ -1,6 +1,10 @@
 id: app_scope_de
 
+namespace: ns
+
 configuration:
+  colors:
+    primary: FFFFFF
   strings:
     de:
       title: Hallo, Welt!

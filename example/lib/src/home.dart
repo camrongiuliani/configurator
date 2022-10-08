@@ -74,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
 
-    final gen = Theme.of(context).extension<AppScopeGeneratedThemeExtension>()!;
+    final gen = Theme.of(context).extension<GeneratedAppScopeThemeExtension>()!;
 
     Configuration config = Config.of( context, listen: false );
 

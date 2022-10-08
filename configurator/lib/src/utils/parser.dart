@@ -40,17 +40,21 @@ class YamlParser {
 
     final YamlNode configNode = rootNode.value['configuration'];
     final String id = rootNode.value['id'];
+    final String? ns = rootNode.value['namespace'];
+
+    print('$id - $ns');
+
 
     return YamlConfiguration(
       name: id,
       partFiles: _processParts( rootNode ),
-      flags: _processSettings( configNode, 'flags' ),
-      colors: _processSettings( configNode, 'colors' ),
-      images: _processSettings( configNode, 'images' ),
-      sizes: _processSettings( configNode, 'sizes' ),
-      padding: _processSettings( configNode, 'paddings' ),
-      margins: _processSettings( configNode, 'margins' ),
-      misc: _processSettings( configNode, 'misc' ),
+      flags: _processSettings( configNode, 'flags', ns ),
+      colors: _processSettings( configNode, 'colors', ns ),
+      images: _processSettings( configNode, 'images', ns ),
+      sizes: _processSettings( configNode, 'sizes', ns ),
+      padding: _processSettings( configNode, 'paddings', ns ),
+      margins: _processSettings( configNode, 'margins', ns ),
+      misc: _processSettings( configNode, 'misc', ns ),
       routes: _processRoutes( configNode, 'routes' ),
       strings: _processTranslations( configNode, 'strings' ),
     );
@@ -80,7 +84,7 @@ class YamlParser {
     return parts;
   }
 
-  static List<YamlSetting> _processSettings( YamlNode configNode, String type ) {
+  static List<YamlSetting> _processSettings( YamlNode configNode, String type, [ String? namespace ] ) {
     List<YamlSetting> settings = [];
 
     try {
@@ -95,7 +99,7 @@ class YamlParser {
 
       Map<String, dynamic> map = json.decode( str );
 
-      settings.addAll( _getSettingNamespaces( map, [], '' ) );
+      settings.addAll( _getSettingNamespaces( map, [], namespace ?? '' ) );
 
     } catch ( e ) {
       print( e );

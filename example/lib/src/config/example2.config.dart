@@ -97,6 +97,8 @@ class _ImageKeys {
   final storeFrontHeaderImage = 'storeFrontHeaderImage';
 }
 
+class _MiscKeys {}
+
 class _RouteKeys {
   final master = 1;
 
@@ -110,6 +112,10 @@ class _SizeKeys {
 
   final detailTitleSize = 'detailTitleSize';
 }
+
+class _PaddingKeys {}
+
+class _MarginKeys {}
 
 class _ColorKeys {
   final primary = 'primary';
@@ -126,6 +132,12 @@ class HomeScopeConfigKeys {
 
   static final sizes = _SizeKeys();
 
+  static final padding = _PaddingKeys();
+
+  static final margins = _MarginKeys();
+
+  static final misc = _MiscKeys();
+
   static final colors = _ColorKeys();
 
   static final images = _ImageKeys();
@@ -135,9 +147,9 @@ class HomeScopeConfigKeys {
 // Theme
 // ********************************
 
-class HomeScopeGeneratedThemeExtension
-    extends ConfigTheme<HomeScopeGeneratedThemeExtension> {
-  HomeScopeGeneratedThemeExtension({required super.themeMap});
+class GeneratedHomeScopeThemeExtension
+    extends ConfigTheme<GeneratedHomeScopeThemeExtension> {
+  GeneratedHomeScopeThemeExtension({required super.themeMap});
 
   Color get primary =>
       _ColorUtil.parseColorValue(themeMap['colors']?['primary']);
@@ -148,18 +160,18 @@ class HomeScopeGeneratedThemeExtension
   double get homeTitleSize => themeMap['sizes']?['homeTitleSize'];
   double get detailTitleSize => themeMap['sizes']?['detailTitleSize'];
   @override
-  HomeScopeGeneratedThemeExtension copyWith(
+  GeneratedHomeScopeThemeExtension copyWith(
       {Map<String, Map<String, dynamic>>? themeMap}) {
     this.themeMap.addAll(themeMap ?? {});
-    return HomeScopeGeneratedThemeExtension(themeMap: this.themeMap);
+    return GeneratedHomeScopeThemeExtension(themeMap: this.themeMap);
   }
 
   @override
-  HomeScopeGeneratedThemeExtension lerp(
-    ThemeExtension<HomeScopeGeneratedThemeExtension>? other,
+  GeneratedHomeScopeThemeExtension lerp(
+    ThemeExtension<GeneratedHomeScopeThemeExtension>? other,
     double t,
   ) {
-    if (other is! HomeScopeGeneratedThemeExtension) {
+    if (other is! GeneratedHomeScopeThemeExtension) {
       return this;
     }
     themeMap['colors']!['primary'] =
@@ -172,7 +184,7 @@ class HomeScopeGeneratedThemeExtension
         lerpDouble(homeTitleSize, other.homeTitleSize, t);
     themeMap['sizes']!['detailTitleSize'] =
         lerpDouble(detailTitleSize, other.detailTitleSize, t);
-    return HomeScopeGeneratedThemeExtension(themeMap: themeMap);
+    return GeneratedHomeScopeThemeExtension(themeMap: themeMap);
   }
 }
 
@@ -330,6 +342,54 @@ class _SizeAccessor {
 }
 
 // ********************************
+// Padding
+// ********************************
+
+class _Padding {
+  const _Padding();
+
+  Map<String, double> get map => {};
+}
+
+class _PaddingAccessor {
+  const _PaddingAccessor(this._config);
+
+  final Configuration _config;
+}
+
+// ********************************
+// Margins
+// ********************************
+
+class _Margins {
+  const _Margins();
+
+  Map<String, double> get map => {};
+}
+
+class _MarginAccessor {
+  const _MarginAccessor(this._config);
+
+  final Configuration _config;
+}
+
+// ********************************
+// Misc
+// ********************************
+
+class _Misc {
+  const _Misc();
+
+  Map<String, dynamic> get map => {};
+}
+
+class _MiscAccessor {
+  const _MiscAccessor(this._config);
+
+  final Configuration _config;
+}
+
+// ********************************
 // Slang (i18n)
 // ********************************
 
@@ -338,7 +398,7 @@ class _SizeAccessor {
 /// Locales: 2
 /// Strings: 2 (1 per locale)
 ///
-/// Built on 2022-10-07 at 14:32 UTC
+/// Built on 2022-10-08 at 02:43 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -579,7 +639,7 @@ extension on _I18nDartDe {
 // Configuration
 // ********************************
 
-class HomeScopeGeneratedScope extends ConfigScope {
+class GeneratedHomeScope extends ConfigScope {
   @override
   String name = '__GeneratedScope';
 
@@ -596,17 +656,16 @@ class HomeScopeGeneratedScope extends ConfigScope {
   Map<String, double> sizes = const _Sizes().map;
 
   @override
+  Map<String, double> padding = const _Padding().map;
+
+  @override
+  Map<String, double> margins = const _Margins().map;
+
+  @override
+  Map<String, dynamic> misc = const _Misc().map;
+
+  @override
   Map<int, String> routes = const _Routes().map;
-
-  @override
-  Map<String, dynamic> get misc => const {};
-
-  @override
-  Map<String, double> get padding => const {};
-
-  @override
-  Map<String, double> get margins => const {};
-
 }
 
 // ********************************
@@ -618,6 +677,9 @@ extension ConfigAccessor on Configuration {
   _ColorAccessor get colors => _ColorAccessor(this);
   _ImageAccessor get images => _ImageAccessor(this);
   _SizeAccessor get sizes => _SizeAccessor(this);
+  _PaddingAccessor get paddings => _PaddingAccessor(this);
+  _MarginAccessor get margins => _MarginAccessor(this);
+  _MiscAccessor get misc => _MiscAccessor(this);
   _RouteAccessor get routes => _RouteAccessor(this);
   _I18nDartEn get strings => t;
 }
