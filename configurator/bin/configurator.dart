@@ -80,6 +80,31 @@ Future<void> generateConfigurations({
 
   List<String> toRemove = [];
 
+  List<ConfigFile> sortConfigs( ConfigFile c, List<ConfigFile> sorted ) {
+
+    if ( c.config.partFiles.isNotEmpty ) {
+      var parts = configs.where( ( p ) => c.config.partFiles.contains( p.config.name ) );
+
+      for ( var part in parts ) {
+        sorted.addAll( sortConfigs( part, sorted ) );
+      }
+    } else {
+      sorted.add( c );
+    }
+
+    return sorted;
+  }
+
+  List<ConfigFile> sorted = [];
+
+  for ( ConfigFile c in List.from( configs ) ) {
+    sortConfigs( c, sorted );
+  }
+
+  for ( var c in sorted ) {
+    print( '-- ${c.config.name}' );
+  }
+
   for ( ConfigFile c in List.from( configs ) ) {
 
     if ( c.config.partFiles.isNotEmpty ) {
