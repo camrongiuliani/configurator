@@ -89,13 +89,20 @@ Future<void> generateConfigurations({
         for ( var part in parts ) {
           c.config = c.config + part.config;
           toRemove.add( part.config.name );
+          print('Merged Part: ${part.config.name}');
         }
       }
     }
   }
 
   for (var e in toRemove) {
-    configs.removeWhere((element) => element.name == e);
+    configs.removeWhere((element) {
+      bool remove = element.name == e;
+      if ( remove ) {
+        print('Removed Part: $e');
+      }
+      return remove;
+    });
   }
 
   for ( var file in configs ) {
