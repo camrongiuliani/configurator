@@ -108,7 +108,7 @@ class Configuration  {
   double margin( String id ) {
     return _scopes.reversed.firstWhereOrNull( ( s ) {
       return s.margins.containsKey( id );
-    })?.margins[ id ] ?? 14.0;
+    })?.margins[ id ] ?? 0.0;
   }
 
   Map<String, Map<String, dynamic>> get themeMap {
