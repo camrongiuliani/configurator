@@ -105,6 +105,9 @@ Future<void> generateConfigurations({
 
     for ( var child in children ) {
       c.config = c.config + child.config;
+
+      print( 'Merged ${c.config.name} <-- ${child.config.name}' );
+
       handled.add( child );
     }
 
