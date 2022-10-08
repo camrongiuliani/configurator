@@ -78,22 +78,39 @@ Future<void> generateConfigurations({
     );
   }).toList();
 
-  List<ConfigFile> merged = [];
+  List<ConfigFile> _getChildren( ConfigFile c, List<ConfigFile> result ) {
+    var children = configs.where((e) => c.config.partFiles.contains( e.config.name ));
 
-  print( '--Configs--' );
+    for ( ConfigFile c in children ) {
+      result.add( c );
 
-  for ( var c in configs ) {
-    print( '        --- ${c.config.name}' );
-    for ( var p in c.config.partFiles ) {
-      print( '        ----- $p' );
-      c.config = c.config + configs.firstWhere((e) => e.config.name == p).config;
+      if ( c.config.partFiles.isNotEmpty ) {
+        return _getChildren( c, result );
+      }
     }
 
-    merged.add( c );
+    return result;
   }
 
+  List<ConfigFile> handled = [];
 
-  for ( var file in merged ) {
+
+  for ( var c in configs ) {
+
+    if ( handled.map((e) => e.config.name).contains( c.config.name )) {
+      continue;
+    }
+
+    var children = _getChildren( c, [] );
+
+    for ( var child in children ) {
+      c.config = c.config + child.config;
+      handled.add( child );
+    }
+
+  }
+
+  for ( var file in configs ) {
 
     String outputFilePath = '${file.directory}${Platform.pathSeparator}${file.name}.config.dart';
 
