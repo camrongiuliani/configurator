@@ -86,7 +86,7 @@ Future<void> generateConfigurations({
       var parts = configs.where( ( p ) => c.config.partFiles.contains( p.config.name ) );
 
       for ( var p in parts ) {
-        sortConfigs( p, [] );
+        sortConfigs( p, sorted );
       }
 
     } else {
