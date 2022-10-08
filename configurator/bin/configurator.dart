@@ -86,11 +86,9 @@ Future<void> generateConfigurations({
         sorted.add( c );
       } else {
         for ( var part in c.config.partFiles ) {
-          sorted.addAll(
-            sortConfigs(
-              configs.where(( e ) => e.config.name == part ).toList(),
-              [],
-            ),
+          sortConfigs(
+            configs.where(( e ) => e.config.name == part ).toList(),
+            [],
           );
         }
       }
