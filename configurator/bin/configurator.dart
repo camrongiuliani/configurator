@@ -80,23 +80,22 @@ Future<void> generateConfigurations({
 
   List<String> toRemove = [];
 
-  List<ConfigFile> sortConfigs( ConfigFile c, List<ConfigFile> sorted ) {
-
-    for ( var part in c.config.partFiles ) {
-
-      ConfigFile c = configs.firstWhere(( e ) => e.config.name == part );
-
-      sorted.addAll( sortConfigs( c, [] ) );
+  List<ConfigFile> sortConfigs( List<ConfigFile> configs, List<ConfigFile> sorted ) {
+    for ( var c in configs ) {
+      for ( var part in c.config.partFiles ) {
+        sorted.addAll(
+          sortConfigs(
+            configs.where(( e ) => e.config.name == part ).toList(),
+            [],
+          ),
+        );
+      }
     }
 
     return sorted;
   }
 
-  List<ConfigFile> sorted = [];
-
-  for ( var c in configs ) {
-    sorted.addAll( sortConfigs( c, [] ) );
-  }
+  List<ConfigFile> sorted = sortConfigs( configs, [] );
 
   for ( var c in sorted ) {
     print( '-- ${c.config.name}' );
