@@ -16,7 +16,7 @@ class ConfigExtWriter extends Writer {
           _buildGetter( '_ColorAccessor', 'colors' ),
           _buildGetter( '_ImageAccessor', 'images' ),
           _buildGetter( '_SizeAccessor', 'sizes' ),
-          _buildGetter( '_PaddingAccessor', 'padding' ),
+          _buildGetter( '_PaddingAccessor', 'paddings' ),
           _buildGetter( '_MarginAccessor', 'margins' ),
           _buildGetter( '_MiscAccessor', 'misc' ),
           _buildGetter( '_RouteAccessor', 'routes' ),
