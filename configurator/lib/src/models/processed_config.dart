@@ -1,5 +1,8 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:configurator/configurator.dart';
+import 'package:configurator/src/writers/margin_writer.dart';
+import 'package:configurator/src/writers/misc_writer.dart';
+import 'package:configurator/src/writers/padding_writer.dart';
 import 'package:configurator/src/writers/title_writer.dart';
 import 'package:configurator/src/writers/color_util_writer.dart';
 import 'package:configurator/src/writers/config_ext_writer.dart';
@@ -57,6 +60,15 @@ class ProcessedConfig {
 
       TitleWriter( 'Sizes' ).write(),
       SizeWriter( frameworkName, yamlConfiguration.sizes ).write(),
+
+      TitleWriter( 'Padding' ).write(),
+      PaddingWriter( frameworkName, yamlConfiguration.padding ).write(),
+
+      TitleWriter( 'Margins' ).write(),
+      MarginWriter( frameworkName, yamlConfiguration.margins ).write(),
+
+      TitleWriter( 'Misc' ).write(),
+      MiscWriter( frameworkName, yamlConfiguration.misc ).write(),
 
       TitleWriter( 'Slang (i18n)' ).write(),
       SlangWriter( yamlConfiguration.strings ).write(),
