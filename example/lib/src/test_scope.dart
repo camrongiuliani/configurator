@@ -25,4 +25,13 @@ class TestScope1 extends ConfigScope {
   @override
   Map<String, double> get sizes => const {};
 
+  @override
+  Map<String, dynamic> get misc => const {};
+
+  @override
+  Map<String, double> get padding => const {};
+
+  @override
+  Map<String, double> get margins => const {};
+
 }

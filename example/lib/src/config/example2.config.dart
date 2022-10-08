@@ -597,6 +597,16 @@ class HomeScopeGeneratedScope extends ConfigScope {
 
   @override
   Map<int, String> routes = const _Routes().map;
+
+  @override
+  Map<String, dynamic> get misc => const {};
+
+  @override
+  Map<String, double> get padding => const {};
+
+  @override
+  Map<String, double> get margins => const {};
+
 }
 
 // ********************************

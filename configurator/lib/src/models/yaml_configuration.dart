@@ -7,7 +7,10 @@ class YamlConfiguration {
   final List<YamlSetting> flags;
   final List<YamlSetting> colors;
   final List<YamlSetting> images;
+  final List<YamlSetting> misc;
   final List<YamlSetting> sizes;
+  final List<YamlSetting> padding;
+  final List<YamlSetting> margins;
   final List<YamlRoute> routes;
   final List<YamlI18n> strings;
 
@@ -17,9 +20,12 @@ class YamlConfiguration {
     this.flags = const [],
     this.colors = const [],
     this.images = const [],
+    this.misc = const [],
     this.sizes = const [],
     this.routes = const [],
     this.strings = const [],
+    this.padding = const [],
+    this.margins = const [],
   });
 
   Map<dynamic, dynamic> toJson() {
@@ -27,16 +33,28 @@ class YamlConfiguration {
       'partFiles': partFiles,
       'flags': { for (var e in flags) e.name: e.value},
       'images': { for (var e in images) e.name: e.value},
+      'misc': { for (var e in misc) e.name: e.value},
       'sizes': { for (var e in sizes) e.name: e.value},
       'colors': { for (var e in colors) e.name: e.value},
       'routes': { for (var e in routes) e.id : e.path },
       'strings': { for (var e in strings) e.name : e.value },
+      'padding': { for (var e in padding) e.name : e.value },
+      'margins': { for (var e in margins) e.name : e.value },
     };
   }
 
   operator +( YamlConfiguration t ) {
     partFiles.removeWhere(( e ) => t.partFiles.contains( e ));
     partFiles.addAll( t.partFiles );
+
+    misc.removeWhere(( e ) => t.misc.contains( e ));
+    misc.addAll( t.misc );
+
+    padding.removeWhere(( e ) => t.padding.contains( e ));
+    padding.addAll( t.padding );
+
+    margins.removeWhere(( e ) => t.margins.contains( e ));
+    margins.addAll( t.margins );
 
     colors.removeWhere(( e ) => t.colors.contains( e ));
     colors.addAll( t.colors );

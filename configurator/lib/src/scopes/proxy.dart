@@ -22,6 +22,15 @@ class ProxyScope extends ConfigScope {
   @override
   Map<String, double> sizes;
 
+  @override
+  Map<String, double> padding;
+
+  @override
+  Map<String, double> margins;
+
+  @override
+  Map<String, dynamic> misc;
+
   ProxyScope({
     required this.name,
     this.partFiles = const [],
@@ -30,5 +39,8 @@ class ProxyScope extends ConfigScope {
     this.routes = const {},
     this.colors = const {},
     this.sizes = const {},
+    this.padding = const {},
+    this.margins = const {},
+    this.misc = const {},
   });
 }

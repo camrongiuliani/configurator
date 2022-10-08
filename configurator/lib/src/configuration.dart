@@ -87,10 +87,28 @@ class Configuration  {
     })?.images[ id ] ?? '';
   }
 
+  dynamic misc( String id ) {
+    return _scopes.reversed.firstWhereOrNull( ( s ) {
+      return s.misc.containsKey( id );
+    })?.misc[ id ];
+  }
+
   double size( String id ) {
     return _scopes.reversed.firstWhereOrNull( ( s ) {
       return s.sizes.containsKey( id );
     })?.sizes[ id ] ?? 14.0;
+  }
+
+  double padding( String id ) {
+    return _scopes.reversed.firstWhereOrNull( ( s ) {
+      return s.padding.containsKey( id );
+    })?.padding[ id ] ?? 0.0;
+  }
+
+  double margin( String id ) {
+    return _scopes.reversed.firstWhereOrNull( ( s ) {
+      return s.margins.containsKey( id );
+    })?.margins[ id ] ?? 14.0;
   }
 
   Map<String, Map<String, dynamic>> get themeMap {
@@ -98,13 +116,19 @@ class Configuration  {
     Map<String, String> colors = {};
     Map<String, String?> images = {};
     Map<String, double> sizes = {};
+    Map<String, double> padding = {};
+    Map<String, double> margins = {};
     Map<String, bool> flags = {};
+    Map<String, dynamic> misc = {};
     // Map<int, String?> routes = {};
 
     for ( var s in _scopes ) {
       images.addAll( s.images );
       colors.addAll( s.colors );
       sizes.addAll( s.sizes );
+      padding.addAll( s.padding );
+      margins.addAll( s.margins );
+      misc.addAll( s.misc );
       flags.addAll( s.flags );
       // routes.addAll( s.routes );
     }
@@ -112,6 +136,9 @@ class Configuration  {
     return {
       'colors': colors,
       'sizes': sizes,
+      'padding': padding,
+      'margins': margins,
+      'misc': misc,
       'images': images,
       'flags': flags,
       // 'routes': routes,

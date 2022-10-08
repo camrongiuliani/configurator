@@ -4,14 +4,13 @@ import 'package:configurator/src/utils/string_ext.dart';
 import 'package:configurator/src/utils/type_ext.dart';
 import 'package:configurator/src/writers/writer.dart';
 
-class ColorWriter extends Writer {
+class MiscWriter extends Writer {
 
   final String name;
-  final List<YamlSetting<String, String>> _colors;
+  final List<YamlSetting<String, dynamic>> _settings;
 
-  ColorWriter( String name, List<YamlSetting> colors )
-      : name = name.canonicalize.capitalized,
-        _colors = colors.convert<String, String>();
+  MiscWriter( String name, this._settings )
+      : name = name.canonicalize.capitalized;
 
   @override
   Spec write() {
@@ -20,10 +19,10 @@ class ColorWriter extends Writer {
     Class scope = Class( ( builder ) {
       builder
         ..constructors.add( Constructor( ( b ) => b..constant = true ) )
-        ..name = '_Colors'
+        ..name = '_Misc'
         ..methods.addAll([
-          _getColorValuesMap(),
-          ..._getColorGetters(),
+          _getValuesMap(),
+          ..._getGetters(),
         ]);
     });
 
@@ -37,38 +36,43 @@ class ColorWriter extends Writer {
 
   }
 
-  List<Method> _getColorGetters([ bool useConfig = false ]) {
-    return _colors.map((e) {
+  List<Method> _getGetters([ bool useConfig = false ]) {
+    return _settings.map((e) {
       return Method( ( builder ) {
         builder
           ..name = e.name.canonicalize
           ..type = MethodType.getter
-          ..returns = refer( useConfig ? 'Color' : 'String' )
+          ..returns = refer( 'dynamic' )
           ..lambda = true
           ..body = Code( () {
             if ( useConfig ) {
-              return '_config.colorValue( ${name}ConfigKeys.colors.${e.name} )';
+              return '_config.misc( ${name}ConfigKeys.misc.${e.name} )';
             }
 
-            return 'map[ ${name}ConfigKeys.colors.${e.name.canonicalize} ] ?? \'\'';
+            return 'map[ ${name}ConfigKeys.misc.${e.name.canonicalize} ]';
           }() );
       });
     }).toList();
   }
 
-  Method _getColorValuesMap() {
+  Method _getValuesMap() {
     return Method( ( builder ) {
       builder
         ..name = 'map'
         ..type = MethodType.getter
-        ..returns = refer( 'Map<String, String>' )
+        ..returns = refer( 'Map<String, dynamic>' )
         ..lambda = true
         ..body = Code( () {
 
-          Map<String, String> map = {};
+          Map<String, dynamic> map = {};
 
-          for ( var f in _colors ) {
-            map['${name}ConfigKeys.colors.${f.name.canonicalize}'] = '\'${f.value}\'';
+          for ( var f in _settings ) {
+            map['${name}ConfigKeys.misc.${f.name.canonicalize}'] = () {
+              if ( f.value is String ) {
+                return '\'${f.value}\'';
+              }
+              return f.value;
+            }();
           }
 
           return map.toString();
@@ -90,7 +94,7 @@ class ColorWriter extends Writer {
               }),
             ]);
         }) )
-        ..name = '_ColorAccessor'
+        ..name = '_MiscAccessor'
         ..fields.addAll([
           Field( ( b ) {
             b
@@ -100,7 +104,7 @@ class ColorWriter extends Writer {
           }),
         ])
         ..methods.addAll([
-          ..._getColorGetters( true ),
+          ..._getGetters( true ),
         ]);
     });
   }

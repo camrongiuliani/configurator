@@ -30,6 +30,30 @@ class KeyWriter extends Writer {
         ]);
     });
 
+    Class miscKeys = Class( ( builder ) {
+      builder
+        ..name = '_MiscKeys'
+        ..fields.addAll([
+          ..._yamlConfiguration.misc.map((e) => _buildField( e.name )),
+        ]);
+    });
+
+    Class paddingKeys = Class( ( builder ) {
+      builder
+        ..name = '_PaddingKeys'
+        ..fields.addAll([
+          ..._yamlConfiguration.padding.map((e) => _buildField( e.name )),
+        ]);
+    });
+
+    Class marginKeys = Class( ( builder ) {
+      builder
+        ..name = '_MarginKeys'
+        ..fields.addAll([
+          ..._yamlConfiguration.margins.map((e) => _buildField( e.name )),
+        ]);
+    });
+
     Class routeKeys = Class( ( builder ) {
       builder
         ..name = '_RouteKeys'
@@ -61,6 +85,9 @@ class KeyWriter extends Writer {
           _buildKeyAccessor( 'routes', '_RouteKeys()' ),
           _buildKeyAccessor( 'flags', '_FlagKeys()' ),
           _buildKeyAccessor( 'sizes', '_SizeKeys()' ),
+          _buildKeyAccessor( 'padding', '_PaddingKeys()' ),
+          _buildKeyAccessor( 'margins', '_MarginKeys()' ),
+          _buildKeyAccessor( 'misc', '_MiscKeys()' ),
           _buildKeyAccessor( 'colors', '_ColorKeys()' ),
           _buildKeyAccessor( 'images', '_ImageKeys()' ),
         ]);
@@ -69,8 +96,11 @@ class KeyWriter extends Writer {
     lb.body.addAll([
       flagKeys,
       imageKeys,
+      miscKeys,
       routeKeys,
       sizeKeys,
+      paddingKeys,
+      marginKeys,
       colorKeys,
       configKeys,
     ]);
