@@ -95,11 +95,7 @@ Future<void> generateConfigurations({
     return sorted;
   }
 
-  List<ConfigFile> sorted = [];
-
-  for ( ConfigFile c in List.from( configs ) ) {
-    sorted.addAll( sortConfigs( c, [] ) );
-  }
+  List<ConfigFile> sorted = sortConfigs( configs, [] );
 
   for ( var c in sorted ) {
     print( '-- ${c.config.name}' );
