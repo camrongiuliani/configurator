@@ -1,0 +1,10 @@
+id: base_scope
+
+parts:
+  - part1
+  - part4
+
+configuration:
+  strings:
+    base:
+      test1: en

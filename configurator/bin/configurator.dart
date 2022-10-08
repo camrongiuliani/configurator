@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:io';
+import 'package:collection/collection.dart';
 import 'package:configurator/configurator.dart';
 import 'package:configurator/src/models/processed_config.dart';
 import 'package:configurator/src/utils/string_ext.dart';
@@ -8,12 +10,19 @@ import 'package:rxdart/rxdart.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 import 'config_file.dart';
+import 'graph.dart';
+
+class DartScriptGen {
+  static void execute( List<String> arguments ) => main( arguments );
+}
 
 /// To run this:
 /// -> flutter pub run configurator
 void main(List<String> arguments) async {
   final bool watchMode;
   final bool verbose;
+  List<String> filters = arguments.where((a) => a.startsWith( '--id-filter=' )).first.split( '=' ).last.split( ',' );
+
   if (arguments.isNotEmpty) {
     watchMode = arguments[0] == 'watch';
     verbose = (arguments.length == 2 &&
@@ -42,7 +51,10 @@ void main(List<String> arguments) async {
       'android',
       'web',
     },
-  ).where((file) => file.path.endsWith( '.config.yaml' )).toList();
+  ).where((file) {
+    return ( file.path.endsWith( '.config.yaml' ) && filters.isEmpty )
+        || filters.contains( file.path.getFileNameNoExtension() );
+  }).toList();
 
   if (watchMode) {
     await watchConfiguration(
@@ -78,38 +90,62 @@ Future<void> generateConfigurations({
     );
   }).toList();
 
-  List<ConfigFile> concat = [];
+  Graph<ConfigFile?> graph = Graph<ConfigFile?>(
+    name: ( c ) => c?.config.name ?? 'null',
+    keepAlive: ( f ) => f != null,
+  );
 
-  List<ConfigFile> mergeConfigs( List<ConfigFile> confs, List<ConfigFile> result, [ ConfigFile? parent ] ) {
+  void buildPartGraph( List<ConfigFile> input, [ ConfigFile? from ] ) {
 
-    for ( var c in confs ) {
+    for ( var c in input ) {
 
-      var children = configs.where((e) => c.config.partFiles.contains( e.config.name )).toList();
+      var parts = configs.where((e) => c.config.partFiles.contains( e.config.name )).toList();
 
-      if ( children.isEmpty ) {
-        if ( parent != null ) {
-          parent.config = parent.config + c.config;
-          print( 'Merged ${c.config.name} --> ${parent.config.name}' );
-          result.add( parent );
-        } else {
-          result.add( c );
-        }
-      } else {
+      configs.removeWhere((e) => parts.contains(e));
 
-        result.addAll( mergeConfigs( children , [], c ) );
+      graph.addEdge( from, c );
 
-      }
-
+      buildPartGraph( parts, c );
     }
-
-    return result;
-
   }
 
-  configs = mergeConfigs( configs, [] );
+  void mergeConfigs( Set<ConfigFile?> set, List<String> handled ) {
 
+    for ( var a in set ) {
 
-  for ( var file in configs ) {
+      if ( a == null || handled.contains( a.config.name ) ) {
+        continue;
+      }
+
+      Set<ConfigFile?> parts = graph.from( a );
+
+      mergeConfigs( parts, handled );
+
+      var to = graph.to( a );
+
+      for ( var t in to ) {
+        if ( t != null ) {
+          print('Merge ${a.config.name} --> ${t.config.name}');
+          t.config = t.config + a.config;
+          handled.add( a.config.name );
+        }
+      }
+    }
+  }
+
+  buildPartGraph( List.from( configs ) );
+  
+  var baseGraph = graph.from( null );
+  
+  graph.delete( null );
+  
+  List<String> track = [];
+
+  for ( var node in baseGraph ) {
+    mergeConfigs( graph.from( node ), track );
+  }
+
+  for ( var file in configs.where(( c ) => ! track.contains( c.config.name )) ) {
 
     String outputFilePath = '${file.directory}${Platform.pathSeparator}${file.name}.config.dart';
 

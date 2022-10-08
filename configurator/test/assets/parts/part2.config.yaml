@@ -1,0 +1,9 @@
+id: part2
+
+parts:
+  - part3
+
+configuration:
+  strings:
+    es:
+      test1: es

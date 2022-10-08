@@ -1,0 +1,6 @@
+id: part4
+
+configuration:
+  strings:
+    ch:
+      test1: ch
