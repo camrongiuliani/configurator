@@ -78,7 +78,7 @@ Future<void> generateConfigurations({
     );
   }).toList();
 
-  List<ConfigFile> toRemove = [];
+  List<String> toRemove = [];
 
   for ( ConfigFile c in List.from( configs ) ) {
 
@@ -86,14 +86,17 @@ Future<void> generateConfigurations({
       var parts = configs.where( ( p ) => c.config.partFiles.contains( p.config.name ) );
 
       if ( parts.isNotEmpty ) {
-        c.config = c.config + parts.map((e) => e.config).reduce(( a, b ) => a + b);
-        toRemove.addAll( configs.where( ( c ) => parts.map((e) => e.config.name).contains( c.config.name ) ) );
+        for ( var part in parts ) {
+          c.config = c.config + part.config;
+          toRemove.add( part.config.name );
+        }
       }
     }
   }
 
-  configs.removeWhere((element) => toRemove.contains( element ));
-  toRemove.clear();
+  for (var e in toRemove) {
+    configs.removeWhere((element) => element.name == e);
+  }
 
   for ( var file in configs ) {
 
