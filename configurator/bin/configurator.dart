@@ -21,7 +21,9 @@ class DartScriptGen {
 void main(List<String> arguments) async {
   final bool watchMode;
   final bool verbose;
-  List<String> filters = arguments.where((a) => a.startsWith( '--id-filter=' )).first.split( '=' ).last.split( ',' );
+  List<String> filters = arguments.contains('--id-filter=')
+      ? arguments.where((a) => a.startsWith( '--id-filter=' )).first.split( '=' ).last.split( ',' )
+      : [];
 
   if (arguments.isNotEmpty) {
     watchMode = arguments[0] == 'watch';
