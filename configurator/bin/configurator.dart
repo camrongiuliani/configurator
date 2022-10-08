@@ -21,7 +21,7 @@ class DartScriptGen {
 void main(List<String> arguments) async {
   final bool watchMode;
   final bool verbose;
-  List<String> filters = arguments.contains('--id-filter=')
+  List<String> filters = arguments.join('///').contains('--id-filter=')
       ? arguments.where((a) => a.startsWith( '--id-filter=' )).first.split( '=' ).last.split( ',' )
       : [];
 
