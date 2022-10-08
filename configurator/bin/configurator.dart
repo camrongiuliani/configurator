@@ -85,8 +85,7 @@ Future<void> generateConfigurations({
     for ( var c in configs ) {
       if ( c.config.partFiles.isNotEmpty ) {
         var parts = configs.where( ( p ) => c.config.partFiles.contains( p.config.name ) );
-
-        sortConfigs( parts.toList(), sorted );
+        sortConfigs( parts.toList(), [] );
       } else {
         sorted.add( c );
       }
