@@ -1,14 +1,9 @@
-
-
 import 'package:configurator/configurator.dart';
 
 class ConfigFile {
   final String directory;
   final String name;
   YamlConfiguration config;
-
-  ConfigFile? parent;
-  List<ConfigFile> children = [];
 
   ConfigFile( this.name, this.directory, this.config );
 
@@ -27,7 +22,5 @@ class ConfigFile {
   int get hashCode =>
       directory.hashCode ^
       name.hashCode ^
-      config.hashCode ^
-      parent.hashCode ^
-      children.hashCode;
+      config.hashCode;
 }

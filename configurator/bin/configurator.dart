@@ -1,12 +1,9 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:io';
-import 'package:collection/collection.dart';
 import 'package:configurator/configurator.dart';
 import 'package:configurator/src/models/processed_config.dart';
 import 'package:configurator/src/utils/string_ext.dart';
 import 'package:dart_style/dart_style.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 import 'config_file.dart';
@@ -156,8 +153,6 @@ Future<void> generateConfigurations({
 
     String outputFilePath = '${file.directory}${Platform.pathSeparator}${file.name}.config.dart';
 
-    // FileUtils.createMissingFolders( filePath: outputFilePath );
-
     var result = ProcessedConfig( file.config.name.camelCase.capitalized, file.config );
 
     FileUtils.writeFile(
@@ -223,12 +218,6 @@ String get currentTime {
 }
 
 extension on String {
-  /// converts /some/path/file.json to file.json
-  String getFileName() {
-    return PathUtils.getFileName(this);
-  }
-
-  /// converts /some/path/file.json to file
   String getFileNameNoExtension() {
     return PathUtils.getFileNameNoExtension(this);
   }
