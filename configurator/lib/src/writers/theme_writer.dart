@@ -45,9 +45,9 @@ class ThemeWriter extends Writer {
         builder
           ..type = MethodType.getter
           ..returns = refer('Color')
-          ..name = ( e.name as String ).canonicalize
+          ..name = '${( e.name as String )}Color'.canonicalize
           ..lambda = true
-          ..body = Code( '_ColorUtil.parseColorValue( themeMap[\'colors\']?[\'${( e.name as String ).canonicalize}\'] )' );
+          ..body = Code( '_ColorUtil.parseColorValue( themeMap[\'colors\']?[\'${( e.name as String ).canonicalize}Color\'] )' );
       });
     }).toList();
   }
@@ -58,9 +58,9 @@ class ThemeWriter extends Writer {
         builder
           ..type = MethodType.getter
           ..returns = refer('double')
-          ..name = ( e.name as String ).canonicalize
+          ..name = '${( e.name as String )}Size'.canonicalize
           ..lambda = true
-          ..body = Code( 'themeMap[\'sizes\']?[\'${( e.name as String ).canonicalize}\']' );
+          ..body = Code( 'themeMap[\'sizes\']?[\'${( e.name as String ).canonicalize}Size\']' );
       });
     }).toList();
   }
@@ -112,11 +112,11 @@ class ThemeWriter extends Writer {
             const Code( '}' ),
 
             ..._yamlConfiguration.colors.map((e) {
-              return Code( 'themeMap[\'colors\']![\'${( e.name as String ).canonicalize}\'] = _ColorUtil.colorToString( Color.lerp( ${( e.name as String ).canonicalize}, other.${( e.name as String ).canonicalize}, t )! );' );
+              return Code( 'themeMap[\'colors\']![\'${( e.name as String ).canonicalize}Color\'] = _ColorUtil.colorToString( Color.lerp( ${( e.name as String ).canonicalize}Color, other.${( e.name as String ).canonicalize}Color, t )! );' );
             }),
 
             ..._yamlConfiguration.sizes.map((e) {
-              return Code( 'themeMap[\'sizes\']![\'${( e.name as String ).canonicalize}\'] = lerpDouble( ${( e.name as String ).canonicalize}, other.${( e.name as String ).canonicalize}, t);' );
+              return Code( 'themeMap[\'sizes\']![\'${( e.name as String ).canonicalize}Size\'] = lerpDouble( ${( e.name as String ).canonicalize}Size, other.${( e.name as String ).canonicalize}Size, t);' );
             }),
 
             Code( 'return $name( themeMap: themeMap );' ),
