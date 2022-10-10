@@ -93,16 +93,6 @@ Future<void> generateConfigurations({
 
       var parts = configs.where((e) => c.config.partFiles.contains( e.config.name )).toList();
 
-      configs.removeWhere((e) {
-        bool part = parts.contains(e);
-
-        if ( part ) {
-          print( '--removing ${e.config.name}, was part of ${c.config.name}' );
-        }
-
-        return part;
-      });
-
       graph.addEdge( from, c );
 
       buildPartGraph( parts, c );
