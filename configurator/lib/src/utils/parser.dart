@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'package:collection/collection.dart';
 import 'package:configurator/configurator.dart';
 import 'package:configurator/src/utils/string_ext.dart';
-import 'package:configurator/src/utils/type_ext.dart';
 import 'package:yaml/yaml.dart';
 
 class InvalidYamlException implements Exception {
