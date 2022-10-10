@@ -94,11 +94,7 @@ class YamlParser {
 
       Map<String, dynamic> map = json.decode( str );
 
-      if ( type == 'images' ) {
-        settings.addAll( _getSettingNamespaces2( map, [], namespace ?? '' ) );
-      } else {
-        settings.addAll( _getSettingNamespaces( map, [], namespace ?? '' ) );
-      }
+      settings.addAll( _getSettingNamespaces( map, [], namespace ?? '' ) );
 
     } catch ( e ) {
       print( e );
@@ -146,21 +142,6 @@ class YamlParser {
 
       if ( es.value is Map ) {
         result.addAll( _getSettingNamespaces( es.value, [], '${path.capitalized}_${es.key.capitalized}'.canonicalize ) );
-      } else {
-        result.add( YamlSetting( '${path.capitalized}_${es.key.capitalized}'.canonicalize, es.value ) );
-      }
-    }
-
-    return result;
-  }
-
-  static List<YamlSetting> _getSettingNamespaces2( Map<String, dynamic> setting, List<YamlSetting> result, String path ) {
-    for ( var es in setting.entries ) {
-
-      if ( es.value is Map ) {
-        result.addAll( _getSettingNamespaces2( es.value, [], '${path.capitalized}_${es.key.capitalized}'.canonicalize ) );
-      } else if ( es.value is List ) {
-        result.add( YamlSetting( '${path.capitalized}_${es.key.capitalized}'.canonicalize, es.value ) );
       } else {
         result.add( YamlSetting( '${path.capitalized}_${es.key.capitalized}'.canonicalize, es.value ) );
       }
