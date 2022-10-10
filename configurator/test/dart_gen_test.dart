@@ -75,6 +75,37 @@ void main() {
 
     });
 
+    test( 'Slang Graph Test', () {
+
+      String? namespace = 'personal.gettingStarted';
+
+      Map<String, dynamic> translationsMap = {
+        'key': 'value',
+      };
+
+      Graph graph = Graph<String>();
+
+      Map<String, dynamic> result = {};
+
+      if ( namespace != null && namespace.isNotEmpty == true ) {
+        var namespaces = namespace.split( '.' );
+
+        String last = '';
+
+        for ( var ns in namespaces ) {
+          graph.addEdge( last, ns );
+          last = ns;
+        }
+      } else {
+        graph.addEdge( '', namespace );
+      }
+
+
+
+      print(graph.toDebugString());
+
+    });
+
   });
 
 }

@@ -177,6 +177,26 @@ class YamlParser {
 
       Map<String, dynamic> translationsMap = json.decode( str );
 
+      if ( namespace != null && namespace.isNotEmpty == true ) {
+
+        var namespaces = namespace.split( '.' );
+
+        Map<String, dynamic> result = {
+          namespaces.last: translationsMap,
+        };
+
+        for ( var i = 1; i < namespaces.length; i++ ) {
+          var current = namespaces.reversed.toList()[i];
+
+          result = {
+            current: result,
+          };
+        }
+
+        translationsMap = result;
+
+      }
+
       for ( var t in translationsMap.entries ) {
         var values = t.value.entries.map( ( v ) => YamlI18n( '${namespace ?? ''}_${v.key}'.camelCase, t.key, v.value) );
         translations.addAll( List.from(values) );
