@@ -6,6 +6,7 @@ import 'package:test/test.dart';
 
 import '../bin/configurator.dart';
 import '../bin/graph.dart';
+import '../bin/script_gen.dart';
 
 const String baseFile = './test/assets/parts/base.config.yaml';
 const String partFile1 = './test/assets/parts/part1.config.yaml';

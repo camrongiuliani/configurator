@@ -9,10 +9,6 @@ import 'package:slang/builder/utils/path_utils.dart';
 import 'config_file.dart';
 import 'graph.dart';
 
-class DartScriptGen {
-  static Future<void> execute( List<String> arguments ) => main( arguments );
-}
-
 /// To run this:
 /// -> flutter pub run configurator
 Future<void> main(List<String> arguments) async {
@@ -45,6 +41,9 @@ Future<void> main(List<String> arguments) async {
     return ( file.path.endsWith( '.config.yaml' ) && filters.isEmpty )
         || filters.contains( file.path.getFileNameNoExtension() );
   }).toList();
+
+  print( '\n*****Parsing Configs*****' );
+  print( files.map((e) => e.path).join('\n') );
 
   if (watch) {
     await watchConfiguration(
