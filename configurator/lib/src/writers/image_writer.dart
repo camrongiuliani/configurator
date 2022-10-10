@@ -42,7 +42,7 @@ class ImageWriter extends Writer {
         builder
           ..name = e.name
           ..type = MethodType.getter
-          ..returns = refer( 'String' )
+          ..returns = refer( e.value is List ? 'List<String>' : 'String' )
           ..lambda = true
           ..body = Code( () {
             if ( useConfig ) {

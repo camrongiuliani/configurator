@@ -87,6 +87,18 @@ class Configuration  {
     })?.images[ id ] ?? '';
   }
 
+  List<String> imageList( String id ) {
+    dynamic i = _scopes.reversed.firstWhereOrNull( ( s ) {
+      return s.images.containsKey( id );
+    })?.images[ id ];
+
+    if ( i is String ) {
+      return [ i ];
+    }
+
+    return i;
+  }
+
   dynamic misc( String id ) {
     return _scopes.reversed.firstWhereOrNull( ( s ) {
       return s.misc.containsKey( id );
