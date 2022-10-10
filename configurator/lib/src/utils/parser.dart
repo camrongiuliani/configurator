@@ -199,7 +199,7 @@ class YamlParser {
       }
 
       for ( var t in translationsMap.entries ) {
-        var values = t.value.entries.map( ( v ) => YamlI18n( '${namespace ?? ''}_${v.key}'.camelCase, t.key, v.value) );
+        var values = t.value.entries.map( ( v ) => YamlI18n( v.key, t.key, v.value) );
         translations.addAll( List.from(values) );
       }
 
