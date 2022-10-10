@@ -1,0 +1,7 @@
+id: part5
+namespace: test.namespace.embed
+
+configuration:
+  strings:
+    it:
+      test1: it

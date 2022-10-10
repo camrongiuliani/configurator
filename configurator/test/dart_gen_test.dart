@@ -13,6 +13,7 @@ const String partFile1 = './test/assets/parts/part1.config.yaml';
 const String partFile2 = './test/assets/parts/part2.config.yaml';
 const String partFile3 = './test/assets/parts/part3.config.yaml';
 const String partFile4 = './test/assets/parts/part4.config.yaml';
+const String partFile5 = './test/assets/parts/i18n/part5.config.yaml';
 
 extension ConvExt on String {
   get yaml2dart => replaceAll('.yaml', '.dart');
@@ -51,9 +52,10 @@ void main() {
       var part2 = File( partFile2.yaml2dart );
       var part3 = File( partFile3.yaml2dart );
       var part4 = File( partFile4.yaml2dart );
+      var part5 = File( partFile5.yaml2dart );
 
       void deleteFiles() {
-        for ( var file in [ base, part1, part2, part3, part4 ] ) {
+        for ( var file in [ base, part1, part2, part3, part4, part5 ] ) {
           if ( file.existsSync() ) {
             file.deleteSync();
           }
@@ -63,7 +65,7 @@ void main() {
       deleteFiles();
 
       await DartScriptGen.execute([
-        '--id-filter=base,part1,part2,part3,part4',
+        '--id-filter=base,part1,part2,part3,part4,part5',
       ]);
 
       expect( base.existsSync(), isTrue );
@@ -71,6 +73,7 @@ void main() {
       expect( part2.existsSync(), isFalse );
       expect( part3.existsSync(), isFalse );
       expect( part4.existsSync(), isFalse );
+      expect( part5.existsSync(), isFalse );
 
       deleteFiles();
 

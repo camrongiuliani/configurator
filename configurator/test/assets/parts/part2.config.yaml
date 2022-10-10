@@ -3,6 +3,7 @@ namespace: test.namespace.embed
 
 parts:
   - part3
+  - part5
 
 configuration:
   strings:

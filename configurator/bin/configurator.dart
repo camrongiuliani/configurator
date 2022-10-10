@@ -4,9 +4,9 @@ import 'package:configurator/configurator.dart';
 import 'package:configurator/src/models/processed_config.dart';
 import 'package:configurator/src/utils/string_ext.dart';
 import 'package:dart_style/dart_style.dart';
-import 'package:slang/builder/utils/file_utils.dart';
 import 'package:slang/builder/utils/path_utils.dart';
 import 'config_file.dart';
+import 'file_utils.dart';
 import 'graph.dart';
 
 /// To run this:
@@ -32,17 +32,22 @@ Future<void> main(List<String> arguments) async {
       '.fvm',
       '.flutter.git',
       '.dart_tool',
+      '.idea',
+      '.gitignore',
       'build',
       'ios',
       'android',
       'web',
     },
   ).where((file) {
-    return ( file.path.endsWith( '.config.yaml' ) && filters.isEmpty )
-        || filters.contains( file.path.getFileNameNoExtension() );
+
+    bool isConfig = file.path.endsWith( '.config.yaml' );
+    bool matchesFilter = filters.isEmpty || filters.contains( file.path.getFileNameNoExtension() );
+
+    return isConfig && matchesFilter;
   }).toList();
 
-  print( '\n*****Parsing Configs*****' );
+  print( '\n---Parsing Configs---' );
   print( files.map((e) => e.path).join('\n') );
 
   if (watch) {

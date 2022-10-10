@@ -27,6 +27,7 @@ class FileUtils {
   static List<File> getFilesBreadthFirst({
     required Directory rootDirectory,
     required Set<String> ignoreTopLevelDirectories,
+    String extension = '.config.yaml',
   }) {
     final result = <File>[];
     final queue = Queue<Directory>();
@@ -36,7 +37,7 @@ class FileUtils {
     do {
       final dirList = queue.removeFirst().listSync(recursive: false);
       for (final FileSystemEntity entity in dirList) {
-        if (entity is File) {
+        if (entity is File && ( extension.isEmpty || entity.path.contains( extension ) ) ) {
           result.add(entity);
         } else if (entity is Directory) {
           final fileName = PathUtils.getFileName(entity.path);
