@@ -95,7 +95,11 @@ Future<void> generateConfigurations({
 
       configs.removeWhere((e) {
         bool part = parts.contains(e);
-        print( '--removing ${e.config.name}, was part of ${c.config.name}' );
+
+        if ( part ) {
+          print( '--removing ${e.config.name}, was part of ${c.config.name}' );
+        }
+
         return part;
       });
 
