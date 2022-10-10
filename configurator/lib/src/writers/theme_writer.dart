@@ -47,7 +47,7 @@ class ThemeWriter extends Writer {
           ..returns = refer('Color')
           ..name = '${( e.name as String )}Color'.canonicalize
           ..lambda = true
-          ..body = Code( '_ColorUtil.parseColorValue( themeMap[\'colors\']?[\'${( e.name as String ).canonicalize}Color\'] )' );
+          ..body = Code( '_ColorUtil.parseColorValue( themeMap[\'colors\']?[\'${( e.name as String ).canonicalize}\'] )' );
       });
     }).toList();
   }
@@ -60,7 +60,7 @@ class ThemeWriter extends Writer {
           ..returns = refer('double')
           ..name = '${( e.name as String )}Size'.canonicalize
           ..lambda = true
-          ..body = Code( 'themeMap[\'sizes\']?[\'${( e.name as String ).canonicalize}Size\']' );
+          ..body = Code( 'themeMap[\'sizes\']?[\'${( e.name as String ).canonicalize}\']' );
       });
     }).toList();
   }
