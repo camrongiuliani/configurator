@@ -1,4 +1,5 @@
 id: base_scope
+namespace: test.namespace.embed
 
 parts:
   - part1

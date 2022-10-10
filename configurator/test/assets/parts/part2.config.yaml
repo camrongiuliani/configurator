@@ -1,4 +1,5 @@
 id: part2
+namespace: test.namespace.embed
 
 parts:
   - part3

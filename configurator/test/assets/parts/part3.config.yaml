@@ -1,4 +1,5 @@
 id: part3
+namespace: test.namespace.embed
 
 configuration:
   strings:

@@ -177,15 +177,16 @@ class YamlParser {
 
       Map<String, dynamic> translationsMap = json.decode( str );
 
-      if ( namespace != null && namespace.isNotEmpty == true ) {
+      if ( translationsMap.isNotEmpty && namespace != null && namespace.isNotEmpty == true ) {
 
-        var namespaces = namespace.split( '.' );
+        var namespaces = [
+          translationsMap.keys.first,
+          ...namespace.split( '.' ),
+        ];
 
-        Map<String, dynamic> result = {
-          namespaces.last: translationsMap,
-        };
+        Map<String, dynamic> result = translationsMap[namespaces.first];
 
-        for ( var i = 1; i < namespaces.length; i++ ) {
+        for ( var i = 0; i < namespaces.length; i++ ) {
           var current = namespaces.reversed.toList()[i];
 
           result = {
