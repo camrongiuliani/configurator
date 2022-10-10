@@ -56,16 +56,6 @@ void main() {
 
   group( 'Configuration Tests', () {
 
-    test ( 'Gen Test', () {
-
-      var m = File( testYaml1c ).readAsStringSync();
-      var scope = ConfigScope.fromYaml( m );
-      Configuration config = Configuration( scopes: [ scope ] );
-
-      print('d');
-
-    });
-
     test ( 'Color Namespace Test', () {
 
       var m = File( testYaml1 ).readAsStringSync();
@@ -100,21 +90,32 @@ void main() {
       Configuration config = Configuration( scopes: [ scope ] );
 
       for ( var rootEntry in scope.toJson().entries ) {
-        for ( var v in rootEntry.value.entries ) {
-          if ( rootEntry.key == 'flags' ) {
-            expect( config.flag( v.key ), equals( v.value ) );
-          }
-          if ( rootEntry.key == 'colors' ) {
-            expect( config.color( v.key ), equals( v.value ) );
-          }
-          if ( rootEntry.key == 'routes' ) {
-            expect( config.route( v.key ), equals( v.value ) );
-          }
-          if ( rootEntry.key == 'images' ) {
-            expect( config.image( v.key ), equals( v.value ) );
-          }
-          if ( rootEntry.key == 'sizes' ) {
-            expect( config.size( v.key ), equals( v.value ) );
+        if ( rootEntry.value is Map ) {
+          for ( var v in rootEntry.value.entries ) {
+            if ( rootEntry.key == 'flags' ) {
+              expect( config.flag( v.key ), equals( v.value ) );
+            }
+            if ( rootEntry.key == 'colors' ) {
+              expect( config.color( v.key ), equals( v.value ) );
+            }
+            if ( rootEntry.key == 'routes' ) {
+              expect( config.route( v.key ), equals( v.value ) );
+            }
+            if ( rootEntry.key == 'images' ) {
+              expect( config.image( v.key ), equals( v.value ) );
+            }
+            if ( rootEntry.key == 'sizes' ) {
+              expect( config.size( v.key ), equals( v.value ) );
+            }
+            if ( rootEntry.key == 'misc' ) {
+              expect( config.misc( v.key ), equals( v.value ) );
+            }
+            if ( rootEntry.key == 'margins' ) {
+              expect( config.margin( v.key ), equals( v.value ) );
+            }
+            if ( rootEntry.key == 'padding' ) {
+              expect( config.padding( v.key ), equals( v.value ) );
+            }
           }
         }
       }

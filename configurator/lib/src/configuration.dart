@@ -111,8 +111,9 @@ class Configuration  {
     })?.margins[ id ] ?? 0.0;
   }
 
-  Map<String, Map<String, dynamic>> get themeMap {
+  Map<String, dynamic> get themeMap {
 
+    List<String> partFiles = [];
     Map<String, String> colors = {};
     Map<String, String?> images = {};
     Map<String, double> sizes = {};
@@ -123,6 +124,7 @@ class Configuration  {
     // Map<int, String?> routes = {};
 
     for ( var s in _scopes ) {
+      partFiles.addAll( s.partFiles );
       images.addAll( s.images );
       colors.addAll( s.colors );
       sizes.addAll( s.sizes );
@@ -134,6 +136,7 @@ class Configuration  {
     }
 
     return {
+      'partFiles': partFiles,
       'colors': colors,
       'sizes': sizes,
       'padding': padding,

@@ -39,12 +39,13 @@ abstract class ConfigScope {
 
   Map<String, dynamic> toJson() {
     return {
+      'partFiles': partFiles,
       'flags': { for (var e in flags.entries) e.key: e.value},
       'images': { for (var e in images.entries) e.key: e.value},
       'misc': { for (var e in misc.entries) e.key: e.value},
       'sizes': { for (var e in sizes.entries) e.key: e.value},
       'padding': { for (var e in padding.entries) e.key: e.value},
-      'margin': { for (var e in margins.entries) e.key: e.value},
+      'margins': { for (var e in margins.entries) e.key: e.value},
       'colors': { for (var e in colors.entries) e.key: e.value},
       'routes': { for (var e in routes.entries) e.key : e.value },
     };
@@ -56,6 +57,7 @@ abstract class ConfigScope {
       other is ConfigScope &&
           name == other.name &&
           const MapEquality().equals( flags, other.flags ) &&
+          const ListEquality().equals( partFiles, other.partFiles ) &&
           const MapEquality().equals( images, other.images ) &&
           const MapEquality().equals( misc, other.misc ) &&
           const MapEquality().equals( routes, other.routes ) &&
@@ -68,6 +70,7 @@ abstract class ConfigScope {
   int get hashCode =>
       name.hashCode
       ^ flags.hashCode
+      ^ partFiles.hashCode
       ^ images.hashCode
       ^ misc.hashCode
       ^ padding.hashCode
