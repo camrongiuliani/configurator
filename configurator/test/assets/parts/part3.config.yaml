@@ -1,6 +1,10 @@
 id: part3
 namespace: test.namespace.embed
 
+parts:
+  - part5
+
+
 configuration:
   strings:
     fr:
