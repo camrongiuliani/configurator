@@ -46,6 +46,9 @@ class ImageWriter extends Writer {
           ..lambda = true
           ..body = Code( () {
             if ( useConfig ) {
+              if ( e.value is List ) {
+                return '_config.imageList( ${name}ConfigKeys.images.${e.name} )';
+              }
               return '_config.image( ${name}ConfigKeys.images.${e.name} )';
             }
 
