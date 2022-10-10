@@ -10,6 +10,7 @@ import 'package:yaml/yaml.dart';
 Matcher invalidYamlMatcher = throwsA( const TypeMatcher<InvalidYamlException>() );
 
 const String testYaml1 = './test/assets/test_1.yaml';
+const String testYaml1array = './test/assets/test_1_array.config.yaml';
 const String testYaml1c = './test/assets/test_1.config.yaml';
 const String testYaml2c = './test/assets/test_2.config.yaml';
 const String testYaml1de = './test/assets/test_1_de.yaml';
@@ -59,6 +60,20 @@ void main() {
     test ( 'Color Namespace Test', () {
 
       var m = File( testYaml1 ).readAsStringSync();
+      var scope = ConfigScope.fromYaml( m );
+      Configuration config = Configuration( scopes: [ scope ] );
+
+      expect( config.color( 'storeFrontProductCardTextFooter' ), isNotEmpty );
+      expect( config.color( 'footer' ), isEmpty );
+      expect( config.flag( 'detailPageEmbActual' ), isTrue );
+      expect( config.flag( 'actual' ), isFalse );
+
+    });
+
+    test ( 'Image Array Test', () {
+
+      var m = File( testYaml1array ).readAsStringSync();
+
       var scope = ConfigScope.fromYaml( m );
       Configuration config = Configuration( scopes: [ scope ] );
 

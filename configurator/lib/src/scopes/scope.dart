@@ -7,7 +7,7 @@ abstract class ConfigScope {
 
   List<String> get partFiles => [];
   Map<String, bool> get flags;
-  Map<String, String?> get images;
+  Map<String, dynamic> get images;
   Map<String, dynamic> get misc;
   Map<String, String> get colors;
   Map<String, double> get sizes;

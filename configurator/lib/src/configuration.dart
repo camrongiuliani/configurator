@@ -115,7 +115,7 @@ class Configuration  {
 
     List<String> partFiles = [];
     Map<String, String> colors = {};
-    Map<String, String?> images = {};
+    Map<String, dynamic> images = {};
     Map<String, double> sizes = {};
     Map<String, double> padding = {};
     Map<String, double> margins = {};

@@ -11,7 +11,7 @@ class ProxyScope extends ConfigScope {
   final Map<String, bool> flags;
 
   @override
-  final Map<String, String> images;
+  final Map<String, dynamic> images;
 
   @override
   final Map<int, String> routes;

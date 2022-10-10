@@ -24,7 +24,7 @@ class ConfigWriter extends Writer {
 
           _mapGetter(
             name: 'images',
-            returnType: 'Map<String, String>',
+            returnType: 'Map<String, dynamic>',
             assignment: 'const _Images().map',
           ),
 

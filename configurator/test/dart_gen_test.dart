@@ -14,6 +14,7 @@ const String partFile2 = './test/assets/parts/part2.config.yaml';
 const String partFile3 = './test/assets/parts/part3.config.yaml';
 const String partFile4 = './test/assets/parts/part4.config.yaml';
 const String partFile5 = './test/assets/parts/i18n/part5.config.yaml';
+const String testYaml1array = './test/assets/test_1_array.config.yaml';
 
 extension ConvExt on String {
   get yaml2dart => replaceAll('.yaml', '.dart');
@@ -76,6 +77,30 @@ void main() {
       expect( part5.existsSync(), isFalse );
 
       deleteFiles();
+
+    });
+
+    test( 'DartScriptGen.execute Builds Array Correctly', () async {
+
+      var base = File( testYaml1array.yaml2dart );
+
+      void deleteFiles() {
+        for ( var file in [ base ] ) {
+          if ( file.existsSync() ) {
+            file.deleteSync();
+          }
+        }
+      }
+
+      deleteFiles();
+
+      await DartScriptGen.execute([
+        '--id-filter=test_1_array',
+      ]);
+
+      expect( base.existsSync(), isTrue );
+
+      // deleteFiles();
 
     });
 

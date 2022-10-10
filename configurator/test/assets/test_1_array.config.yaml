@@ -1,0 +1,34 @@
+id: image_array
+
+definitions:
+  - strings:
+      - &defaultHeaderImage
+          'https://pub.dev/static/hash-qr9i96gp/img/pub-dev-logo-2x.png'
+  - colors:
+      - &defaultPageBg EFF1F3
+      - &defaultButtonBg CC0000
+      - &defaultButtonTextColor '000000'
+  - routes:
+      - &myVar test
+
+configuration:
+  colors:
+
+  sizes:
+  flags:
+  images:
+    footer:
+      images:
+        - 'assets/FDIC1.svg'
+        - 'assets/FDIC2.svg'
+        - 'assets/FDIC3.svg'
+  routes:
+    - id: 1
+      path: /master
+    - id: 4
+      path: *myVar
+
+  strings:
+    base:
+      title: Hello, World!
+      scope: Scope
