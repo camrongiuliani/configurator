@@ -13,12 +13,15 @@ const String partFile2 = './test/assets/parts/part2.config.yaml';
 const String partFile3 = './test/assets/parts/part3.config.yaml';
 const String partFile4 = './test/assets/parts/part4.config.yaml';
 
+extension ConvExt on String {
+  get yaml2dart => replaceAll('.yaml', '.dart');
+}
 
 void main() {
 
   group( 'flutter pub run tests', () {
 
-    test('add edge', () {
+    test('Graph Add Edge Test', () {
       final graph = Graph<int?>();
 
       graph.addEdge(1, 2);
@@ -40,27 +43,35 @@ void main() {
       expect(graph.to(3), {1, 2});
     });
 
-    test( 'ext', () async {
+    test( 'DartScriptGen.execute Builds Correctly', () async {
 
-      try {
-        File( baseFile.replaceAll('yaml', 'dart') ).deleteSync();
-      } catch ( e ) {}
+      var base = File( baseFile.yaml2dart );
+      var part1 = File( partFile1.yaml2dart );
+      var part2 = File( partFile2.yaml2dart );
+      var part3 = File( partFile3.yaml2dart );
+      var part4 = File( partFile4.yaml2dart );
 
-      var base = File( baseFile ).readAsStringSync();
-      var part1 = File( partFile1 ).readAsStringSync();
-      var part2 = File( partFile2 ).readAsStringSync();
-      var part3 = File( partFile3 ).readAsStringSync();
-      var part4 = File( partFile4 ).readAsStringSync();
+      void deleteFiles() {
+        for ( var file in [ base, part1, part2, part3, part4 ] ) {
+          if ( file.existsSync() ) {
+            file.deleteSync();
+          }
+        }
+      }
 
-      DartScriptGen.execute([
+      deleteFiles();
+
+      await DartScriptGen.execute([
         '--id-filter=base,part1,part2,part3,part4',
       ]);
 
-      await Future.delayed( const Duration( seconds: 2 ), () {
-        try {
-          File( baseFile.replaceAll('yaml', 'dart') ).deleteSync();
-        } catch ( e ) {}
-      });
+      expect( base.existsSync(), isTrue );
+      expect( part1.existsSync(), isFalse );
+      expect( part2.existsSync(), isFalse );
+      expect( part3.existsSync(), isFalse );
+      expect( part4.existsSync(), isFalse );
+
+      deleteFiles();
 
     });
 

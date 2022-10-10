@@ -10,32 +10,23 @@ import 'config_file.dart';
 import 'graph.dart';
 
 class DartScriptGen {
-  static void execute( List<String> arguments ) => main( arguments );
+  static Future<void> execute( List<String> arguments ) => main( arguments );
 }
 
 /// To run this:
 /// -> flutter pub run configurator
-void main(List<String> arguments) async {
-  final bool watchMode;
-  final bool verbose;
+Future<void> main(List<String> arguments) async {
+  final bool watch = arguments.contains( '-w' ) || arguments.contains( '--watch' );
+
   List<String> filters = arguments.join('///').contains('--id-filter=')
       ? arguments.where((a) => a.startsWith( '--id-filter=' )).first.split( '=' ).last.split( ',' )
       : [];
-
-  if (arguments.isNotEmpty) {
-    watchMode = arguments[0] == 'watch';
-    verbose = (arguments.length == 2 &&
-            (arguments[1] == '-v' || arguments[1] == '--verbose'));
-  } else {
-    watchMode = false;
-    verbose = true;
-  }
 
   print( '\n*****Configurator Starting!*****' );
 
   final stopwatch = Stopwatch();
 
-  if (!watchMode) {
+  if (!watch) {
     stopwatch.start();
   }
 
@@ -55,15 +46,13 @@ void main(List<String> arguments) async {
         || filters.contains( file.path.getFileNameNoExtension() );
   }).toList();
 
-  if (watchMode) {
+  if (watch) {
     await watchConfiguration(
       files: files,
-      verbose: verbose,
     );
   } else {
     await generateConfigurations(
       files: files,
-      verbose: verbose,
       stopwatch: stopwatch,
     );
   }
@@ -169,7 +158,6 @@ Future<void> generateConfigurations({
 
 Future<void> watchConfiguration({
   required List<FileSystemEntity> files,
-  bool verbose = false,
 }) async {
 
   StreamController sc = StreamController<FileSystemEvent>();
@@ -180,15 +168,17 @@ Future<void> watchConfiguration({
     if ( ! watchDirs.contains( file.parent.path ) ) {
       file.parent.watch( events: FileSystemEvent.all ).listen( sc.sink.add );
       print( 'Watching: ${file.parent.path}' );
+      watchDirs.add( file.parent.path );
     }
   }
 
   await generateConfigurations(
     files: files,
-    verbose: verbose,
   );
 
-  stdout.write('\r -> Last Updated: $currentTime. \r');
+  print('\n\nLast Updated: $currentTime.');
+
+  stdout.write('\r -> Watching for Changes... \r');
   await for (final event in sc.stream) {
     if (event.path.endsWith('.config.yaml')) {
 
@@ -203,7 +193,6 @@ Future<void> watchConfiguration({
 
       await generateConfigurations(
         files: newFiles,
-        verbose: verbose,
       );
 
       stdout.write('\r -> Last Updated: $currentTime.\r');
