@@ -259,6 +259,9 @@ void main() {
       expect( max( configs[0].routes.length, configs[1].routes.length ) , equals( config.routes.length ) );
       expect( max( configs[0].images.length, configs[1].images.length ) , equals( config.images.length ) );
       expect( max( configs[0].strings.length, configs[1].strings.length ) , equals( config.strings.length ) );
+      expect( max( configs[0].misc.length, configs[1].misc.length ) , equals( config.misc.length ) );
+      expect( max( configs[0].padding.length, configs[1].padding.length ) , equals( config.padding.length ) );
+      expect( max( configs[0].margins.length, configs[1].margins.length ) , equals( config.margins.length ) );
       expect( max( configs[0].sizes.length, configs[1].sizes.length ) , equals( config.sizes.length ) );
     });
 
