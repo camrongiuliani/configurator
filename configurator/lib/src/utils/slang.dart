@@ -55,6 +55,10 @@ class SlangUtil {
       conv[ node.locale ]![ node.name ] = node.value;
     }
 
+    if ( !conv.containsKey( 'base' ) ) {
+      conv['base'] = {};
+    }
+
     var base = conv['base']!;
 
     translationMap.addTranslations(
