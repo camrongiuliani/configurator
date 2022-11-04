@@ -1,0 +1,8 @@
+id: store_front_de
+namespace: storeFront
+
+configuration:
+  strings:
+    de:
+      hero: Gehen\nSie neue\nWege in\nIhre\nfinanzielle\nZukunft
+

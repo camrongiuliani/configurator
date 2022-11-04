@@ -1,0 +1,40 @@
+id: personal_account_type
+namespace: personal.accountType
+
+parts:
+  - personal_account_type_de
+
+definitions:
+  - strings:
+      - &defaultHeaderImage
+          'https://pub.dev/static/hash-qr9i96gp/img/pub-dev-logo-2x.png'
+  - colors:
+      - &primary 1D2F3F
+      - &onPrimary FFFFFF
+      - &secondary CC0000
+      - &onSecondary FFFFFF
+      - &tertiary '000000'
+      - &onTertiary FFFFFF
+      - &background EFF1F3
+      - &onBackground '000000'
+      - &surface FFFFFF
+      - &onSurface '000000'
+      - &error FF0000
+      - &onError FFFFFF
+
+configuration:
+  flags:
+  images:
+  sizes:
+  routes:
+
+  colors:
+    bg: *background
+
+  strings:
+    base:
+      title: Your Account Type
+      introLine1: What type of account do you want to open?
+      introLine2: Your choice will apply to all the accounts you wish to open during this session.
+      individualButton: Individual (Just Me)
+      jointButton: Joint

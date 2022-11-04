@@ -1,0 +1,45 @@
+id: personal_getting_started
+namespace: personal.gettingStarted
+
+parts:
+  - personal_getting_started_de
+
+definitions:
+  - strings:
+      - &defaultHeaderImage
+          'https://pub.dev/static/hash-qr9i96gp/img/pub-dev-logo-2x.png'
+  - colors:
+      - &primary 1D2F3F
+      - &onPrimary FFFFFF
+      - &secondary CC0000
+      - &onSecondary FFFFFF
+      - &tertiary '000000'
+      - &onTertiary FFFFFF
+      - &background EFF1F3
+      - &onBackground '000000'
+      - &surface FFFFFF
+      - &onSurface '000000'
+      - &error FF0000
+      - &onError FFFFFF
+
+configuration:
+  flags:
+    tabBar:
+      personal: true
+      business: true
+  images:
+  sizes:
+  routes:
+
+  colors:
+    bg: *background
+
+  strings:
+    base:
+      title: Tell Us Who You Want To Be...
+      newCustomer: I am not a customer
+      existingCustomer: I am an existing customer
+      alreadyStarted: I've already started an application
+      importantInfoTitle: Important Information for Opening a New Account
+      importantInfoBody1: To help the government fight the funding of terrorism and money laundering activities, federal law requires all financial institutions to obtain, verify, and record information that identifies each person who opens an account.
+      importantInfoBody2(rich): "${bold(What this means for you: )} ${regular(When you open an account, we will ask for your name, address, date of birth, and other information that will allow us to identify you. We may also ask to see your driver's license or other identifying documents.)}"

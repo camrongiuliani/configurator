@@ -1,0 +1,13 @@
+id: personal_getting_started_de
+namespace: personal.gettingStarted
+
+configuration:
+  strings:
+    de:
+      title: Tell Us Who You Are...
+      newCustomer: I am a new customer
+      existingCustomer: I am an existing customer
+      alreadyStarted: I've already started an application
+      importantInfoTitle: Important Information for Opening a New Account
+      importantInfoBody1: To help the government fight the funding of terrorism and money laundering activities, federal law requires all financial institutions to obtain, verify, and record information that identifies each person who opens an account.
+      importantInfoBody2(rich): "${bold(What this means for you: )} ${regular(When you open an account, we will ask for your name, address, date of birth, and other information that will allow us to identify you. We may also ask to see your driver's license or other identifying documents.)}"

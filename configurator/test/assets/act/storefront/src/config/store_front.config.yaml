@@ -1,0 +1,97 @@
+id: store_front_scope
+namespace: storeFront
+
+parts:
+  - store_front_de
+
+definitions:
+  - strings:
+      - &defaultHeaderImage
+          'https://pub.dev/static/hash-qr9i96gp/img/pub-dev-logo-2x.png'
+  - colors:
+      - &primary 1D2F3F
+      - &onPrimary FFFFFF
+      - &secondary CC0000
+      - &onSecondary FFFFFF
+      - &tertiary FC9403
+      - &onTertiary '000000'
+      - &background EFF1F3
+      - &onBackground '000000'
+      - &surface FFFFFF
+      - &onSurface '000000'
+      - &error FF0000
+      - &onError FFFFFF
+      - &clear 00FFFFFF
+
+configuration:
+  flags:
+    tabBar:
+      personal: true
+      business: true
+  images:
+    hero: assets/man_on_mountain_hero.png
+    appBar:
+      bg: assets/mobile_appbar.png
+      logo: assets/battle-bank-mini-logo.svg
+
+  colors:
+    bg: *background
+    hero:
+      topBorder: *tertiary
+      bottomBorder: *tertiary
+      textBg: *surface
+      text: *onSurface
+
+    tabBar:
+      bg: *primary
+      indicator: *clear
+      item:
+        active:
+          text: *onPrimary
+          bg: *primary
+        inactive:
+          text: *onPrimary
+          bg: *primary
+
+    productSection:
+      text: *onBackground
+
+    productCard:
+      bg: *surface
+      text:
+        title: *onSurface
+        body: *onSurface
+        footer: *onSurface
+    submitBtn:
+      bg: *primary
+      text: *onPrimary
+
+  margins:
+    hero:
+      text: 12.0
+
+  paddings:
+    hero:
+      text: 20.0
+
+  sizes:
+    hero:
+      topBorderWidth: 8.0
+      bottomBorderWidth: 8.0
+      textSize: 20.0
+
+  routes:
+    - id: 1
+      path: /oao
+      children:
+        - id: 2
+          path: /store-front
+        - id: 3
+          path: /personal
+          children:
+            - id: 4
+              path: /getting-started
+
+  strings:
+    base:
+        hero: Forging\na new\npath to\nyour\nfinancial\nfuture

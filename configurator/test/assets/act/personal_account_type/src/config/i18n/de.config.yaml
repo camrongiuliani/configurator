@@ -1,0 +1,11 @@
+id: personal_account_type_de
+namespace: personal.accountType
+
+configuration:
+  strings:
+    de:
+      title: Your Account Type
+      introLine1: What type of account do you want to open?
+      introLine2: Your choice will apply to all the accounts you wish to open during this session.
+      individualButton: Individual (Just Me)
+      jointButton: Joint

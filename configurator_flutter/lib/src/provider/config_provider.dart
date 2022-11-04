@@ -1,8 +1,7 @@
 import 'package:configurator_flutter/configurator_flutter.dart';
 import 'package:flutter/widgets.dart';
-import 'package:collection/collection.dart';
 
-final _configProviderKey = GlobalKey<_ConfigurationProviderState>();
+// final _configProviderKey = GlobalKey<_ConfigurationProviderState>();
 
 class Configurator extends StatefulWidget {
 
@@ -12,7 +11,8 @@ class Configurator extends StatefulWidget {
   Configurator({
     required this.config,
     required this.builder,
-  }) : super( key: _configProviderKey );
+    super.key,
+  });
 
   @override
   State<Configurator> createState() => _ConfigurationProviderState();
