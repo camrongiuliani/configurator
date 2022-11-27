@@ -15,6 +15,7 @@ import 'package:configurator/src/writers/color_writer.dart';
 import 'package:configurator/src/writers/size_writer.dart';
 import 'package:configurator/src/writers/slang_writer.dart';
 import 'package:configurator/src/writers/theme_writer.dart';
+import 'package:configurator/src/writers/weight_writer.dart';
 
 class ProcessedConfig {
 
@@ -42,6 +43,9 @@ class ProcessedConfig {
 
       TitleWriter( 'Keys' ).write(),
       KeyWriter( frameworkName, yamlConfiguration ).write(),
+
+      TitleWriter( 'Weight' ).write(),
+      WeightWriter( frameworkName, yamlConfiguration.weight ).write(),
 
       TitleWriter( 'Theme' ).write(),
       ThemeWriter( frameworkName, yamlConfiguration ).write(),

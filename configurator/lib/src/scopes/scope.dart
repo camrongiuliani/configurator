@@ -6,6 +6,7 @@ abstract class ConfigScope {
   abstract final String name;
 
   List<String> get partFiles => [];
+  int get weight;
   Map<String, bool> get flags;
   Map<String, dynamic> get images;
   Map<String, dynamic> get misc;
@@ -26,6 +27,7 @@ abstract class ConfigScope {
     return ProxyScope(
       name: config.name,
       partFiles: config.partFiles,
+      weight: config.weight,
       flags: { for (var e in config.flags) e.name : e.value },
       images: { for (var e in config.images) e.name : e.value },
       misc: { for (var e in config.misc) e.name : e.value },

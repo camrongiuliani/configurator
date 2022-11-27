@@ -17,6 +17,12 @@ class ConfigWriter extends Writer {
           _nameField(),
 
           _mapGetter(
+            name: 'weight',
+            returnType: 'int',
+            assignment: '_Weight().map[\'weight\'] ?? 0',
+          ),
+
+          _mapGetter(
             name: 'flags',
             returnType: 'Map<String, bool>',
             assignment: 'const _Flags().map',

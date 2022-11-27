@@ -43,6 +43,7 @@ class YamlParser {
     return YamlConfiguration(
       name: id,
       partFiles: _processParts( rootNode ),
+      weight: _processWeight( rootNode ),
       flags: _processSettings( configNode, 'flags', ns ),
       colors: _processSettings( configNode, 'colors', ns ),
       images: _processSettings( configNode, 'images', ns ),
@@ -77,6 +78,25 @@ class YamlParser {
     }
 
     return parts;
+  }
+
+  static int _processWeight( YamlNode configNode ) {
+    try {
+
+      final node = configNode.value[ 'weight' ];
+
+      if ( node is int ) {
+        return node;
+      } else if (node is String) {
+        return int.parse(node);
+      }
+
+    } catch ( e ) {
+      print( e );
+    }
+
+    return 0;
+
   }
 
   static List<YamlSetting> _processSettings( YamlNode configNode, String type, [ String? namespace ] ) {

@@ -9,6 +9,8 @@ class Configuration  {
   final List<ConfigScope> _scopes;
   List<ConfigScope> get scopes => List.from( _scopes );
 
+  List<ConfigScope> get _scopesSorted => _scopes.sorted((b, a) => a.weight.compareTo(b.weight));
+
   ConfigScope get _currentScope => _scopes.last;
   String get currentScopeName => _currentScope.name;
 
@@ -64,31 +66,31 @@ class Configuration  {
   }
 
   bool flag( String id ) {
-    return _scopes.reversed.firstWhereOrNull( ( s ) {
+    return _scopesSorted.reversed.firstWhereOrNull( ( s ) {
       return s.flags.containsKey( id );
     })?.flags[ id ] ?? false;
   }
 
   String color( String id ) {
-    return _scopes.reversed.firstWhereOrNull( ( s ) {
+    return _scopesSorted.reversed.firstWhereOrNull( ( s ) {
       return s.colors.containsKey( id );
     })?.colors[ id ] ?? '';
   }
 
   String route( int id ) {
-    return _scopes.reversed.firstWhereOrNull( ( s ) {
+    return _scopesSorted.reversed.firstWhereOrNull( ( s ) {
       return s.routes.containsKey( id );
     })?.routes[ id ] ?? '';
   }
 
   String image( String id ) {
-    return _scopes.reversed.firstWhereOrNull( ( s ) {
+    return _scopesSorted.reversed.firstWhereOrNull( ( s ) {
       return s.images.containsKey( id );
     })?.images[ id ] ?? '';
   }
 
   List<String> imageList( String id ) {
-    dynamic i = _scopes.reversed.firstWhereOrNull( ( s ) {
+    dynamic i = _scopesSorted.reversed.firstWhereOrNull( ( s ) {
       return s.images.containsKey( id );
     })?.images[ id ];
 
@@ -100,25 +102,25 @@ class Configuration  {
   }
 
   dynamic misc( String id ) {
-    return _scopes.reversed.firstWhereOrNull( ( s ) {
+    return _scopesSorted.reversed.firstWhereOrNull( ( s ) {
       return s.misc.containsKey( id );
     })?.misc[ id ];
   }
 
   double size( String id ) {
-    return _scopes.reversed.firstWhereOrNull( ( s ) {
+    return _scopesSorted.reversed.firstWhereOrNull( ( s ) {
       return s.sizes.containsKey( id );
     })?.sizes[ id ] ?? 14.0;
   }
 
   double padding( String id ) {
-    return _scopes.reversed.firstWhereOrNull( ( s ) {
+    return _scopesSorted.reversed.firstWhereOrNull( ( s ) {
       return s.padding.containsKey( id );
     })?.padding[ id ] ?? 0.0;
   }
 
   double margin( String id ) {
-    return _scopes.reversed.firstWhereOrNull( ( s ) {
+    return _scopesSorted.reversed.firstWhereOrNull( ( s ) {
       return s.margins.containsKey( id );
     })?.margins[ id ] ?? 0.0;
   }

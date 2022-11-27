@@ -696,6 +696,9 @@ class GeneratedAppScope extends ConfigScope {
   String name = '__GeneratedScope';
 
   @override
+  int get weight => 0;
+
+  @override
   Map<String, bool> flags = const _Flags().map;
 
   @override

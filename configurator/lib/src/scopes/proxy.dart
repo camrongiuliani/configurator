@@ -5,6 +5,9 @@ class ProxyScope extends ConfigScope {
   final String name;
 
   @override
+  final int weight;
+
+  @override
   final List<String> partFiles;
 
   @override
@@ -34,6 +37,7 @@ class ProxyScope extends ConfigScope {
   ProxyScope({
     required this.name,
     this.partFiles = const [],
+    this.weight = 0,
     this.flags = const {},
     this.images = const {},
     this.routes = const {},

@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:configurator/configurator.dart';
 
 class YamlConfiguration {
 
   final String name;
   final List<String> partFiles;
+  final int weight;
   final List<YamlSetting> flags;
   final List<YamlSetting> colors;
   final List<YamlSetting> images;
@@ -16,6 +19,7 @@ class YamlConfiguration {
 
   YamlConfiguration({
     required this.name,
+    this.weight = 0,
     this.partFiles = const [],
     this.flags = const [],
     this.colors = const [],
@@ -31,6 +35,7 @@ class YamlConfiguration {
   Map<dynamic, dynamic> toJson() {
     return {
       'partFiles': partFiles,
+      'weight': weight,
       'flags': { for (var e in flags) e.name: e.value},
       'images': { for (var e in images) e.name: e.value},
       'misc': { for (var e in misc) e.name: e.value},

@@ -34,4 +34,7 @@ class TestScope1 extends ConfigScope {
   @override
   Map<String, double> get margins => const {};
 
+  @override
+  int get weight => 0;
+
 }

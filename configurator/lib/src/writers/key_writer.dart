@@ -14,6 +14,14 @@ class KeyWriter extends Writer {
   Spec write() {
     LibraryBuilder lb = LibraryBuilder();
 
+    Class weightKeys = Class( ( builder ) {
+      builder
+        ..name = '_WeightKeys'
+        ..fields.addAll([
+          _buildField( 'weight' ),
+        ]);
+    });
+
     Class flagKeys = Class( ( builder ) {
       builder
         ..name = '_FlagKeys'
@@ -82,6 +90,7 @@ class KeyWriter extends Writer {
       builder
         ..name = '${name}ConfigKeys'
         ..fields.addAll([
+          _buildKeyAccessor( 'weight', '_WeightKeys()' ),
           _buildKeyAccessor( 'routes', '_RouteKeys()' ),
           _buildKeyAccessor( 'flags', '_FlagKeys()' ),
           _buildKeyAccessor( 'sizes', '_SizeKeys()' ),
@@ -94,6 +103,7 @@ class KeyWriter extends Writer {
     });
 
     lb.body.addAll([
+      weightKeys,
       flagKeys,
       imageKeys,
       miscKeys,
