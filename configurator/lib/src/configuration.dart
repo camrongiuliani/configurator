@@ -9,7 +9,7 @@ class Configuration  {
   final List<ConfigScope> _scopes;
   List<ConfigScope> get scopes => List.from( _scopes );
 
-  List<ConfigScope> get _scopesSorted => _scopes.sorted((b, a) => a.weight.compareTo(b.weight));
+  List<ConfigScope> get _scopesSorted => _scopes.sorted((a, b) => a.weight.compareTo(b.weight));
 
   ConfigScope get _currentScope => _scopes.last;
   String get currentScopeName => _currentScope.name;
