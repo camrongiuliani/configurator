@@ -17,6 +17,8 @@ import 'package:configurator/src/writers/slang_writer.dart';
 import 'package:configurator/src/writers/theme_writer.dart';
 import 'package:configurator/src/writers/weight_writer.dart';
 
+import '../writers/typeface_writer.dart';
+
 class ProcessedConfig {
 
   final YamlConfiguration yamlConfiguration;
@@ -73,6 +75,9 @@ class ProcessedConfig {
 
       TitleWriter( 'Misc' ).write(),
       MiscWriter( frameworkName, yamlConfiguration.misc ).write(),
+
+      TitleWriter( 'Typefaces' ).write(),
+      TypefaceWriter( frameworkName, yamlConfiguration.typefaces ).write(),
 
       TitleWriter( 'Slang (i18n)' ).write(),
       SlangWriter( yamlConfiguration.strings ).write(),

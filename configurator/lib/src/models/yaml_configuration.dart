@@ -11,6 +11,7 @@ class YamlConfiguration {
   final List<YamlSetting> colors;
   final List<YamlSetting> images;
   final List<YamlSetting> misc;
+  final List<YamlSetting> typefaces;
   final List<YamlSetting> sizes;
   final List<YamlSetting> padding;
   final List<YamlSetting> margins;
@@ -25,6 +26,7 @@ class YamlConfiguration {
     this.colors = const [],
     this.images = const [],
     this.misc = const [],
+    this.typefaces = const [],
     this.sizes = const [],
     this.routes = const [],
     this.strings = const [],
@@ -39,6 +41,7 @@ class YamlConfiguration {
       'flags': { for (var e in flags) e.name: e.value},
       'images': { for (var e in images) e.name: e.value},
       'misc': { for (var e in misc) e.name: e.value},
+      'typefaces': { for (var e in typefaces) e.name: e.value},
       'sizes': { for (var e in sizes) e.name: e.value},
       'colors': { for (var e in colors) e.name: e.value},
       'routes': { for (var e in routes) e.id : e.path },
@@ -51,6 +54,9 @@ class YamlConfiguration {
   operator +( YamlConfiguration t ) {
     misc.removeWhere(( e ) => t.misc.contains( e ));
     misc.addAll( t.misc );
+
+    typefaces.removeWhere(( e ) => t.typefaces.contains( e ));
+    typefaces.addAll( t.typefaces );
 
     padding.removeWhere(( e ) => t.padding.contains( e ));
     padding.addAll( t.padding );

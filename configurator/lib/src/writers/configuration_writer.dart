@@ -65,6 +65,12 @@ class ConfigWriter extends Writer {
           ),
 
           _mapGetter(
+            name: 'typefaces',
+            returnType: 'Map<String, dynamic>',
+            assignment: 'const _Typeface().map',
+          ),
+
+          _mapGetter(
             name: 'routes',
             returnType: 'Map<int, String>',
             assignment: 'const _Routes().map',

@@ -46,6 +46,14 @@ class KeyWriter extends Writer {
         ]);
     });
 
+    Class typefaceKeys = Class( ( builder ) {
+      builder
+        ..name = '_TypefaceKeys'
+        ..fields.addAll([
+          ..._yamlConfiguration.typefaces.map((e) => _buildField( e.name )),
+        ]);
+    });
+
     Class paddingKeys = Class( ( builder ) {
       builder
         ..name = '_PaddingKeys'
@@ -97,6 +105,7 @@ class KeyWriter extends Writer {
           _buildKeyAccessor( 'padding', '_PaddingKeys()' ),
           _buildKeyAccessor( 'margins', '_MarginKeys()' ),
           _buildKeyAccessor( 'misc', '_MiscKeys()' ),
+          _buildKeyAccessor( 'typefaces', '_TypefaceKeys()' ),
           _buildKeyAccessor( 'colors', '_ColorKeys()' ),
           _buildKeyAccessor( 'images', '_ImageKeys()' ),
         ]);
@@ -107,6 +116,7 @@ class KeyWriter extends Writer {
       flagKeys,
       imageKeys,
       miscKeys,
+      typefaceKeys,
       routeKeys,
       sizeKeys,
       paddingKeys,

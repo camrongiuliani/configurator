@@ -107,6 +107,12 @@ class Configuration  {
     })?.misc[ id ];
   }
 
+  dynamic typefaces( String id ) {
+    return _scopesSorted.reversed.firstWhereOrNull( ( s ) {
+      return s.typefaces.containsKey( id );
+    })?.misc[ id ];
+  }
+
   double size( String id ) {
     return _scopesSorted.reversed.firstWhereOrNull( ( s ) {
       return s.sizes.containsKey( id );

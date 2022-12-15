@@ -1,5 +1,6 @@
 library configurator;
 
+export 'src/models/typeface.dart';
 export 'src/scopes/scope.dart';
 export 'src/scopes/proxy.dart';
 export 'src/configuration.dart';
