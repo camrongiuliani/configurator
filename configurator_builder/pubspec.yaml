@@ -26,11 +26,13 @@ dependencies:
     git:
       url: git@github.com:camrongiuliani/configurator.git
       path: configurator
+      ref: 0.0.1
 
   configurator_annotations:
     git:
       url: git@github.com:camrongiuliani/configurator.git
       path: configurator_annotations
+      ref: 0.0.1
 
   meta: ^1.7.0
   source_gen: ^1.2.1
