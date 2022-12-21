@@ -65,9 +65,9 @@ class ConfigWriter extends Writer {
           ),
 
           _mapGetter(
-            name: 'typefaces',
+            name: 'textStyles',
             returnType: 'Map<String, dynamic>',
-            assignment: 'const _Typeface().map',
+            assignment: 'const _TextStyle().map',
           ),
 
           _mapGetter(

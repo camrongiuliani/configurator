@@ -107,10 +107,10 @@ class Configuration  {
     })?.misc[ id ];
   }
 
-  dynamic typefaces( String id ) {
+  Map<String, dynamic>  textStyle( String id ) {
     return _scopesSorted.reversed.firstWhereOrNull( ( s ) {
-      return s.typefaces.containsKey( id );
-    })?.misc[ id ];
+      return s.textStyles.containsKey( id );
+    })?.textStyles[ id ];
   }
 
   double size( String id ) {

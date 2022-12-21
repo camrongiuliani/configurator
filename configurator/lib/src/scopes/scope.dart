@@ -15,7 +15,7 @@ abstract class ConfigScope {
   Map<String, double> get padding;
   Map<String, double> get margins;
   Map<String, double> get radius => {};
-  Map<String, dynamic> get typefaces => {};
+  Map<String, dynamic> get textStyles => {};
   Map<int, String?> get routes;
 
 
@@ -33,7 +33,7 @@ abstract class ConfigScope {
       flags: { for (var e in config.flags) e.name : e.value },
       images: { for (var e in config.images) e.name : e.value },
       misc: { for (var e in config.misc) e.name : e.value },
-      typefaces: { for (var e in config.typefaces) e.name : e.value },
+      textStyles: { for (var e in config.textStyles) e.key : e },
       routes: { for (var e in config.routes) e.id : e.path },
       sizes: { for (var e in config.sizes) e.name : e.value },
       padding: { for (var e in config.padding) e.name : e.value },
@@ -48,7 +48,7 @@ abstract class ConfigScope {
       'flags': { for (var e in flags.entries) e.key: e.value},
       'images': { for (var e in images.entries) e.key: e.value},
       'misc': { for (var e in misc.entries) e.key: e.value},
-      'typefaces': { for (var e in typefaces.entries) e.key: e.value},
+      'textStyles': { for (var e in textStyles.entries) e.key: e.value},
       'sizes': { for (var e in sizes.entries) e.key: e.value},
       'padding': { for (var e in padding.entries) e.key: e.value},
       'margins': { for (var e in margins.entries) e.key: e.value},
@@ -66,7 +66,7 @@ abstract class ConfigScope {
           const ListEquality().equals( partFiles, other.partFiles ) &&
           const MapEquality().equals( images, other.images ) &&
           const MapEquality().equals( misc, other.misc ) &&
-          const MapEquality().equals( typefaces, other.typefaces ) &&
+          const MapEquality().equals( textStyles, other.textStyles ) &&
           const MapEquality().equals( routes, other.routes ) &&
           const MapEquality().equals( colors, other.colors ) &&
           const MapEquality().equals( padding, other.padding ) &&
@@ -80,7 +80,7 @@ abstract class ConfigScope {
       ^ partFiles.hashCode
       ^ images.hashCode
       ^ misc.hashCode
-      ^ typefaces.hashCode
+      ^ textStyles.hashCode
       ^ padding.hashCode
       ^ margins.hashCode
       ^ routes.hashCode

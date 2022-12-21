@@ -17,7 +17,7 @@ import 'package:configurator/src/writers/slang_writer.dart';
 import 'package:configurator/src/writers/theme_writer.dart';
 import 'package:configurator/src/writers/weight_writer.dart';
 
-import '../writers/typeface_writer.dart';
+import '../writers/text_style_writer.dart';
 
 class ProcessedConfig {
 
@@ -37,7 +37,7 @@ class ProcessedConfig {
       Directive.import( 'package:slang/builder/model/node.dart' ),
       Directive.export( 'package:slang_flutter/slang_flutter.dart' ),
     ]);
-
+    
     builder.body.addAll([
 
       TitleWriter( 'Color Util' ).write(),
@@ -76,8 +76,8 @@ class ProcessedConfig {
       TitleWriter( 'Misc' ).write(),
       MiscWriter( frameworkName, yamlConfiguration.misc ).write(),
 
-      TitleWriter( 'Typefaces' ).write(),
-      TypefaceWriter( frameworkName, yamlConfiguration.typefaces ).write(),
+      TitleWriter( 'TextStyles' ).write(),
+      TextStyleWriter( frameworkName, yamlConfiguration.textStyles ).write(),
 
       TitleWriter( 'Slang (i18n)' ).write(),
       SlangWriter( yamlConfiguration.strings ).write(),

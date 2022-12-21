@@ -149,6 +149,7 @@ Future<void> generateConfigurations({
     FileUtils.writeFile(
       path: outputFilePath,
       content: DartFormatter().format( await result.write() ),
+      // content: await result.write(),
     );
 
     print( outputFilePath );

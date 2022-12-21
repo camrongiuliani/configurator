@@ -19,7 +19,7 @@ class ConfigExtWriter extends Writer {
           _buildGetter( '_PaddingAccessor', 'paddings' ),
           _buildGetter( '_MarginAccessor', 'margins' ),
           _buildGetter( '_MiscAccessor', 'miscellaneous' ),
-          _buildGetter( '_TypefaceAccessor', 'typefaces' ),
+          _buildGetter( '_TextStyleAccessor', 'textStyles' ),
           _buildGetter( '_RouteAccessor', 'routes' ),
           _buildGetter( '_I18nDartEn', 'strings', 't' ),
         ]);

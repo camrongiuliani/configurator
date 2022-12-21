@@ -35,7 +35,7 @@ class ProxyScope extends ConfigScope {
   Map<String, dynamic> misc;
 
   @override
-  Map<String, dynamic> typefaces;
+  Map<String, dynamic> textStyles;
 
   ProxyScope({
     required this.name,
@@ -49,6 +49,6 @@ class ProxyScope extends ConfigScope {
     this.padding = const {},
     this.margins = const {},
     this.misc = const {},
-    this.typefaces = const {},
+    this.textStyles = const {},
   });
 }
