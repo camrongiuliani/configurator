@@ -72,7 +72,7 @@ class TextStyleWriter extends Writer {
                   return TextStyle(
                     color: _ColorUtil.parseColorValue(ts["color"]),
                     fontSize: ts["size"] ?? 12.0,
-                    fontWeight: ts["weight"] ?? 400,
+                    fontWeight: _FontUtil.parseFontWeight(ts["weight"] ?? 400),
                     fontFamily: ts["typeface"]?["family"] ?? "Poppins",
                   );
                 ''';

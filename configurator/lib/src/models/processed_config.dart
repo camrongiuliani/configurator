@@ -1,5 +1,6 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:configurator/configurator.dart';
+import 'package:configurator/src/writers/font_util_writer.dart';
 import 'package:configurator/src/writers/margin_writer.dart';
 import 'package:configurator/src/writers/misc_writer.dart';
 import 'package:configurator/src/writers/padding_writer.dart';
@@ -42,6 +43,9 @@ class ProcessedConfig {
 
       TitleWriter( 'Color Util' ).write(),
       ColorUtilWriter().write(),
+
+      TitleWriter( 'Font Util' ).write(),
+      FontUtilWriter().write(),
 
       TitleWriter( 'Keys' ).write(),
       KeyWriter( frameworkName, yamlConfiguration ).write(),
