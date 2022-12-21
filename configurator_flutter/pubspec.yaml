@@ -28,6 +28,7 @@ dependencies:
     git:
       url: git@github.com:camrongiuliani/configurator.git
       path: configurator
+      ref: 0.0.1
 
 dev_dependencies:
   flutter_test:
