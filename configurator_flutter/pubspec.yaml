@@ -11,9 +11,6 @@ dependency_overrides:
   configurator:
     path: ../configurator
 
-  configurator_annotations:
-    path: ../configurator_annotations
-
 dependencies:
   flutter:
     sdk: flutter
