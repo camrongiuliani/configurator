@@ -71,18 +71,19 @@ class TextStyleWriter extends Writer {
                 var fontSize = ts["size"] ?? 12.0;
                 var source = ts["typeface"]?["source"];
                 var heightAbs = ts["height"] ?? 0.0;
+                var fontFamily = ts["typeface"]?["family"] ?? "Poppins";
                 
                 var style = TextStyle(
                   color: _ColorUtil.parseColorValue(ts["color"]),
                   fontSize: fontSize,
                   fontWeight: _FontUtil.parseFontWeight(ts["weight"] ?? 400),
-                  fontFamily: ts["typeface"]?["family"] ?? "Poppins",
+                  fontFamily: fontFamily,
                   height: heightAbs == 0 ? null : (heightAbs / fontSize),
                 );
             
                 if (source == 'GoogleFont') {
                   try {
-                    return GoogleFonts.getFont(source, textStyle: style);
+                    return GoogleFonts.getFont(fontFamily, textStyle: style);
                   } catch (_) {}
                 }
             
