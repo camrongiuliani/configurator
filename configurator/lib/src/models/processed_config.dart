@@ -36,6 +36,7 @@ class ProcessedConfig {
       Directive.import( 'package:configurator_flutter/configurator_flutter.dart' ),
       Directive.import( 'dart:ui' ),
       Directive.import( 'package:slang/builder/model/node.dart' ),
+      Directive.import( 'package:google_fonts/google_fonts.dart' ),
       Directive.export( 'package:slang_flutter/slang_flutter.dart' ),
     ]);
     

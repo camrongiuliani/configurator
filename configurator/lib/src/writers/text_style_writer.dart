@@ -69,15 +69,24 @@ class TextStyleWriter extends Writer {
               return '''
                 var ts = _config.textStyle( ${name}ConfigKeys.textStyles.${e.key} );
                 var fontSize = ts["size"] ?? 12.0;
+                var source = ts["typeface"]?["source"];
                 var heightAbs = ts["height"] ?? 0.0;
                 
-                  return TextStyle(
-                    color: _ColorUtil.parseColorValue(ts["color"]),
-                    fontSize: fontSize,
-                    fontWeight: _FontUtil.parseFontWeight(ts["weight"] ?? 400),
-                    fontFamily: ts["typeface"]?["family"] ?? "Poppins",
-                    height: heightAbs == 0 ? null : (heightAbs / fontSize),
-                  );
+                var style = TextStyle(
+                  color: _ColorUtil.parseColorValue(ts["color"]),
+                  fontSize: fontSize,
+                  fontWeight: _FontUtil.parseFontWeight(ts["weight"] ?? 400),
+                  fontFamily: ts["typeface"]?["family"] ?? "Poppins",
+                  height: heightAbs == 0 ? null : (heightAbs / fontSize),
+                );
+            
+                if (source == 'GoogleFont') {
+                  try {
+                    return GoogleFonts.getFont(source, textStyle: style);
+                  } catch (_) {}
+                }
+            
+                return style;
                 ''';
             }
 
