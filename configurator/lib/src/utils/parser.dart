@@ -199,9 +199,10 @@ class YamlParser {
         result.add(
           YamlTextStyle(
             key: '${path.capitalized}_${es.key.capitalized}'.canonicalize,
-            color: es.value['color'],
-            size: es.value['size'],
-            weight: es.value['weight'],
+            color: es.value['color'] ?? '000000',
+            size: es.value['size'] ?? 12.0,
+            weight: es.value['weight'] ?? 400,
+            height: es.value['height'] ?? 0,
             typeface: <String, String>{
               ...es.value['typeface'],
             },

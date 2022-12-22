@@ -68,12 +68,15 @@ class TextStyleWriter extends Writer {
             if (useConfig) {
               return '''
                 var ts = _config.textStyle( ${name}ConfigKeys.textStyles.${e.key} );
+                var fontSize = ts["size"] ?? 12.0;
+                var heightAbs = ts["height"] ?? 0.0;
                 
                   return TextStyle(
                     color: _ColorUtil.parseColorValue(ts["color"]),
-                    fontSize: ts["size"] ?? 12.0,
+                    fontSize: fontSize,
                     fontWeight: _FontUtil.parseFontWeight(ts["weight"] ?? 400),
                     fontFamily: ts["typeface"]?["family"] ?? "Poppins",
+                    height: heightAbs == 0 ? null : (heightAbs / fontSize),
                   );
                 ''';
             }

@@ -3,6 +3,7 @@ class YamlTextStyle {
   final String color;
   final int size;
   final int weight;
+  final int height;
 
   final Map<String, String> typeface;
 
@@ -12,6 +13,7 @@ class YamlTextStyle {
     required this.color,
     required this.size,
     required this.weight,
+    required this.height,
     required this.typeface,
   });
 
@@ -20,6 +22,7 @@ class YamlTextStyle {
     color: json['color'] as String,
     size: json['size'] as int,
     weight: json['weight'] as int,
+    height: json['height'] as int,
     typeface: json['typeface'] as Map<String, String>,
   );
 
@@ -28,6 +31,7 @@ class YamlTextStyle {
     'color': color,
     'size': size,
     'weight': weight,
+    'height': height,
     'typeface': typeface,
   };
 }
