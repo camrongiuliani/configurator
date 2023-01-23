@@ -75,7 +75,7 @@ class TextStyleWriter extends Writer {
                 
                 var style = TextStyle(
                   color: _ColorUtil.parseColorValue(ts["color"]),
-                  fontSize: fontSize,
+                  fontSize: fontSize.toDouble(),
                   fontWeight: _FontUtil.parseFontWeight(ts["weight"] ?? 400),
                   fontFamily: fontFamily,
                   height: heightAbs == 0 ? null : (heightAbs / fontSize),
