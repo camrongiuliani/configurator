@@ -113,7 +113,7 @@ Future<void> applyDefinitions({
 
     var searchIdx = colorStartIdx + 1;
 
-    while (lines[searchIdx].startsWith('    ')) {
+    while (searchIdx < lines.length && lines[searchIdx].startsWith('    ')) {
       colorEndIdx++;
       searchIdx++;
     }
