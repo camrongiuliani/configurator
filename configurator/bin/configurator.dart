@@ -12,7 +12,6 @@ import 'package:yaml_edit/yaml_edit.dart';
 import 'config_file.dart';
 import 'file_utils.dart';
 import 'graph.dart';
-import 'package:source_span/source_span.dart';
 
 /// To run this:
 /// -> flutter pub run configurator
