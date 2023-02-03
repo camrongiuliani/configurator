@@ -44,7 +44,7 @@ class TextStyleWriter extends Writer {
           List<String> lines = [];
 
           for (var e in _textStyles) {
-            lines.add('..._config.textStyle( ${name}ConfigKeys.textStyles.${e.key})["typefaces"],');
+            lines.add('..._config.textStyle( ${name}ConfigKeys.textStyles.${e.key})["typeface"],');
           }
 
           return '''                
