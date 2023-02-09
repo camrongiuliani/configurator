@@ -21,7 +21,9 @@ class ConfigExtWriter extends Writer {
           _buildGetter( '_MiscAccessor', 'miscellaneous' ),
           _buildGetter( '_TextStyleAccessor', 'textStyles' ),
           _buildGetter( '_RouteAccessor', 'routes' ),
-          _buildGetter( '_I18nDartEn', 'strings', 't' ),
+          // _buildGetter( '_I18nDartEn', 'strings', 't' ),
+          _buildTranslationGetter(),
+          // _buildTranslationMap(),
         ]);
     });
   }
@@ -32,6 +34,28 @@ class ConfigExtWriter extends Writer {
         ..name = fieldName
         ..returns = refer( className )
         ..body = Code( body ?? '$className( this )' )
+        ..lambda = true
+        ..type = MethodType.getter;
+    });
+  }
+
+  Method _buildTranslationGetter() {
+    return Method( ( b ) {
+      b
+        ..name = 'strings'
+        ..returns = refer( '_i18n' )
+        ..body = const Code( '_i18n(this)' )
+        ..lambda = true
+        ..type = MethodType.getter;
+    });
+  }
+
+  Method _buildTranslationMap() {
+    return Method( ( b ) {
+      b
+        ..name = '_translationMap'
+        ..returns = refer( 'Map<String, Map<String, String>>' )
+        ..body = const Code( 'this.scopes.sorted((a, b) => a.weight.compareTo(b.weight)).reversed.firstWhereOrNull((s) => s.translations.isNotEmpty)?.translations ?? {}' )
         ..lambda = true
         ..type = MethodType.getter;
     });

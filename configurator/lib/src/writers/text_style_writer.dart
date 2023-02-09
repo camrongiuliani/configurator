@@ -74,9 +74,9 @@ class TextStyleWriter extends Writer {
                 var fontFamily = ts["typeface"]?["family"] ?? "Poppins";
                 
                 var style = TextStyle(
-                  color: _ColorUtil.parseColorValue(ts["color"]),
+                  color: ColorParser.parse(ts["color"]),
                   fontSize: fontSize.toDouble(),
-                  fontWeight: _FontUtil.parseFontWeight(ts["weight"] ?? 400),
+                  fontWeight: FontWeightParser.parse(ts["weight"] ?? 400),
                   fontFamily: fontFamily,
                   height: heightAbs == 0 ? null : (heightAbs / fontSize),
                 );

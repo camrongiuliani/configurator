@@ -11,7 +11,9 @@ class SlangWriter extends Writer {
   @override
   Spec write() {
     return Code( SlangUtil.generateTranslations(
-      rawConfig: {},
+      rawConfig: {
+        // 'translation_class_visibility': 'public'
+      },
       i18nNodes: strings,
       verbose: true,
     ) );

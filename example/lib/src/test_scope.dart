@@ -1,5 +1,6 @@
 import 'package:configurator/configurator.dart';
 import 'package:example/src/config/example1.config.dart';
+import 'package:i18n_extension/i18n_extension.dart' as i18nt;
 
 class TestScope1 extends ConfigScope {
   @override
@@ -36,5 +37,12 @@ class TestScope1 extends ConfigScope {
 
   @override
   int get weight => 0;
+
+  @override
+  i18nt.Translations? i18n = i18nt.Translations('en_us');
+
+  @override
+  Map<String, Map<String, String>> get translations => {};
+
 
 }

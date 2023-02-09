@@ -17,6 +17,7 @@ class YamlConfiguration {
   final List<YamlTextStyle> textStyles;
   final List<YamlRoute> routes;
   final List<YamlI18n> strings;
+  final List<YamlI18n> i18n;
 
   YamlConfiguration({
     required this.name,
@@ -32,6 +33,7 @@ class YamlConfiguration {
     this.strings = const [],
     this.padding = const [],
     this.margins = const [],
+    this.i18n = const [],
   });
 
   Map<dynamic, dynamic> toJson() {

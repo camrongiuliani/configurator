@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:configurator/configurator.dart';
+import 'package:configurator/src/models/getter.dart';
 import 'package:configurator/src/utils/string_ext.dart';
 import 'package:yaml/yaml.dart';
 
@@ -36,8 +37,8 @@ class YamlParser {
     final YamlNode configNode = rootNode.value['configuration'];
     final String id = rootNode.value['id'];
     final String? ns = rootNode.value['namespace'];
-    
-    return YamlConfiguration(
+
+    var yamlConfig = YamlConfiguration(
       name: id,
       partFiles: _processParts(rootNode),
       weight: _processWeight(rootNode),
@@ -51,7 +52,10 @@ class YamlParser {
       textStyles: _processTextStyles(configNode, ns),
       routes: _processRoutes(configNode, 'routes'),
       strings: _processTranslations(configNode, 'strings', ns),
+      i18n: _processTranslations(configNode, 'i18n', ns),
     );
+
+    return yamlConfig;
   }
 
   static List<String> _processParts(YamlNode node) {
@@ -226,6 +230,23 @@ class YamlParser {
     return result;
   }
 
+  static List<YamlI18n> processTranslationsMap(Map<String, dynamic> translationsMap) {
+    List<YamlI18n> translations = [];
+
+    try {
+      for (var t in translationsMap.entries) {
+        var values = t.value.entries.map((v) {
+          return YamlI18n(v.key, t.key, v.value);
+        });
+        translations.addAll(List.from(values));
+      }
+    } catch (e) {
+      print(e);
+    }
+
+    return translations;
+  }
+
   static List<YamlI18n> _processTranslations(YamlNode configNode, String type,
       [String? namespace]) {
     List<YamlI18n> translations = [];
@@ -356,3 +377,146 @@ class YamlParser {
     }
   }
 }
+
+class I18nParser {
+
+  static Map<String, dynamic> parse({
+    required List<YamlI18n> strings,
+    void Function(Getter)? onGetter,
+  }) {
+    Map<String, dynamic> map = {};
+
+    for (var f in strings) {
+      map[f.locale] ??= {};
+      map[f.locale][f.name] ??= f.value;
+    }
+
+    List<String> locales = map.keys.toList();
+
+    return locales.map((e) {
+      return visitTranslations(e, Map.from(map[e]), {}, [], onGetter);
+    }).reduce((value, element) => deepMapMerge(value, element));
+  }
+
+  static Map<String, dynamic> visitTranslations(
+    String locale,
+    dynamic setting,
+    Map<String, dynamic> result,
+    List<String> path, [
+    void Function(Getter)? onGetter,
+  ]) {
+
+    if (setting is Map) {
+      for (var entry in setting.entries) {
+        result.addAll(
+          visitTranslations(
+            locale,
+            entry.value,
+            {},
+            [
+              ...() {
+                if (path.isEmpty) {
+                  return [entry.key];
+                }
+
+                return [
+                  ...path,
+                  '_',
+                  entry.key,
+                ];
+              }(),
+            ],
+            onGetter,
+          ),
+        );
+      }
+    } else if (setting is List) {
+      Map<String, dynamic> listResult = {};
+      List<Map<String, dynamic>> mapResult = [];
+
+      bool? isListOfStrings;
+
+      List<String> mapKeys = [];
+
+
+      for (var i = 0; i < setting.length; i++) {
+        var entry = setting[i];
+
+        if (entry is Map<String, dynamic>) {
+          mapKeys.addAll(entry.keys.where((k) => !mapKeys.contains(k)));
+        }
+
+        isListOfStrings ??= entry is String;
+
+        var entryTranslations = visitTranslations(
+          locale,
+          entry,
+          {},
+          [
+            ...path,
+            '_',
+            '$i',
+          ],
+          onGetter,
+        );
+
+        if (mapKeys.isNotEmpty) {
+          var r = <String, dynamic>{};
+
+          for (var i = 0; i < mapKeys.length; i ++) {
+            r[mapKeys[i]] = entryTranslations.keys.toList()[i];
+          }
+
+          mapResult.add(r);
+        } else {
+          listResult.addAll(entryTranslations);
+        }
+      }
+
+      String valueKey = path.map((e) => e.capitalized).join('_').canonicalize;
+
+      if (onGetter != null) {
+        if (mapResult.isEmpty) {
+          onGetter(Getter(valueKey, listResult.keys.toList()));
+        } else {
+          onGetter(Getter(valueKey, mapResult));
+        }
+      }
+
+      if (listResult.isNotEmpty) {
+        result.addAll(listResult);
+      }
+    } else if (setting is String || setting is num) {
+      String valueKey = path.map((e) => e.capitalized).join('_').canonicalize;
+
+      if (onGetter != null) {
+        onGetter(Getter(valueKey, valueKey));
+      }
+
+      result[valueKey] = {
+        locale: '$setting',
+      };
+    } else {
+      throw Exception('Unsupported setting found in Strings : ${setting.runtimeType}');
+    }
+
+    return result;
+  }
+
+  static Map<String, dynamic> deepMapMerge(
+    Map<String, dynamic> original,
+    Map<String, dynamic> newMap,
+  ) {
+    for (var key in newMap.keys) {
+      if (newMap[key] is Map && original[key] is Map) {
+        original[key] = deepMapMerge(original[key], newMap[key]);
+      } else {
+        original[key] = newMap[key];
+      }
+    }
+
+    return original;
+  }
+}
+
+

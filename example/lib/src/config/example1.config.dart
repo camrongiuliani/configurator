@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:configurator_flutter/configurator_flutter.dart';
+import 'package:i18n_extension/i18n_extension.dart';
 import 'dart:ui';
 import 'package:slang/builder/model/node.dart';
 export 'package:slang_flutter/slang_flutter.dart';
+import 'package:i18n_extension/i18n_extension.dart' as i18nt;
 
 // ********************************
 // Color Util
@@ -699,6 +701,9 @@ class GeneratedAppScope extends ConfigScope {
   int get weight => 0;
 
   @override
+  Map<String, Map<String, String>> get translations => {};
+
+  @override
   Map<String, bool> flags = const _Flags().map;
 
   @override
@@ -721,6 +726,9 @@ class GeneratedAppScope extends ConfigScope {
 
   @override
   Map<int, String> routes = const _Routes().map;
+
+  @override
+  i18nt.Translations? i18n = i18nt.Translations('en_us');
 }
 
 // ********************************

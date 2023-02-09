@@ -47,7 +47,7 @@ class ThemeWriter extends Writer {
           ..returns = refer('Color')
           ..name = ( e.name as String ).canonicalize
           ..lambda = true
-          ..body = Code( '_ColorUtil.parseColorValue( themeMap[\'colors\']?[\'${( e.name as String ).canonicalize}\'] )' );
+          ..body = Code( 'ColorParser.parse( themeMap[\'colors\']?[\'${( e.name as String ).canonicalize}\'] )' );
       });
     }).toList();
   }
@@ -112,7 +112,7 @@ class ThemeWriter extends Writer {
             Code( '}' ),
 
             ..._yamlConfiguration.colors.map((e) {
-              return Code( 'themeMap[\'colors\']![\'${( e.name as String ).canonicalize}\'] = _ColorUtil.colorToString( Color.lerp( ${( e.name as String ).canonicalize}, other.${( e.name as String ).canonicalize}, t )! );' );
+              return Code( 'themeMap[\'colors\']![\'${( e.name as String ).canonicalize}\'] = ColorParser.colorToString( Color.lerp( ${( e.name as String ).canonicalize}, other.${( e.name as String ).canonicalize}, t )! );' );
             }),
 
             ..._yamlConfiguration.sizes.map((e) {

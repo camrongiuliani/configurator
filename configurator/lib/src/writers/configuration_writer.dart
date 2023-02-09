@@ -1,11 +1,15 @@
+import 'dart:convert';
+
 import 'package:code_builder/code_builder.dart';
+import 'package:configurator/configurator.dart';
 import 'package:configurator/src/writers/writer.dart';
 
 class ConfigWriter extends Writer {
 
   final String name;
+  final List<YamlI18n> strings;
 
-  ConfigWriter( this.name );
+  ConfigWriter( this.name, this.strings );
 
   @override
   Spec write() {
@@ -74,6 +78,25 @@ class ConfigWriter extends Writer {
             name: 'routes',
             returnType: 'Map<int, String>',
             assignment: 'const _Routes().map',
+          ),
+
+          _mapGetter(
+            name: 'translations',
+            returnType: ' Map<String, Map<String, String>>',
+            assignment: () {
+              Map<String, dynamic> map = {};
+
+              for (var f in strings) {
+                map[f.locale] ??= {};
+                map[f.locale][f.name] ??= f.value;
+              }
+
+              Map<String, dynamic> parsed = I18nParser.parse(
+                strings: strings,
+              );
+
+              return jsonEncode(parsed);
+            }(),
           ),
         ]);
     });

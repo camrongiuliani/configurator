@@ -1,6 +1,7 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:configurator/configurator.dart';
 import 'package:configurator/src/writers/font_util_writer.dart';
+import 'package:configurator/src/writers/i18n_writer.dart';
 import 'package:configurator/src/writers/margin_writer.dart';
 import 'package:configurator/src/writers/misc_writer.dart';
 import 'package:configurator/src/writers/padding_writer.dart';
@@ -32,21 +33,23 @@ class ProcessedConfig {
     LibraryBuilder builder = LibraryBuilder();
 
     builder.directives.addAll([
-      Directive.import( 'package:flutter/material.dart' ),
-      Directive.import( 'package:configurator_flutter/configurator_flutter.dart' ),
       Directive.import( 'dart:ui' ),
-      Directive.import( 'package:slang/builder/model/node.dart' ),
+      Directive.import( 'package:flutter/material.dart' ),
       Directive.import( 'package:google_fonts/google_fonts.dart' ),
-      Directive.export( 'package:slang_flutter/slang_flutter.dart' ),
+      Directive.import( 'package:configurator_flutter/configurator_flutter.dart' ),
+      Directive.import( 'package:collection/collection.dart' ),
+      Directive.import( 'package:i18n_extension/i18n_extension.dart', as: 'i18n' ),
     ]);
     
     builder.body.addAll([
 
-      TitleWriter( 'Color Util' ).write(),
-      ColorUtilWriter().write(),
+      TitleWriter('ignore_for_file: type=lint').write(),
 
-      TitleWriter( 'Font Util' ).write(),
-      FontUtilWriter().write(),
+      // TitleWriter( 'Color Util' ).write(),
+      // ColorUtilWriter().write(),
+
+      // TitleWriter( 'Font Util' ).write(),
+      // FontUtilWriter().write(),
 
       TitleWriter( 'Keys' ).write(),
       KeyWriter( frameworkName, yamlConfiguration ).write(),
@@ -84,11 +87,15 @@ class ProcessedConfig {
       TitleWriter( 'TextStyles' ).write(),
       TextStyleWriter( frameworkName, yamlConfiguration.textStyles ).write(),
 
-      TitleWriter( 'Slang (i18n)' ).write(),
-      SlangWriter( yamlConfiguration.strings ).write(),
+      // TitleWriter( 'Slang (i18n)' ).write(),
+      // SlangWriter( yamlConfiguration.strings ).write(),
+
+      TitleWriter( 'Strings' ).write(),
+      I18nWriter( frameworkName, yamlConfiguration.i18n ).write(),
+
 
       TitleWriter( 'Configuration' ).write(),
-      ConfigWriter( frameworkName ).write(),
+      ConfigWriter( frameworkName, yamlConfiguration.i18n ).write(),
 
       TitleWriter( 'Configuration Extension' ).write(),
       ConfigExtWriter().write(),
