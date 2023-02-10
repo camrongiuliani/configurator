@@ -84,18 +84,19 @@ class ConfigWriter extends Writer {
             name: 'translations',
             returnType: ' Map<String, Map<String, String>>',
             assignment: () {
-              Map<String, dynamic> map = {};
-
-              for (var f in strings) {
-                map[f.locale] ??= {};
-                map[f.locale][f.name] ??= f.value;
-              }
-
               Map<String, dynamic> parsed = I18nParser.parse(
                 strings: strings,
               );
 
-              return jsonEncode(parsed);
+              var data = jsonEncode(parsed).replaceAll(r'\\', r'\');
+
+              while (data.contains(r'\\')) {
+                data = data.replaceAll(r'\\', r'\');
+              }
+
+              data = data.replaceAll(r'+$', r'+\$');
+
+              return data;
             }(),
           ),
         ]);

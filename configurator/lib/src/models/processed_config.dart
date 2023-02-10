@@ -91,8 +91,7 @@ class ProcessedConfig {
       // SlangWriter( yamlConfiguration.strings ).write(),
 
       TitleWriter( 'Strings' ).write(),
-      I18nWriter( frameworkName, yamlConfiguration.i18n ).write(),
-
+      I18nWriter( yamlConfiguration.i18n ).write(),
 
       TitleWriter( 'Configuration' ).write(),
       ConfigWriter( frameworkName, yamlConfiguration.i18n ).write(),

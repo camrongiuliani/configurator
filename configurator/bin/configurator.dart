@@ -235,9 +235,9 @@ Future<void> generateConfigurations({
 
       for (var t in to) {
         if (t != null) {
-          print('Merged ${a.config.name} --> ${t.config.name}');
           t.config = t.config + a.config;
           handled.add(a.config.name);
+          print('Merged ${a.config.name} --> ${t.config.name}');
         }
       }
     }
@@ -267,9 +267,18 @@ Future<void> generateConfigurations({
     var result =
         ProcessedConfig(file.config.name.camelCase.capitalized, file.config);
 
+    var builtContent = await () async {
+      try {
+        return DartFormatter().format(await result.write());
+      } catch(e) {
+        print(e);
+        return await result.write();
+      }
+    }();
+
     FileUtils.writeFile(
       path: outputFilePath,
-      content: DartFormatter().format(await result.write()),
+      content: builtContent,
       // content: await result.write(),
     );
 

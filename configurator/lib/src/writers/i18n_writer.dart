@@ -7,24 +7,10 @@ import 'package:configurator/src/utils/string_ext.dart';
 import 'package:configurator/src/writers/writer.dart';
 
 class I18nWriter extends Writer {
-  final String name;
   final List<YamlI18n> strings;
+  List<Getter> getters = [];
 
-  I18nWriter(String name, this.strings) : name = name.canonicalize.capitalized;
-
-  @override
-  Spec write() {
-    LibraryBuilder lb = LibraryBuilder();
-
-    List<Getter> getters = [];
-
-    Map<String, dynamic> map = {};
-
-    for (var f in strings) {
-      map[f.locale] ??= {};
-      map[f.locale][f.name] ??= f.value;
-    }
-
+  I18nWriter(this.strings) {
     I18nParser.parse(
       strings: strings,
       onGetter: (getter) {
@@ -33,7 +19,11 @@ class I18nWriter extends Writer {
         }
       },
     );
-    //translations
+  }
+
+  @override
+  Spec write() {
+    LibraryBuilder lb = LibraryBuilder();
 
     Class scope = Class((builder) {
       builder
@@ -82,12 +72,6 @@ class I18nWriter extends Writer {
         ..lambda = true
         ..body = Code(
           () {
-            Map<String, dynamic> map = {};
-
-            for (var f in strings) {
-              map[f.locale] ??= {};
-              map[f.locale][f.name] ??= f.value;
-            }
 
             Map<String, dynamic> parsed = I18nParser.parse(
               strings: strings,
@@ -172,28 +156,6 @@ class I18nWriter extends Writer {
     }).toList();
   }
 
-  List<Method> _getGetters([bool useConfig = false]) {
-    return strings.map((e) {
-      MethodBuilder initBuilder(builder) {
-        return builder
-          ..name = e.name.canonicalize
-          ..type = MethodType.getter
-          ..returns = refer('String')
-          ..lambda = true;
-      }
-
-      return Method((builder) {
-        initBuilder(builder).body = Code(() {
-          if (useConfig) {
-            return '_config.i18n( ${name}ConfigKeys.i18n.${e.name} )';
-          }
-
-          return 'map[ ${name}ConfigKeys.i18n.${e.name} ] ?? ""';
-        }());
-      });
-    }).toList();
-  }
-
   Method _getTranslationsMap() {
     return Method((builder) {
       builder
@@ -211,39 +173,6 @@ class I18nWriter extends Writer {
 
           return jsonEncode(map);
         }());
-    });
-  }
-
-  Class _buildAccessor() {
-    return Class((builder) {
-      builder
-        ..constructors.add(
-          Constructor(
-            (b) {
-              b
-                ..constant = true
-                ..requiredParameters.addAll([
-                  Parameter((b) {
-                    b
-                      ..name = '_config'
-                      ..toThis = true;
-                  }),
-                ]);
-            },
-          ),
-        )
-        ..name = '_I18nAccessor'
-        ..fields.addAll([
-          Field((b) {
-            b
-              ..name = '_config'
-              ..type = refer('Configuration')
-              ..modifier = FieldModifier.final$;
-          }),
-        ])
-        ..methods.addAll([
-          ..._getGetters(true),
-        ]);
     });
   }
 }

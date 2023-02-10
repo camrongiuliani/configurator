@@ -84,6 +84,10 @@ class YamlConfiguration {
     strings.removeWhere(( e ) => t.strings.contains( e ));
     strings.addAll( t.strings );
 
+    i18n.removeWhere(( e ) => t.i18n.contains( e ));
+    i18n.addAll( t.i18n );
+
+
     return this;
   }
 }
