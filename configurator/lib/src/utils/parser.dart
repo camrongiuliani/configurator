@@ -253,7 +253,7 @@ class YamlParser {
     List<YamlI18n> translations = [];
 
     try {
-      final YamlNode translationsNode = configNode.value[type];
+      final translationsNode = configNode.value[type];
 
       if (translationsNode is! YamlMap) {
         return translations;
@@ -435,6 +435,10 @@ class I18nParser {
     void Function(Getter)? onGetter,
   ) {
     for (var entry in input.entries) {
+
+      // var mapRegex = RegExp(r'(\(map\))');
+
+      //(map)
       var translations = visitTranslations(
         locale,
         entry.value,
@@ -452,6 +456,149 @@ class I18nParser {
       );
     }
   }
+
+  static void _translateMap2(
+      String locale,
+      Map<dynamic, dynamic> input,
+      dynamic parent,
+      Map<String, dynamic> result,
+      List<String> path,
+      void Function(Getter)? onGetter,
+      ) {
+    Map<String, List<String>> primitives = {};
+
+    String primaryKey = path.map((e) => e.capitalized).join('_').canonicalize;
+
+    List<dynamic> builtKeys = [];
+
+    List<Getter> childGetters = [];
+
+    for (var inputEntry in input.entries) {
+      var entry = inputEntry.value;
+
+      var newPath = [
+        ...path,
+        '_',
+        '${inputEntry.key}',
+      ];
+
+      var entryTranslations = visitTranslations(
+        locale,
+        entry,
+        input,
+        {},
+        newPath,
+            (getter) {
+          childGetters.add(getter);
+
+          if (onGetter != null) {
+            onGetter(getter);
+          }
+        },
+      );
+
+      result.addAll(entryTranslations);
+
+      builtKeys.addAll(entryTranslations.keys);
+
+      if (entry is String || entry is num) {
+        primitives[primaryKey] ??= [];
+        primitives[primaryKey]!.addAll(entryTranslations.keys);
+      } else if (entry is! Map<dynamic, dynamic>) {
+        // throw Exception(
+        //     'Encountered bad type while traversing translations: ${entry.runtimeType} - $entry');
+      }
+    }
+
+    if (onGetter != null) {
+      if (primitives.isNotEmpty) {
+        onGetter(Getter(primaryKey, primitives[primaryKey]));
+      }
+
+      if (parent is! Map<dynamic, dynamic>) {
+        print('d');
+        return;
+        // var entryTranslations = visitTranslations(
+        //   locale,
+        //   entry,
+        //   input,
+        //   {},
+        //   newPath,
+        //       (getter) {
+        //     childGetters.add(getter);
+        //
+        //     if (onGetter != null) {
+        //       onGetter(getter);
+        //     }
+        //   },
+        // );
+      }
+
+      var rawParent = parent[path.last];
+
+      Map<String, dynamic> finalOutput = {};
+
+      for (var rawEntry in rawParent.entries) {
+        Map<String, dynamic> mappedObject = {};
+
+        var rawObject = rawEntry.value;
+
+        if (rawObject is! Map) {
+          continue;
+        }
+
+        int rawObjectLen = rawObject.entries.length;
+
+        // for (var entry in rawObject.entries) {
+        //   if (entry.value is String || entry.value is num) {
+        //     rawObjectLen++;
+        //   } else if (entry.value is List) {
+        //     rawObjectLen += (entry.value as List).length;
+        //   }
+        // }
+
+        var relKeys = builtKeys.sublist(0, rawObjectLen);
+        builtKeys.removeRange(0, rawObjectLen);
+
+        for (var x = 0; x < rawObjectLen; x++) {
+          try {
+            var entry = rawObject.entries.toList()[x];
+          } catch (e) {
+            print('d');;
+          }
+          var entry = rawObject.entries.toList()[x];
+
+          if (entry.value is List) {
+            if (childGetters.isEmpty) {
+              var key = entry.key;
+              var value = [];
+              for (var y = 0; y < entry.value.length; y++) {
+                value.add(relKeys[x]);
+                x++;
+              }
+
+              mappedObject[key] = value;
+            } else {
+              var key = entry.key;
+              var value = childGetters.last.key;
+              mappedObject[key] = value;
+              x += (entry.value as List).length;
+            }
+          } else {
+            var key = entry.key;
+            var value = relKeys[x];
+            mappedObject[key] = value;
+          }
+        }
+        finalOutput[rawEntry.key] = mappedObject;
+
+        // finalOutput.add(mappedObject);
+      }
+
+      onGetter(Getter(primaryKey, finalOutput));
+    }
+  }
+
 
   static void _translateList(
     String locale,
@@ -500,7 +647,8 @@ class I18nParser {
         primitives[primaryKey] ??= [];
         primitives[primaryKey]!.addAll(entryTranslations.keys);
       } else if (entry is! Map<dynamic, dynamic>) {
-        throw Exception('Encountered bad type while traversing translations: ${entry.runtimeType} - $entry');
+        throw Exception(
+            'Encountered bad type while traversing translations: ${entry.runtimeType} - $entry');
       }
     }
 
@@ -578,6 +726,32 @@ class I18nParser {
   ) {
     if (input is Map<dynamic, dynamic>) {
       _translateMap(locale, input, parent, result, path, onGetter);
+
+      for (var entry in input.entries) {
+
+        var mapRegex = RegExp(r'(\(map\))');
+
+        if (mapRegex.hasMatch(entry.key)) {
+          print('d');
+        }
+
+        //(map)
+        var translations = visitTranslations(
+          locale,
+          entry.value,
+          input,
+          {},
+          [
+            ...(path.isNotEmpty ? [...path, '_'] : path),
+            entry.key,
+          ],
+          onGetter,
+        );
+
+        result.addAll(
+          translations,
+        );
+      }
     } else if (input is List) {
       _translateList(locale, input, parent, result, path, onGetter);
     } else if (input is String || input is num) {
