@@ -128,10 +128,6 @@ class I18nWriter extends Writer {
       bool isListType = e.value is List;
       bool isMapType = e.value is Map<dynamic, dynamic>;
 
-      if (isMapType) {
-        print('d');
-      }
-
       String? type = isListType ? 'List<dynamic>' : isMapType ? 'Map<dynamic, dynamic>' : 'String';
 
       String anchor = e.key;
@@ -154,26 +150,7 @@ class I18nWriter extends Writer {
                 throw Exception('Unsupported list type in strings : ${e.value.runtimeType}');
               }
             } else if (isMapType) {
-
-              Map<dynamic, dynamic> visit(input, Map<dynamic, dynamic> result) {
-                if (input is Map<dynamic, dynamic>) {
-                  for (var entry in input.entries) {
-                    if (entry.value is String || entry.value is num) {
-                      result['"${entry.key}"'] = entry.value;
-                    } else {
-                      result['"${entry.key}"'] = jsonEncode(visit(entry.value, result));
-                    }
-                  }
-                }
-
-                return result;
-              }
-
-              var result = visit(e.value, {});
-
-              var x = result.toString();
-
-              return x;
+              return jsonEncode(e.value);
             } else {
               return '_localize("$anchor")';
             }
