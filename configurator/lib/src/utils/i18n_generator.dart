@@ -181,7 +181,7 @@ void _generateClass(
           childName: key,
         );
         buffer.writeln(
-            'late final $childClassWithLocale $key = $childClassWithLocale._(_config);');
+            'late final $childClassWithLocale $key = $childClassWithLocale(_config);');
       }
     } else if (value is PluralNode) {
       final returnType = value.rich ? 'TextSpan' : 'String';
@@ -269,7 +269,7 @@ void _generateMap({
         queue.add(ClassTask(childClassNoLocale, value));
         String childClassWithLocale =
             getClassName(parentName: className, childName: key);
-        buffer.writeln('\'$key\': $childClassWithLocale._(_config),');
+        buffer.writeln('\'$key\': $childClassWithLocale(_config),');
       }
     } else if (value is PluralNode) {
       buffer.write('\'$key\': ');
@@ -367,7 +367,7 @@ void _generateList({
           childName: key,
           // locale: locale,
         );
-        buffer.writeln('$childClassWithLocale._(_config),');
+        buffer.writeln('$childClassWithLocale(_config),');
       }
     } else if (value is PluralNode) {
       _addPluralizationCall(
