@@ -93,7 +93,7 @@ void _generateClass(
         input,
         i18n.Translations.from(
           "en_us",
-          _config.currentTranslations(),
+          _config.currentTranslations(input),
         ),
       );
     }
