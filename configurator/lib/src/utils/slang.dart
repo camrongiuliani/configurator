@@ -1,10 +1,20 @@
 import 'package:configurator/src/models/yaml_i18n_string.dart';
+import 'package:configurator/src/utils/i18n_generator.dart';
 import 'package:slang/builder/builder/raw_config_builder.dart';
+import 'package:slang/builder/builder/translation_model_builder.dart';
 import 'package:slang/builder/generator_facade.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
 import 'package:slang/builder/model/raw_config.dart';
 import 'package:slang/builder/model/translation_map.dart';
-import 'package:slang/builder/utils/regex_utils.dart';
+import 'package:slang/builder/builder/build_model_config_builder.dart';
+import 'package:slang/builder/builder/generate_config_builder.dart';
+import 'package:slang/builder/builder/translation_model_builder.dart';
+import 'package:slang/builder/generator/generator.dart';
+import 'package:slang/builder/model/raw_config.dart';
+import 'package:slang/builder/model/build_result.dart';
+import 'package:slang/builder/model/i18n_data.dart';
+import 'package:slang/builder/model/interface.dart';
+import 'package:slang/builder/model/translation_map.dart';
 
 class SlangUtil {
 
@@ -24,20 +34,39 @@ class SlangUtil {
       verbose: verbose,
     );
 
-    final result = GeneratorFacade.generate(
-      rawConfig: config,
+    final List<I18nData> translationList = translationMap.getEntries().map((localeEntry) {
+      final locale = localeEntry.key;
+      final namespaces = localeEntry.value;
+      return TranslationModelBuilder.build(
+        buildConfig: config.toBuildModelConfig(),
+        map: config.namespaces ? namespaces : namespaces.values.first,
+        localeDebug: locale.languageTag,
+      ).toI18nData(base: config.baseLocale == locale, locale: locale);
+    }).toList();
+
+    final generateConfig = GenerateConfigBuilder.build(
       baseName:'i18n.dart',
-      translationMap: translationMap,
+      config: config,
+      interfaces: [],
     );
 
-    final String output = result.joinAsSingleOutput();
+    final map = {
+      for (final t in translationList) t.locale: generateSlangTranslations(generateConfig, t),
+    };
 
-    final parts = output.split( '\n' );
+    List<String> resultLines = [];
 
-    parts.removeWhere((e) => e.startsWith('import'));
-    parts.removeWhere((e) => e.startsWith('export'));
+    if (map.isNotEmpty) {
+      for (var entry in map.values) {
+        resultLines.add(entry);
+      }
+    }
 
-    return parts.join('\n');
+    if (resultLines.isNotEmpty) {
+      return resultLines.join('\n\n');
+    } else {
+      return '';
+    }
   }
 
   static TranslationMap _buildTranslationMap({
@@ -55,48 +84,48 @@ class SlangUtil {
       conv[ node.locale ]![ node.name ] = node.value;
     }
 
-    if ( !conv.containsKey( 'base' ) ) {
-      conv['base'] = {};
+    if ( !conv.containsKey( 'en_us' ) ) {
+      conv['en_us'] = {};
     }
 
-    var base = conv['base']!;
+    var base = conv['en_us']!;
 
     translationMap.addTranslations(
       locale: rawConfig.baseLocale,
-      namespace: 'base',
+      namespace: 'en',
       translations: base,
     );
 
-    conv.remove( 'base' );
+    conv.remove( 'en_us' );
 
-    for (final node in conv.entries) {
-
-      String fileNameNoExtension = 'strings_${node.key}';
-      final Map<String, dynamic> translations = node.value;
-
-      final match = RegexUtils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
-
-      if (match != null) {
-        final namespace = match.group(1)!;
-        final locale = I18nLocale(
-          language: match.group(2)!,
-          script: match.group(3),
-          country: match.group(4),
-        );
-
-        translationMap.addTranslations(
-          locale: locale,
-          namespace: namespace,
-          translations: translations,
-        );
-      }
-    }
-
-    if (translationMap
-        .getEntries()
-        .every((locale) => locale.key != rawConfig.baseLocale)) {
-      throw 'Translation file for base locale "${rawConfig.baseLocale.languageTag}" not found.';
-    }
+    // for (final node in conv.entries) {
+    //
+    //   String fileNameNoExtension = 'strings_${node.key}';
+    //   final Map<String, dynamic> translations = node.value;
+    //
+    //   final match = RegexUtils.fileWithLocaleRegex.firstMatch(fileNameNoExtension);
+    //
+    //   if (match != null) {
+    //     final namespace = match.group(1)!;
+    //     final locale = I18nLocale(
+    //       language: match.group(2)!,
+    //       script: match.group(3),
+    //       country: match.group(4),
+    //     );
+    //
+    //     translationMap.addTranslations(
+    //       locale: locale,
+    //       namespace: namespace,
+    //       translations: translations,
+    //     );
+    //   }
+    // }
+    //
+    // if (translationMap
+    //     .getEntries()
+    //     .every((locale) => locale.key != rawConfig.baseLocale)) {
+    //   throw 'Translation file for base locale "${rawConfig.baseLocale.languageTag}" not found.';
+    // }
 
     return translationMap;
   }

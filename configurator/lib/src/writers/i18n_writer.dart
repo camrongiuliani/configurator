@@ -1,23 +1,13 @@
-import 'dart:convert';
-
 import 'package:code_builder/code_builder.dart';
 import 'package:configurator/configurator.dart';
-import 'package:configurator/src/models/getter.dart';
-import 'package:configurator/src/utils/string_ext.dart';
 import 'package:configurator/src/writers/writer.dart';
 
 class I18nWriter extends Writer {
   final List<YamlI18n> strings;
-  List<Getter> getters = [];
 
   I18nWriter(this.strings) {
     I18nParser.parse(
       strings: strings,
-      onGetter: (getter) {
-        if (!getters.map((e) => e.key).contains(getter.key)) {
-          getters.add(getter);
-        }
-      },
     );
   }
 
@@ -54,34 +44,12 @@ class I18nWriter extends Writer {
         ..methods.addAll([
           _getTranslationBuilder(),
           _getLocalizeMethod(),
-          ..._getValueGetters(getters),
         ]);
     });
 
     lb.body.add(scope);
 
     return lb.build();
-  }
-
-  Method _buildTranslationGetter(void Function(Getter) onGetter) {
-    return Method((builder) {
-      builder
-        ..name = 'translations'
-        ..type = MethodType.getter
-        ..returns = refer('Map<String, Map<String, String>>')
-        ..lambda = true
-        ..body = Code(
-          () {
-
-            Map<String, dynamic> parsed = I18nParser.parse(
-              strings: strings,
-              onGetter: onGetter,
-            );
-
-            return jsonEncode(parsed);
-          }(),
-        );
-    });
   }
 
   Method _getTranslationBuilder() {
@@ -119,63 +87,6 @@ class I18nWriter extends Writer {
               buildTranslations(),
             );
         ''');
-    });
-  }
-
-  List<Method> _getValueGetters(List<Getter> getters) {
-    return getters.map((e) {
-
-      bool isListType = e.value is List;
-      bool isMapType = e.value is Map<dynamic, dynamic>;
-
-      String? type = isListType ? 'List<dynamic>' : isMapType ? 'Map<dynamic, dynamic>' : 'String';
-
-      String anchor = e.key;
-
-      return Method((builder) {
-        builder
-          ..name = anchor
-          ..type = MethodType.getter
-          ..returns = refer(type)
-          ..lambda = true
-          ..body = Code(() {
-            if (isListType) {
-              if (e.value is List<String>) {
-                return e.value.toString();
-              } else if (e.value is List<Map>) {
-                return e.value.map((e) => e.map((key, value) {
-                  return MapEntry('"$key"', value);
-                })).toList().toString();
-              } else {
-                throw Exception('Unsupported list type in strings : ${e.value.runtimeType}');
-              }
-            } else if (isMapType) {
-              return jsonEncode(e.value);
-            } else {
-              return '_localize("$anchor")';
-            }
-          }());
-      });
-    }).toList();
-  }
-
-  Method _getTranslationsMap() {
-    return Method((builder) {
-      builder
-        ..name = 'map'
-        ..type = MethodType.getter
-        ..returns = refer('Map<String, dynamic>')
-        ..lambda = true
-        ..body = Code(() {
-          Map<String, dynamic> map = {};
-
-          for (var f in strings) {
-            map[f.locale] ??= {};
-            map[f.locale][f.name] ??= f.value;
-          }
-
-          return jsonEncode(map);
-        }());
     });
   }
 }

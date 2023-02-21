@@ -25,7 +25,7 @@ extension StringExtension on String {
     }
   }
 
-  String get canonicalize => replaceAll(RegExp(r'[^\w\s]+'), '_').replaceFirst('_', '').camelCase;
+  String get canonicalize => split('.').map((e) => e.capitalized).join('_').replaceAll(RegExp(r'[^\w\s]+'), '_').replaceFirst('_', '').camelCase;
 
   bool get isUrl => startsWith( 'http' ) && Uri.tryParse( this )?.isAbsolute == true;
 }

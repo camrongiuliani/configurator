@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:configurator/configurator.dart';
-import 'package:configurator/src/models/getter.dart';
 import 'package:configurator/src/utils/string_ext.dart';
 import 'package:yaml/yaml.dart';
 
@@ -382,7 +381,6 @@ class YamlParser {
 class I18nParser {
   static Map<String, dynamic> parse({
     required List<YamlI18n> strings,
-    void Function(Getter)? onGetter,
   }) {
     Map<String, dynamic> map = {};
 
@@ -396,7 +394,7 @@ class I18nParser {
     Map<String, dynamic> result = {};
 
     var r = locales.map((e) {
-      return visitTranslations(e, Map.from(map[e]), null, result, [], onGetter);
+      return visitTranslations(e, Map.from(map[e]), null, result, []);
     }).reduce((value, element) => deepMapMerge(value, element));
 
     return r;
@@ -408,7 +406,6 @@ class I18nParser {
     dynamic parent,
     Map<String, dynamic> result,
     List<String> path,
-    void Function(Getter)? onGetter,
   ) {
     if (input is! String && input is! num) {
       throw Exception(
@@ -417,13 +414,31 @@ class I18nParser {
 
     String valueKey = path.map((e) => e.capitalized).join('_').canonicalize;
 
-    if (onGetter != null) {
-      onGetter(Getter(valueKey, valueKey));
+    if (valueKey.contains('MapMap')) {
+      valueKey = valueKey.replaceAll('MapMap', 'Map');
     }
 
-    result[valueKey] = {
-      locale: '$input',
-    };
+    if (input is String) {
+      if (path.isNotEmpty && RegExp(r'\(rich\)').hasMatch(path.last)) {
+        var content = RegExp(r'\((.*?)\)');
+
+        if (content.hasMatch(input)) {
+          var match = content.firstMatch(input);
+
+          result[valueKey.replaceAll('Rich', '')] = {
+            locale: input.substring(match!.start + 1, match.end - 1),
+          };
+        }
+      } else {
+        result[valueKey] = {
+          locale: input.replaceAll(RegExp(r'\${(.*?)}'), '%s'),
+        };
+      }
+    } else {
+      result[valueKey] = {
+        locale: '$input',
+      };
+    }
   }
 
   static void _translateMap(
@@ -432,11 +447,9 @@ class I18nParser {
     dynamic parent,
     Map<String, dynamic> result,
     List<String> path,
-    void Function(Getter)? onGetter,
   ) {
     for (var entry in input.entries) {
 
-      //(map)
       var translations = visitTranslations(
         locale,
         entry.value,
@@ -446,21 +459,7 @@ class I18nParser {
           ...(path.isNotEmpty ? [...path, '_'] : path),
           entry.key,
         ],
-        onGetter,
       );
-
-      var mapRegex = RegExp(r'(\(map\))');
-
-      if (onGetter != null && mapRegex.hasMatch(entry.key)) {
-        List<String> p = [
-          ...path,
-          entry.key.replaceAll(mapRegex, ''),
-        ];
-
-        String valueKey = p.map((e) => e.capitalized).join('_').canonicalize;
-
-        onGetter(Getter(valueKey, entry.value));
-      }
 
       result.addAll(
         translations,
@@ -474,15 +473,12 @@ class I18nParser {
     dynamic parent,
     Map<String, dynamic> result,
     List<String> path,
-    void Function(Getter)? onGetter,
   ) {
     Map<String, List<String>> primitives = {};
 
     String primaryKey = path.map((e) => e.capitalized).join('_').canonicalize;
 
     List<dynamic> builtKeys = [];
-
-    List<Getter> childGetters = [];
 
     for (var i = 0; i < input.length; i++) {
       var entry = input[i];
@@ -498,89 +494,9 @@ class I18nParser {
         input,
         {},
         newPath,
-        (getter) {
-          childGetters.add(getter);
-
-          if (onGetter != null) {
-            onGetter(getter);
-          }
-        },
       );
 
       result.addAll(entryTranslations);
-
-      builtKeys.addAll(entryTranslations.keys);
-
-      if (entry is String || entry is num) {
-        primitives[primaryKey] ??= [];
-        primitives[primaryKey]!.addAll(entryTranslations.keys);
-      } else if (entry is! Map<dynamic, dynamic>) {
-        throw Exception(
-            'Encountered bad type while traversing translations: ${entry.runtimeType} - $entry');
-      }
-    }
-
-    if (onGetter != null) {
-      if (primitives.isNotEmpty) {
-        onGetter(Getter(primaryKey, primitives[primaryKey]));
-      }
-
-      List<dynamic> rawObjectList = parent[path.last];
-
-      List<Map<String, dynamic>> finalOutput = [];
-
-      for (var i = 0; i < rawObjectList.length; i++) {
-        Map<String, dynamic> mappedObject = {};
-
-        var rawObject = rawObjectList[i];
-
-        if (rawObject is! Map) {
-          continue;
-        }
-
-        int rawObjectLen = 0;
-
-        for (var entry in rawObject.entries) {
-          if (entry.value is String || entry.value is num) {
-            rawObjectLen++;
-          } else if (entry.value is List) {
-            rawObjectLen += (entry.value as List).length;
-          }
-        }
-
-        var relKeys = builtKeys.sublist(0, rawObjectLen);
-        builtKeys.removeRange(0, rawObjectLen);
-
-        for (var x = 0; x < rawObjectLen; x++) {
-          var entry = rawObject.entries.toList()[x];
-
-          if (entry.value is List) {
-            if (childGetters.isEmpty) {
-              var key = entry.key;
-              var value = [];
-              for (var y = 0; y < entry.value.length; y++) {
-                value.add(relKeys[x]);
-                x++;
-              }
-
-              mappedObject[key] = value;
-            } else {
-              var key = entry.key;
-              var value = childGetters.last.key;
-              mappedObject[key] = value;
-              x += (entry.value as List).length;
-            }
-          } else {
-            var key = entry.key;
-            var value = relKeys[x];
-            mappedObject[key] = value;
-          }
-        }
-
-        finalOutput.add(mappedObject);
-      }
-
-      onGetter(Getter(primaryKey, finalOutput));
     }
   }
 
@@ -590,14 +506,13 @@ class I18nParser {
     dynamic parent,
     Map<String, dynamic> result,
     List<String> path,
-    void Function(Getter)? onGetter,
   ) {
     if (input is Map<dynamic, dynamic>) {
-      _translateMap(locale, input, parent, result, path, onGetter);
+      _translateMap(locale, input, parent, result, path);
     } else if (input is List) {
-      _translateList(locale, input, parent, result, path, onGetter);
+      _translateList(locale, input, parent, result, path);
     } else if (input is String || input is num) {
-      _translatePrimitive(locale, input, parent, result, path, onGetter);
+      _translatePrimitive(locale, input, parent, result, path);
     } else {
       throw Exception(
           'Unsupported setting found in Strings : ${input.runtimeType}');

@@ -43,8 +43,8 @@ class ConfigExtWriter extends Writer {
     return Method( ( b ) {
       b
         ..name = 'strings'
-        ..returns = refer( '_i18n' )
-        ..body = const Code( '_i18n(this)' )
+        ..returns = refer( '_I18nDart' )
+        ..body = const Code( '_I18nDart(this)' )
         ..lambda = true
         ..type = MethodType.getter;
     });
