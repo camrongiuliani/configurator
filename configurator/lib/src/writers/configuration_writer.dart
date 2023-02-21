@@ -90,9 +90,9 @@ class ConfigWriter extends Writer {
 
               var data = jsonEncode(parsed).replaceAll(r'\\', r'\');
 
-              while (data.contains(r'\\')) {
-                data = data.replaceAll(r'\\', r'\');
-              }
+              // while (data.contains(r'\\')) {
+              //   data = data.replaceAll(r'\\', r'\');
+              // }
 
               data = data.replaceAll(r'+$', r'+\$');
 
