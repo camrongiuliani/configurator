@@ -141,19 +141,10 @@ class Configuration {
         0.0;
   }
 
-  // String string(String id) {
-  //   var t = _scopesSorted.reversed.firstWhereOrNull((s) {
-  //         return s.translations.isNotEmpty;
-  //       })?.translations ??
-  //       {};
-  //
-  //   return localize(id, Translations.from('en_us', t));
-  // }
-
-  Map<String, Map<String, String>> currentTranslations() {
-    return _scopesSorted.reversed
-            .firstWhereOrNull((s) => s.translations.isNotEmpty)
-            ?.translations ??
+  Map<String, Map<String, String>> currentTranslations(String key) {
+    return _scopesSorted.reversed.firstWhereOrNull((s) {
+          return s.translations.isNotEmpty && s.translations.containsKey(key);
+        })?.translations ??
         {};
   }
 
