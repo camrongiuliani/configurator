@@ -87,11 +87,11 @@ class ProcessedConfig {
       TitleWriter( 'TextStyles' ).write(),
       TextStyleWriter( frameworkName, yamlConfiguration.textStyles ).write(),
 
-      TitleWriter( 'Slang (i18n)' ).write(),
+      TitleWriter( 'Strings' ).write(),
       SlangWriter( yamlConfiguration.i18n ).write(),
 
-      TitleWriter( 'Strings' ).write(),
-      I18nWriter( yamlConfiguration.i18n ).write(),
+      // TitleWriter( 'Strings' ).write(),
+      // I18nWriter( yamlConfiguration.i18n ).write(),
 
       TitleWriter( 'Configuration' ).write(),
       ConfigWriter( frameworkName, yamlConfiguration.i18n ).write(),
