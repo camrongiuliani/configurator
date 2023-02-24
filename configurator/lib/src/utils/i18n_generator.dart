@@ -343,7 +343,8 @@ void _generateList({
         depth: depth + 1,
       );
     } else if (value is ObjectNode) {
-      final String key = depth.toString() + 'i' + i.toString();
+      // final String key = depth.toString() + 'i' + i.toString();
+      final String key = node.path.split('.').last.canonicalize + depth.toString() + 'i' + i.toString();
       final String childClassNoLocale =
           getClassName(parentName: className, childName: key);
 
