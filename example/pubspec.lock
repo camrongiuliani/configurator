@@ -159,7 +159,7 @@ packages:
       path: "../configurator"
       relative: true
     source: path
-    version: "0.0.19"
+    version: "0.0.20"
   configurator_annotations:
     dependency: "direct main"
     description:
@@ -180,7 +180,7 @@ packages:
       path: "../configurator_flutter"
       relative: true
     source: path
-    version: "0.0.19"
+    version: "0.0.20"
   convert:
     dependency: transitive
     description:
