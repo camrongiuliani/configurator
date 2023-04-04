@@ -1,6 +1,6 @@
 name: configurator_flutter
 description: A new Flutter package project.
-version: 0.0.7
+version: 0.0.8
 homepage:
 
 environment:
@@ -17,7 +17,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  i18n_extension: ^6.0.0
+  i18n_extension: ^8.0.0
 
   parse_color: ^0.0.1
   collection: ^1.16.0

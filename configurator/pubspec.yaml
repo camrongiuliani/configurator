@@ -1,6 +1,6 @@
 name: configurator
 description: A new Flutter package project.
-version: 0.0.7
+version: 0.0.8
 homepage:
 
 environment:
@@ -16,7 +16,7 @@ dependencies:
   slang: 3.0.0
   rxdart: ^0.27.5
 
-  i18n_extension: ^6.0.0
+  i18n_extension: ^8.0.0
   source_gen: ^1.2.1
   code_builder: ^4.0.0
   dart_style: ^2.0.0
