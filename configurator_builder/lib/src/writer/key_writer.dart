@@ -32,7 +32,7 @@ class KeyWriter extends Writer {
 
     Class routeKeys = Class( ( builder ) {
       builder
-        ..name = '_RouteKeys'
+        ..name = 'RouteKeys'
         ..fields.addAll([
           ..._yamlConfiguration.routes.map((e) => _buildField2( ( e.path ).canonicalize, '${e.id}' )),
         ]);
@@ -58,7 +58,7 @@ class KeyWriter extends Writer {
       builder
         ..name = '${name}ConfigKeys'
         ..fields.addAll([
-          _buildKeyAccessor( 'routes', '_RouteKeys()' ),
+          _buildKeyAccessor( 'routes', 'RouteKeys()' ),
           _buildKeyAccessor( 'flags', '_FlagKeys()' ),
           _buildKeyAccessor( 'sizes', '_SizeKeys()' ),
           _buildKeyAccessor( 'colors', '_ColorKeys()' ),
