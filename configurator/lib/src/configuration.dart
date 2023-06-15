@@ -4,6 +4,8 @@ import 'package:collection/collection.dart';
 
 typedef VoidCallback = void Function();
 
+typedef PopScopePredicate = bool Function(ConfigScope scope);
+
 class Configuration {
   final List<ConfigScope> _scopes;
 
@@ -62,7 +64,9 @@ class Configuration {
 
   Future<void> popScopeUntil(bool Function(ConfigScope) test) async {
     int it = 0;
-    while (test(_scopes.last) == false && _scopes.length > 1 && it < _scopes.length) {
+    while (test(_scopes.last) == false &&
+        _scopes.length > 1 &&
+        it < _scopes.length) {
       _scopes.removeLast();
       it++;
     }
@@ -70,8 +74,14 @@ class Configuration {
     notifyListeners();
   }
 
-  Future<void> removeScopesOfType<T extends ConfigScope>() async {
+  Future<void> removeScopeWhere(
+    PopScopePredicate predicate, {
+    bool notify = true,
+  }) async {
+    _scopes.removeWhere((scope) => predicate(scope));
+  }
 
+  Future<void> removeScopesOfType<T extends ConfigScope>() async {
     _scopes.removeWhere((s) => s is T);
 
     notifyListeners();
