@@ -68,6 +68,13 @@ class Configuration {
     notifyListeners();
   }
 
+  Future<void> removeScopesOfType<T extends ConfigScope>() async {
+
+    _scopes.removeWhere((s) => s is T);
+
+    notifyListeners();
+  }
+
   bool flag(String id) {
     return _scopesSorted.reversed.firstWhereOrNull((s) {
           return s.flags.containsKey(id);
