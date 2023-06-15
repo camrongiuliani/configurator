@@ -93,69 +93,206 @@ Future<void> applyDefinitions({
   final YamlNode rootNode = document.contents;
 
   final YamlNode definitions = rootNode.value['definitions'];
-  final YamlMap colors = definitions.value['colors'];
+  final YamlMap? colors = definitions.value['colors'];
+  final YamlMap? sizes = definitions.value['sizes'];
+  final YamlMap? flags = definitions.value['flags'];
 
-  final Map colorsMap = Map.fromEntries(colors.entries);
+  final Map colorsMap = Map.fromEntries(colors?.entries ?? {});
+  final Map sizesMap = Map.fromEntries(sizes?.entries ?? {});
+  final Map flagsMap = Map.fromEntries(flags?.entries ?? {});
 
   for (var file in configFiles) {
-    var contents = file.readAsStringSync();
+    writeDefsToFile(file, colorsMap, 'colors', true);
+    writeDefsToFile(file, sizesMap, 'sizes');
+    writeDefsToFile(file, flagsMap, 'flags');
+  }
+}
 
-    List<String> lines = contents.split('\n');
+void writeDefsToFile(
+  File file,
+  Map defs,
+  String node, [
+  bool quoteWrap = false,
+]) {
+  if (defs.isEmpty) {
+    return;
+  }
 
-    var colorNodeIdx = lines.indexWhere((l) => l.contains('colors:'));
+  var contents = file.readAsStringSync();
 
-    if (colorNodeIdx < 0) {
-      continue;
+  List<String> lines = contents.split('\n');
+
+  var configurationNodeIdx = lines.indexWhere((l) {
+    return l.trim().startsWith('configuration');
+  });
+
+  var lookupNodeIdx = lines.indexWhere((l) {
+    return l.contains('$node:') && !l.trim().startsWith('#');
+  });
+
+  if (lookupNodeIdx < 0 || lookupNodeIdx > configurationNodeIdx) {
+    return;
+  }
+
+  var nodeStartIdx = lookupNodeIdx + 1;
+  var nodeEndIdx = nodeStartIdx;
+
+  var searchIdx = nodeStartIdx + 1;
+
+  while (searchIdx < lines.length && lines[searchIdx].startsWith('    ')) {
+    nodeEndIdx++;
+    searchIdx++;
+  }
+
+  List<String> newDefs = [];
+
+  String? getCurrentLineIfExists(String key) {
+    var line = lines
+        .sublist(nodeStartIdx, nodeEndIdx + 1)
+        .firstWhereOrNull((l) => l.startsWith('$key:'));
+
+    if (line == null) {
+      return null;
     }
 
-    var colorStartIdx = colorNodeIdx + 1;
-    var colorEndIdx = colorStartIdx;
+    var lineIdx = lines.indexOf(line);
 
-    var searchIdx = colorStartIdx + 1;
-
-    while (searchIdx < lines.length && lines[searchIdx].startsWith('    ')) {
-      colorEndIdx++;
-      searchIdx++;
+    if (lineIdx == -1) {
+      return null;
     }
 
-    List<String> newDefs = [];
+    var outOfBounds = lineIdx < nodeStartIdx || lineIdx > nodeEndIdx;
 
-    for (var entry in colorsMap.entries) {
-      var line = lines.sublist(colorStartIdx, colorEndIdx + 1).firstWhereOrNull((l) => l.trim().startsWith('${entry.key}:'));
+    return outOfBounds ? null : line;
+  }
 
-      if (line == null) {
-        newDefs.add('    ${entry.key}: &${entry.key} "${entry.value}"');
+  void updateLineIfNotEqual({
+    required String oldLine,
+    required String newLine,
+  }) {
+    var lineIdx = lines.indexOf(oldLine);
+
+    if (lineIdx > -1) {
+      var oldLine = lines[lineIdx];
+
+      if (oldLine != newLine) {
+        lines[lineIdx] = newLine;
+        print('Updated ${node.capitalized} Def -> $newLine');
       } else {
-        var lineIdx = lines.indexOf(line);
+        print('Did not update def, no change: $newLine');
+      }
+    }
+  }
 
-        if (lineIdx > -1) {
-          var oldLine = lines[lineIdx];
-          var newLine = '    ${entry.key}: &${entry.key} "${entry.value}"';
+  List<String> expandDefMap(
+    Map map,
+    List<String> result,
+    List<String> keys,
+    int depth,
+    bool quoteWrap,
+  ) {
+    List<String> result = [];
 
-          if (oldLine != newLine) {
-            lines[lineIdx] = '    ${entry.key}: &${entry.key} "${entry.value}"';
-            print('Update Color Def -> $line -> ${lines[lineIdx]}');
-          }
+    for (var entry in map.entries) {
+      List<String> _keys = List.from(keys);
+      _keys.add(entry.key);
+
+      if (entry.value is Map) {
+        var padding = List.filled(2 * depth, ' ').join();
+
+        var oldLine = getCurrentLineIfExists('$padding${entry.key}');
+
+        if (oldLine != null) {
+          continue;
+        }
+
+        result.add('$padding${entry.key}:');
+
+        result.addAll(
+          expandDefMap(
+            entry.value,
+            result,
+            _keys,
+            depth + 1,
+            quoteWrap,
+          ),
+        );
+      } else {
+        var padding = List.filled(2 * depth, ' ').join();
+        var value = quoteWrap ? '"${entry.value}"' : entry.value;
+
+        var oldLine = getCurrentLineIfExists('$padding${entry.key}');
+
+        var keyPart = '&${_keys.join('.').canonicalize}';
+        var newLine = '$padding${entry.key}: $keyPart $value';
+
+        if (oldLine == null) {
+          result.add(newLine);
+        } else {
+          updateLineIfNotEqual(
+            oldLine: oldLine,
+            newLine: newLine,
+          );
         }
       }
     }
 
-    if (newDefs.isNotEmpty) {
-      for (var def in newDefs) {
-        lines.insert(colorEndIdx, def);
-        colorEndIdx++;
-        print('Insert Color Def -> $def');
+    return result;
+  }
+
+  for (var entry in defs.entries) {
+    var line = getCurrentLineIfExists('    ${entry.key}');
+
+    if (line == null || entry.value is Map) {
+      if (entry.value is Map) {
+        var oldLine = getCurrentLineIfExists('    ${entry.key}');
+        var newLine = '    ${entry.key}:';
+
+        if (oldLine == null) {
+          newDefs.add(newLine);
+        } else {
+          updateLineIfNotEqual(
+            oldLine: oldLine,
+            newLine: newLine,
+          );
+        }
+
+        newDefs.addAll(
+          expandDefMap(
+            entry.value,
+            [],
+            [node, entry.key],
+            3,
+            quoteWrap,
+          ),
+        );
+      } else {
+        var value = quoteWrap ? '"${entry.value}"' : entry.value;
+        newDefs.add('    ${entry.key}: &${entry.key} $value');
       }
+    } else {
+      var value = quoteWrap ? '"${entry.value}"' : entry.value;
+      updateLineIfNotEqual(
+        oldLine: line,
+        newLine: '    ${entry.key}: &${entry.key} $value',
+      );
     }
+  }
 
-    var newDoc = lines.join('\n');
-
-    try {
-      var parsed = YamlEditor(newDoc).toString();
-      file.writeAsStringSync(parsed, flush: true);
-    } catch (e) {
-      file.writeAsStringSync(newDoc, flush: true);
+  if (newDefs.isNotEmpty) {
+    lines.insertAll(nodeStartIdx, newDefs);
+    for (var def in newDefs) {
+      print('Insert ${node.capitalized} Def -> $def');
     }
+  }
+
+  var newDoc = lines.join('\n');
+
+  try {
+    var parsed = YamlEditor(newDoc).toString();
+    file.writeAsStringSync(parsed, flush: true);
+  } catch (e) {
+    file.writeAsStringSync(newDoc, flush: true);
   }
 }
 
@@ -270,7 +407,7 @@ Future<void> generateConfigurations({
     var builtContent = await () async {
       try {
         return DartFormatter().format(await result.write());
-      } catch(e) {
+      } catch (e) {
         print(e);
         return await result.write();
       }
