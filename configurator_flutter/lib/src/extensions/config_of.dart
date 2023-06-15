@@ -7,4 +7,8 @@ extension Config on Configuration {
   static Configuration of( BuildContext context, { bool listen = true } ) {
     return ConfigurationProvider.of( context, listen: listen ).config;
   }
+
+  static Configuration? maybeOf( BuildContext context, { bool listen = true } ) {
+    return ConfigurationProvider.maybeOf( context, listen: listen )?.config;
+  }
 }

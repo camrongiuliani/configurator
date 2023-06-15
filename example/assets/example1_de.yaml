@@ -1,9 +1,0 @@
-id: app_scope_de
-
-configuration:
-  strings:
-    de:
-      title: Hallo, Welt!
-      currentScope: Aktuellen Umfang
-      common:
-        personal: persönlich

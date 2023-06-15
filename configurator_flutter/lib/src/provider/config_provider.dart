@@ -8,7 +8,7 @@ class Configurator extends StatefulWidget {
   final Configuration config;
   final Widget Function( BuildContext, Configuration ) builder;
 
-  Configurator({
+  const Configurator({
     required this.config,
     required this.builder,
     super.key,
@@ -70,6 +70,17 @@ class ConfigurationProvider extends InheritedWidget {
 
     assert(result != null, 'No ConfigurationProvider found in context');
     return result!;
+  }
+
+  static ConfigurationProvider? maybeOf( BuildContext context, { bool listen = true } ) {
+
+    final ConfigurationProvider? result = context.findAncestorWidgetOfExactType();
+
+    if ( result != null && listen ) {
+      context.dependOnInheritedWidgetOfExactType<ConfigurationProvider>();
+    }
+
+    return result;
   }
 
   @override
