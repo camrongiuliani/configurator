@@ -87,16 +87,6 @@ void _generateClass(
 
   buffer.writeln('''
     final Configuration _config;
-
-    String _localize(String input) {
-      return i18n.localize(
-        input,
-        i18n.Translations.from(
-          "en_us",
-          _config.currentTranslations(input),
-        ),
-      );
-    }
   ''');
 
 
@@ -125,10 +115,10 @@ void _generateClass(
     if (value is StringTextNode) {
       if (value.params.isEmpty) {
         buffer.writeln(
-            'String get $key => _localize(\'${value.path.canonicalize}\');');
+            'String get $key => LocalizeUtil.localize(_config, \'${value.path.canonicalize}\');');
       } else {
         buffer.writeln(
-            'String $key${_toParameterList(value.params, value.paramTypeMap)} => _localize(\'${value.path.canonicalize}\').fill([${value.params.join(',')}]);');
+            'String $key${_toParameterList(value.params, value.paramTypeMap)} => LocalizeUtil.localize(_config, \'${value.path.canonicalize}\').fill([${value.params.join(',')}]);');
       }
     } else if (value is RichTextNode) {
       buffer.write('TextSpan ');
@@ -230,10 +220,10 @@ void _generateMap({
     _addTabs(buffer, depth + 2);
     if (value is StringTextNode) {
       if (value.params.isEmpty) {
-        buffer.writeln('\'$key\': _localize(\'${value.path.canonicalize}\'),');
+        buffer.writeln('\'$key\': LocalizeUtil.localize(_config, \'${value.path.canonicalize}\'),');
       } else {
         buffer.writeln(
-            '\'$key\': ${_toParameterList(value.params, value.paramTypeMap)} => _localize(\'${value.path.canonicalize}\'),');
+            '\'$key\': ${_toParameterList(value.params, value.paramTypeMap)} => LocalizeUtil.localize(_config, \'${value.path.canonicalize}\'),');
       }
     } else if (value is ListNode) {
       buffer.write('\'$key\': ');
@@ -326,10 +316,10 @@ void _generateList({
     _addTabs(buffer, depth + 2);
     if (value is StringTextNode) {
       if (value.params.isEmpty) {
-        buffer.writeln('_localize(\'${value.path.canonicalize}\'),');
+        buffer.writeln('LocalizeUtil.localize(_config, \'${value.path.canonicalize}\'),');
       } else {
         buffer.writeln(
-            '${_toParameterList(value.params, value.paramTypeMap)} => _localize(\'${value.path.canonicalize}\'),');
+            '${_toParameterList(value.params, value.paramTypeMap)} => LocalizeUtil.localize(_config, \'${value.path.canonicalize}\'),');
       }
     } else if (value is ListNode) {
       _generateList(
@@ -556,7 +546,7 @@ void _addRichTextCall({
   for (final span in node.spans) {
     _addTabs(buffer, depth + 2);
     if (span is FunctionSpan) {
-      buffer.write("${span.functionName}(_localize('${node.path.canonicalize}'))");
+      buffer.write("${span.functionName}(LocalizeUtil.localize(_config, '${node.path.canonicalize}'))");
     } else {
       buffer.write(span.code);
     }
