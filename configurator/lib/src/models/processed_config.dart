@@ -31,8 +31,6 @@ class ProcessedConfig {
       Directive.import(
           'package:configurator_flutter/configurator_flutter.dart'),
       Directive.import('package:collection/collection.dart'),
-      Directive.import('package:i18n_extension/i18n_extension.dart',
-          as: 'i18n'),
     ]);
 
     builder.body.addAll([
