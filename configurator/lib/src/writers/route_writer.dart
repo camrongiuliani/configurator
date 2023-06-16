@@ -15,17 +15,6 @@ class RouteWriter extends Writer {
   Spec write() {
     LibraryBuilder lb = LibraryBuilder();
 
-    Class scope = Class( ( builder ) {
-      builder
-        ..constructors.add( Constructor( ( b ) => b..constant = true ) )
-        ..name = '_Routes'
-        ..methods.addAll([
-          ..._getGetters(),
-        ]);
-    });
-
-    lb.body.add( scope );
-
     Class config = _buildAccessor();
 
     lb.body.add( config );
@@ -33,7 +22,7 @@ class RouteWriter extends Writer {
     return lb.build();
   }
 
-  List<Method> _getGetters([ bool useConfig = false ]) {
+  List<Method> _getGetters() {
     return _routes.map((e) {
       return Method( ( builder ) {
         builder
@@ -42,11 +31,7 @@ class RouteWriter extends Writer {
           ..returns = refer( 'String' )
           ..lambda = true
           ..body = Code( () {
-            if ( useConfig ) {
-              return '_config.route( ${name}ConfigKeys.routes.${e.path.canonicalize} )';
-            }
-
-            return 'map[ ${name}ConfigKeys.routes.${e.path.canonicalize} ] ?? \'/\'';
+            return '_config.route(${e.id})';
           }() );
       });
     }).toList();
@@ -76,7 +61,7 @@ class RouteWriter extends Writer {
           }),
         ])
         ..methods.addAll([
-          ..._getGetters( true ),
+          ..._getGetters(),
         ]);
     });
   }

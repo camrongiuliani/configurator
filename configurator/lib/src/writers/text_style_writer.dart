@@ -14,17 +14,6 @@ class TextStyleWriter extends Writer {
   Spec write() {
     LibraryBuilder lb = LibraryBuilder();
 
-    Class scope = Class((builder) {
-      builder
-        ..constructors.add(Constructor((b) => b..constant = true))
-        ..name = '_TextStyle'
-        ..methods.addAll([
-          ..._getGetters(),
-        ]);
-    });
-
-    lb.body.add(scope);
-
     Class config = _buildAccessor();
 
     lb.body.add(config);
@@ -43,7 +32,7 @@ class TextStyleWriter extends Writer {
           List<String> lines = [];
 
           for (var e in _textStyles) {
-            lines.add('..._config.textStyle( ${name}ConfigKeys.textStyles.${e.key})["typeface"],');
+            lines.add('..._config.textStyle("${e.key}")["typeface"],');
           }
 
           return '''                
@@ -55,20 +44,16 @@ class TextStyleWriter extends Writer {
     });
   }
 
-  List<Method> _getGetters([bool useConfig = false]) {
+  List<Method> _getGetters() {
     return _textStyles.map((e) {
       return Method((builder) {
         builder
           ..name = e.key.canonicalize
           ..type = MethodType.getter
-          ..returns = refer(useConfig ? 'TextStyle' : 'dynamic')
-          ..lambda = !useConfig
+          ..returns = refer('TextStyle')
+          ..lambda = false
           ..body = Code(() {
-            if (useConfig) {
-              return 'return TextStyleParser.parse(_config, ${name}ConfigKeys.textStyles.${e.key});';
-            }
-
-            return 'map[ ${name}ConfigKeys.textStyles.${e.key.canonicalize} ]';
+            return 'return TextStyleParser.parse(_config, ${name}ConfigKeys.textStyles.${e.key});';
           }());
       });
     }).toList();
@@ -98,7 +83,7 @@ class TextStyleWriter extends Writer {
           }),
         ])
         ..methods.addAll([
-          ..._getGetters(true),
+          ..._getGetters(),
           _buildTypefaceGetter(),
         ]);
     });

@@ -17,17 +17,6 @@ class ColorWriter extends Writer {
   Spec write() {
     LibraryBuilder lb = LibraryBuilder();
 
-    Class scope = Class( ( builder ) {
-      builder
-        ..constructors.add( Constructor( ( b ) => b..constant = true ) )
-        ..name = '_Colors'
-        ..methods.addAll([
-          ..._getColorGetters(),
-        ]);
-    });
-
-    lb.body.add( scope );
-
     Class config = _buildAccessor();
 
     lb.body.add( config );
@@ -36,20 +25,16 @@ class ColorWriter extends Writer {
 
   }
 
-  List<Method> _getColorGetters([ bool useConfig = false ]) {
+  List<Method> _getColorGetters() {
     return _colors.map((e) {
       return Method( ( builder ) {
         builder
           ..name = e.name.canonicalize
           ..type = MethodType.getter
-          ..returns = refer( useConfig ? 'Color' : 'String' )
+          ..returns = refer('Color')
           ..lambda = true
           ..body = Code( () {
-            if ( useConfig ) {
-              return '_config.colorValue( ${name}ConfigKeys.colors.${e.name} )';
-            }
-
-            return 'map[ ${name}ConfigKeys.colors.${e.name.canonicalize} ] ?? \'\'';
+            return '_config.colorValue( "${e.name}" )';
           }() );
       });
     }).toList();
@@ -79,7 +64,7 @@ class ColorWriter extends Writer {
           }),
         ])
         ..methods.addAll([
-          ..._getColorGetters( true ),
+          ..._getColorGetters(),
         ]);
     });
   }

@@ -90,8 +90,7 @@ class Configuration {
   bool flag(String id) {
     return _scopesSorted.reversed.firstWhereOrNull((s) {
           return s.flags.containsKey(id);
-        })?.flags[id] ??
-        false;
+        })?.flags[id] == true;
   }
 
   String color(String id) {

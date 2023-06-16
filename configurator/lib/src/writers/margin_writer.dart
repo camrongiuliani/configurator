@@ -17,17 +17,6 @@ class MarginWriter extends Writer {
   Spec write() {
     LibraryBuilder lb = LibraryBuilder();
 
-    Class scope =  Class( ( builder ) {
-      builder
-        ..constructors.add( Constructor( ( b ) => b..constant = true ) )
-        ..name = '_Margins'
-        ..methods.addAll([
-          ..._getGetters(),
-        ]);
-    });
-
-    lb.body.add( scope );
-
     Class config = _buildAccessor();
 
     lb.body.add( config );
@@ -35,7 +24,7 @@ class MarginWriter extends Writer {
     return lb.build();
   }
 
-  List<Method> _getGetters([ bool useConfig = false ]) {
+  List<Method> _getGetters() {
     return _sizes.map((e) {
       return Method( ( builder ) {
         builder
@@ -44,11 +33,7 @@ class MarginWriter extends Writer {
           ..returns = refer( 'double' )
           ..lambda = true
           ..body = Code( () {
-            if ( useConfig ) {
-              return '_config.margin( ${name}ConfigKeys.margins.${e.name} )';
-            }
-
-            return 'map[ ${name}ConfigKeys.margins.${e.name} ] ?? 0.0';
+            return '_config.margin("${e.name}")';
           }() );
       });
     }).toList();
@@ -78,7 +63,7 @@ class MarginWriter extends Writer {
           }),
         ])
         ..methods.addAll([
-          ..._getGetters( true ),
+          ..._getGetters(),
         ]);
     });
   }

@@ -17,17 +17,6 @@ class SizeWriter extends Writer {
   Spec write() {
     LibraryBuilder lb = LibraryBuilder();
 
-    Class scope =  Class( ( builder ) {
-      builder
-        ..constructors.add( Constructor( ( b ) => b..constant = true ) )
-        ..name = '_Sizes'
-        ..methods.addAll([
-          ..._getSizeGetters(),
-        ]);
-    });
-
-    lb.body.add( scope );
-
     Class config = _buildAccessor();
 
     lb.body.add( config );
@@ -35,7 +24,7 @@ class SizeWriter extends Writer {
     return lb.build();
   }
 
-  List<Method> _getSizeGetters([ bool useConfig = false ]) {
+  List<Method> _getSizeGetters() {
     return _sizes.map((e) {
       return Method( ( builder ) {
         builder
@@ -44,11 +33,7 @@ class SizeWriter extends Writer {
           ..returns = refer( 'double' )
           ..lambda = true
           ..body = Code( () {
-            if ( useConfig ) {
-              return '_config.size( ${name}ConfigKeys.sizes.${e.name} )';
-            }
-
-            return 'map[ ${name}ConfigKeys.sizes.${e.name} ] ?? 0.0';
+            return '_config.size("${e.name}")';
           }() );
       });
     }).toList();
@@ -78,7 +63,7 @@ class SizeWriter extends Writer {
           }),
         ])
         ..methods.addAll([
-          ..._getSizeGetters( true ),
+          ..._getSizeGetters(),
         ]);
     });
   }

@@ -18,17 +18,6 @@ class FlagWriter extends Writer {
 
     LibraryBuilder lb = LibraryBuilder();
 
-    Class scope = Class( ( builder ) {
-      builder
-        ..constructors.add( Constructor( ( b ) => b..constant = true ) )
-        ..name = '_Flags'
-        ..methods.addAll([
-          ..._getGetters(),
-        ]);
-    });
-
-    lb.body.add( scope );
-
     Class config = _buildAccessor();
 
     lb.body.add( config );
@@ -37,7 +26,7 @@ class FlagWriter extends Writer {
 
   }
 
-  List<Method> _getGetters([ bool useConfig = false ]) {
+  List<Method> _getGetters() {
     return _flags.map((e) {
       return Method( ( builder ) {
         builder
@@ -46,11 +35,7 @@ class FlagWriter extends Writer {
           ..returns = refer( 'bool' )
           ..lambda = true
           ..body = Code( () {
-            if ( useConfig ) {
-              return '_config.flag( ${name}ConfigKeys.flags.${e.name} ) == true';
-            }
-
-            return 'map[ ${name}ConfigKeys.flags.${e.name} ] == true';
+            return '_config.flag("${e.name}")';
           }() );
       });
     }).toList();
@@ -80,7 +65,7 @@ class FlagWriter extends Writer {
           }),
         ])
         ..methods.addAll([
-          ..._getGetters( true ),
+          ..._getGetters(),
         ]);
     });
   }

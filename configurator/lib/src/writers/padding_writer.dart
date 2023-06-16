@@ -17,17 +17,6 @@ class PaddingWriter extends Writer {
   Spec write() {
     LibraryBuilder lb = LibraryBuilder();
 
-    Class scope =  Class( ( builder ) {
-      builder
-        ..constructors.add( Constructor( ( b ) => b..constant = true ) )
-        ..name = '_Padding'
-        ..methods.addAll([
-          ..._getGetters(),
-        ]);
-    });
-
-    lb.body.add( scope );
-
     Class config = _buildAccessor();
 
     lb.body.add( config );
@@ -35,7 +24,7 @@ class PaddingWriter extends Writer {
     return lb.build();
   }
 
-  List<Method> _getGetters([ bool useConfig = false ]) {
+  List<Method> _getGetters() {
     return _sizes.map((e) {
       return Method( ( builder ) {
         builder
@@ -44,11 +33,7 @@ class PaddingWriter extends Writer {
           ..returns = refer( 'double' )
           ..lambda = true
           ..body = Code( () {
-            if ( useConfig ) {
-              return '_config.padding( ${name}ConfigKeys.padding.${e.name} )';
-            }
-
-            return 'map[ ${name}ConfigKeys.padding.${e.name} ] ?? 0.0';
+            return '_config.padding("${e.name}")';
           }() );
       });
     }).toList();
@@ -78,7 +63,7 @@ class PaddingWriter extends Writer {
           }),
         ])
         ..methods.addAll([
-          ..._getGetters( true ),
+          ..._getGetters(),
         ]);
     });
   }

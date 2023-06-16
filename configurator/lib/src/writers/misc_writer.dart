@@ -17,17 +17,6 @@ class MiscWriter extends Writer {
   Spec write() {
     LibraryBuilder lb = LibraryBuilder();
 
-    Class scope = Class( ( builder ) {
-      builder
-        ..constructors.add( Constructor( ( b ) => b..constant = true ) )
-        ..name = '_Misc'
-        ..methods.addAll([
-          ..._getGetters(),
-        ]);
-    });
-
-    lb.body.add( scope );
-
     Class config = _buildAccessor();
 
     lb.body.add( config );
@@ -36,20 +25,28 @@ class MiscWriter extends Writer {
 
   }
 
-  List<Method> _getGetters([ bool useConfig = false ]) {
+  List<Method> _getGetters() {
     return _settings.map((e) {
       return Method( ( builder ) {
         builder
           ..name = e.name.canonicalize
           ..type = MethodType.getter
-          ..returns = refer( 'dynamic' )
-          ..lambda = true
-          ..body = Code( () {
-            if ( useConfig ) {
-              return '_config.misc( ${name}ConfigKeys.misc.${e.name} )';
+          ..returns = refer(() {
+            if (e.value is String) {
+              return 'String';
+            } else if (e.value is int) {
+              return 'int';
+            } else if (e.value is double) {
+              return 'double';
+            } else if (e.value is bool) {
+              return 'bool';
             }
 
-            return 'map[ ${name}ConfigKeys.misc.${e.name.canonicalize} ]';
+            return 'dynamic';
+          }())
+          ..lambda = true
+          ..body = Code( () {
+            return '_config.misc("${e.name}")';
           }() );
       });
     }).toList();
@@ -79,7 +76,7 @@ class MiscWriter extends Writer {
           }),
         ])
         ..methods.addAll([
-          ..._getGetters( true ),
+          ..._getGetters(),
         ]);
     });
   }

@@ -16,17 +16,6 @@ class ImageWriter extends Writer {
   Spec write() {
     LibraryBuilder lb = LibraryBuilder();
 
-    Class scope = Class( ( builder ) {
-      builder
-        ..constructors.add( Constructor( ( b ) => b..constant = true ) )
-        ..name = '_Images'
-        ..methods.addAll([
-          ..._getGetters(),
-        ]);
-    });
-
-    lb.body.add( scope );
-
     Class config = _buildAccessor();
 
     lb.body.add( config );
@@ -35,7 +24,7 @@ class ImageWriter extends Writer {
 
   }
 
-  List<Method> _getGetters([ bool useConfig = false ]) {
+  List<Method> _getGetters() {
     return _images.map((e) {
       return Method( ( builder ) {
         builder
@@ -44,14 +33,10 @@ class ImageWriter extends Writer {
           ..returns = refer( e.value is List ? 'List<String>' : 'String' )
           ..lambda = true
           ..body = Code( () {
-            if ( useConfig ) {
-              if ( e.value is List ) {
-                return '_config.imageList( ${name}ConfigKeys.images.${e.name} )';
-              }
-              return '_config.image( ${name}ConfigKeys.images.${e.name} )';
+            if ( e.value is List ) {
+              return '_config.imageList("${e.name}")';
             }
-
-            return 'map[ ${name}ConfigKeys.images.${e.name} ] ?? \'/\'';
+            return '_config.image("${e.name}")';
           }() );
       });
     }).toList();
@@ -81,7 +66,7 @@ class ImageWriter extends Writer {
           }),
         ])
         ..methods.addAll([
-          ..._getGetters( true ),
+          ..._getGetters(),
         ]);
     });
   }
