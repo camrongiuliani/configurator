@@ -4,31 +4,21 @@ import 'package:configurator/configurator.dart';
 abstract class ConfigScope {
   abstract final String name;
 
-  List<String> get partFiles => [];
+  const ConfigScope();
 
-  int get weight;
-
-  Map<String, bool> get flags;
-
-  Map<String, dynamic> get images;
-
-  Map<String, dynamic> get misc;
-
-  Map<String, String> get colors;
-
-  Map<String, double> get sizes;
-
-  Map<String, double> get padding;
-
-  Map<String, double> get margins;
-
-  Map<String, double> get radius => {};
-
-  Map<String, dynamic> get textStyles => {};
-
-  Map<int, String?> get routes;
-
-  Map<String, Map<String, String>> get translations;
+  final List<String> partFiles = const [];
+  final int weight = 0;
+  final Map<String, bool> flags = const {};
+  final Map<String, dynamic> images = const {};
+  final Map<String, dynamic> misc = const {};
+  final Map<String, String> colors = const {};
+  final Map<String, double> sizes = const {};
+  final Map<String, double> padding = const {};
+  final Map<String, double> margins = const {};
+  final Map<String, double> radius = const {};
+  final Map<String, dynamic> textStyles = const {};
+  final Map<int, String?> routes = const {};
+  final Map<String, Map<String, String>> translations = const {};
 
   static ConfigScope empty({required String name}) {
     return ProxyScope(name: name);
