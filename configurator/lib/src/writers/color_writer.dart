@@ -22,7 +22,6 @@ class ColorWriter extends Writer {
         ..constructors.add( Constructor( ( b ) => b..constant = true ) )
         ..name = '_Colors'
         ..methods.addAll([
-          _getColorValuesMap(),
           ..._getColorGetters(),
         ]);
     });
@@ -54,26 +53,6 @@ class ColorWriter extends Writer {
           }() );
       });
     }).toList();
-  }
-
-  Method _getColorValuesMap() {
-    return Method( ( builder ) {
-      builder
-        ..name = 'map'
-        ..type = MethodType.getter
-        ..returns = refer( 'Map<String, String>' )
-        ..lambda = true
-        ..body = Code( () {
-
-          Map<String, String> map = {};
-
-          for ( var f in _colors ) {
-            map['${name}ConfigKeys.colors.${f.name.canonicalize}'] = '\'${f.value}\'';
-          }
-
-          return map.toString();
-        }() );
-    });
   }
 
   Class _buildAccessor() {

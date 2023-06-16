@@ -21,7 +21,6 @@ class ImageWriter extends Writer {
         ..constructors.add( Constructor( ( b ) => b..constant = true ) )
         ..name = '_Images'
         ..methods.addAll([
-          _getValuesMap(),
           ..._getGetters(),
         ]);
     });
@@ -56,32 +55,6 @@ class ImageWriter extends Writer {
           }() );
       });
     }).toList();
-  }
-
-  Method _getValuesMap() {
-    return Method( ( builder ) {
-      builder
-        ..name = 'map'
-        ..type = MethodType.getter
-        ..returns = refer( 'Map<String, dynamic>' )
-        ..lambda = true
-        ..body = Code( () {
-
-          Map<String, dynamic> map = {};
-
-          for ( var f in _images ) {
-            map['${name}ConfigKeys.images.${f.name}'] = () {
-              if ( f.value is String ) {
-                return '\'${f.value}\'';
-              } else if ( f.value is List ) {
-                return f.value.map( ( v ) => '\'$v\'' ).toList();
-              }
-            }();
-          }
-
-          return map.toString();
-        }() );
-    });
   }
 
   Class _buildAccessor() {

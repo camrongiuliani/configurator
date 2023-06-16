@@ -5,6 +5,7 @@ export 'src/provider/config_provider.dart';
 export 'src/theme/base.dart';
 export 'src/utils/font_weight_parser.dart';
 export 'src/utils/color_parser.dart';
+export 'src/utils/text_style_parser.dart';
 export 'src/utils/interpolate_string.dart';
 export 'src/extensions/config_listenable.dart';
 export 'src/extensions/config_of.dart';

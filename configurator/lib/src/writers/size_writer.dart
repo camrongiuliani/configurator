@@ -22,7 +22,6 @@ class SizeWriter extends Writer {
         ..constructors.add( Constructor( ( b ) => b..constant = true ) )
         ..name = '_Sizes'
         ..methods.addAll([
-          _getSizeValuesMap(),
           ..._getSizeGetters(),
         ]);
     });
@@ -53,26 +52,6 @@ class SizeWriter extends Writer {
           }() );
       });
     }).toList();
-  }
-
-  Method _getSizeValuesMap() {
-    return Method( ( builder ) {
-      builder
-        ..name = 'map'
-        ..type = MethodType.getter
-        ..returns = refer( 'Map<String, double>' )
-        ..lambda = true
-        ..body = Code( () {
-
-          Map<String, double> map = {};
-
-          for ( var f in _sizes ) {
-            map['${name}ConfigKeys.sizes.${f.name.canonicalize}'] = f.value;
-          }
-
-          return map.toString();
-        }() );
-    });
   }
 
   Class _buildAccessor() {

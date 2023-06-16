@@ -22,7 +22,6 @@ class PaddingWriter extends Writer {
         ..constructors.add( Constructor( ( b ) => b..constant = true ) )
         ..name = '_Padding'
         ..methods.addAll([
-          _getValuesMap(),
           ..._getGetters(),
         ]);
     });
@@ -53,26 +52,6 @@ class PaddingWriter extends Writer {
           }() );
       });
     }).toList();
-  }
-
-  Method _getValuesMap() {
-    return Method( ( builder ) {
-      builder
-        ..name = 'map'
-        ..type = MethodType.getter
-        ..returns = refer( 'Map<String, double>' )
-        ..lambda = true
-        ..body = Code( () {
-
-          Map<String, double> map = {};
-
-          for ( var f in _sizes ) {
-            map['${name}ConfigKeys.padding.${f.name.canonicalize}'] = f.value;
-          }
-
-          return map.toString();
-        }() );
-    });
   }
 
   Class _buildAccessor() {

@@ -19,7 +19,6 @@ class TextStyleWriter extends Writer {
         ..constructors.add(Constructor((b) => b..constant = true))
         ..name = '_TextStyle'
         ..methods.addAll([
-          _getValuesMap(),
           ..._getGetters(),
         ]);
     });
@@ -66,70 +65,13 @@ class TextStyleWriter extends Writer {
           ..lambda = !useConfig
           ..body = Code(() {
             if (useConfig) {
-              return '''
-                var ts = _config.textStyle( ${name}ConfigKeys.textStyles.${e.key} );
-                var fontSize = ts["size"] ?? 12.0;
-                var source = ts["typeface"]?["source"];
-                var heightAbs = ts["height"] ?? 0.0;
-                var fontFamily = ts["typeface"]?["family"] ?? "Poppins";
-                
-                var style = TextStyle(
-                  color: ColorParser.parse(ts["color"]),
-                  fontSize: fontSize.toDouble(),
-                  fontWeight: FontWeightParser.parse(ts["weight"] ?? 400),
-                  fontFamily: fontFamily,
-                  height: heightAbs == 0 ? null : (heightAbs / fontSize),
-                );
-            
-                if (source == 'GoogleFont') {
-                  try {
-                    return GoogleFonts.getFont(fontFamily, textStyle: style);
-                  } catch (_) {}
-                }
-            
-                return style;
-                ''';
+              return 'return TextStyleParser.parse(_config, ${name}ConfigKeys.textStyles.${e.key});';
             }
 
             return 'map[ ${name}ConfigKeys.textStyles.${e.key.canonicalize} ]';
           }());
       });
     }).toList();
-  }
-
-  Method _getValuesMap() {
-    return Method((builder) {
-      builder
-        ..name = 'map'
-        ..type = MethodType.getter
-        ..returns = refer('Map<String, dynamic>')
-        ..lambda = true
-        ..body = Code(() {
-          Map<String, dynamic> map = {};
-
-          Map mapSanitize(Map map) {
-            return map.map((key, value) {
-              return MapEntry('"$key"', () {
-                if (value is String) {
-                  return '"$value"';
-                } else if (value is Map) {
-                  return mapSanitize(value);
-                } else {
-                  return value;
-                }
-              }());
-            });
-          }
-
-          for (var f in _textStyles) {
-            map['${name}ConfigKeys.textStyles.${f.key.canonicalize}'] = () {
-              return mapSanitize(f.toJson());
-            }();
-          }
-
-          return map.toString();
-        }());
-    });
   }
 
   Class _buildAccessor() {

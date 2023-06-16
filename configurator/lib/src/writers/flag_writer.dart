@@ -23,7 +23,6 @@ class FlagWriter extends Writer {
         ..constructors.add( Constructor( ( b ) => b..constant = true ) )
         ..name = '_Flags'
         ..methods.addAll([
-          _getValuesMap(),
           ..._getGetters(),
         ]);
     });
@@ -55,26 +54,6 @@ class FlagWriter extends Writer {
           }() );
       });
     }).toList();
-  }
-
-  Method _getValuesMap() {
-    return Method( ( builder ) {
-      builder
-        ..name = 'map'
-        ..type = MethodType.getter
-        ..returns = refer( 'Map<String, bool>' )
-        ..lambda = true
-        ..body = Code( () {
-
-          Map<String, bool> map = {};
-
-          for ( var f in _flags ) {
-            map['${name}ConfigKeys.flags.${f.name}'] = f.value;
-          }
-
-          return map.toString();
-        }() );
-    });
   }
 
   Class _buildAccessor() {

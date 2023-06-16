@@ -22,7 +22,6 @@ class MiscWriter extends Writer {
         ..constructors.add( Constructor( ( b ) => b..constant = true ) )
         ..name = '_Misc'
         ..methods.addAll([
-          _getValuesMap(),
           ..._getGetters(),
         ]);
     });
@@ -54,31 +53,6 @@ class MiscWriter extends Writer {
           }() );
       });
     }).toList();
-  }
-
-  Method _getValuesMap() {
-    return Method( ( builder ) {
-      builder
-        ..name = 'map'
-        ..type = MethodType.getter
-        ..returns = refer( 'Map<String, dynamic>' )
-        ..lambda = true
-        ..body = Code( () {
-
-          Map<String, dynamic> map = {};
-
-          for ( var f in _settings ) {
-            map['${name}ConfigKeys.misc.${f.name.canonicalize}'] = () {
-              if ( f.value is String ) {
-                return '\'${f.value}\'';
-              }
-              return f.value;
-            }();
-          }
-
-          return map.toString();
-        }() );
-    });
   }
 
   Class _buildAccessor() {

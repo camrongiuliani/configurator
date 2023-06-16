@@ -20,7 +20,6 @@ class RouteWriter extends Writer {
         ..constructors.add( Constructor( ( b ) => b..constant = true ) )
         ..name = '_Routes'
         ..methods.addAll([
-          _getValuesMap(),
           ..._getGetters(),
         ]);
     });
@@ -51,26 +50,6 @@ class RouteWriter extends Writer {
           }() );
       });
     }).toList();
-  }
-
-  Method _getValuesMap() {
-    return Method( ( builder ) {
-      builder
-        ..name = 'map'
-        ..type = MethodType.getter
-        ..returns = refer( 'Map<int, String>' )
-        ..lambda = true
-        ..body = Code( () {
-
-          Map<String, String> map = {};
-
-          for ( var f in _routes ) {
-            map['${name}ConfigKeys.routes.${f.path.canonicalize}'] = '\'${f.path}\'';
-          }
-
-          return map.toString();
-        }() );
-    });
   }
 
   Class _buildAccessor() {

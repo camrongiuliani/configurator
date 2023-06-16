@@ -49,15 +49,4 @@ class ConfigExtWriter extends Writer {
         ..type = MethodType.getter;
     });
   }
-
-  Method _buildTranslationMap() {
-    return Method( ( b ) {
-      b
-        ..name = '_translationMap'
-        ..returns = refer( 'Map<String, Map<String, String>>' )
-        ..body = const Code( 'this.scopes.sorted((a, b) => a.weight.compareTo(b.weight)).reversed.firstWhereOrNull((s) => s.translations.isNotEmpty)?.translations ?? {}' )
-        ..lambda = true
-        ..type = MethodType.getter;
-    });
-  }
 }
