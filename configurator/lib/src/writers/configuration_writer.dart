@@ -30,7 +30,7 @@ class ConfigWriter extends Writer {
           _mapGetter(
             name: 'weight',
             returnType: 'final int',
-            assignment: 'const _Weight().map[\'weight\'] ?? 0',
+            assignment: 'const _Weight().weight',
           ),
 
           _mapGetter(
