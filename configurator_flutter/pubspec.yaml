@@ -1,6 +1,6 @@
 name: configurator_flutter
 description: A new Flutter package project.
-version: 0.0.33
+version: 0.0.34
 homepage:
 
 environment:
@@ -17,12 +17,12 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  i18n_extension: ^8.0.0
-  google_fonts: ^3.0.0
+  i18n_extension: ^9.0.2
+  google_fonts: ^5.1.0
 
   parse_color: ^0.0.1
-  collection: ^1.16.0
-  yaml: ^3.1.1
+  collection: ^1.17.1
+  yaml: ^3.1.2
 
   slang_flutter: ^3.0.0
 
@@ -30,7 +30,7 @@ dependencies:
     git:
       url: git@github.com:camrongiuliani/configurator.git
       path: configurator
-      ref: 0.0.33
+      ref: 0.0.34
 
 dev_dependencies:
   flutter_test:
