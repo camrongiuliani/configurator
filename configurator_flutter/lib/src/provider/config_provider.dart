@@ -35,7 +35,7 @@ class _ConfigurationProviderState extends State<Configurator> {
   }
 
   void configListener() {
-    if (context.mounted) {
+    if (mounted) {
       setState(() {});
     }
   }

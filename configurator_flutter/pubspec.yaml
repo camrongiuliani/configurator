@@ -1,6 +1,6 @@
 name: configurator_flutter
 description: A new Flutter package project.
-version: 0.0.35
+version: 0.0.36
 homepage:
 
 environment:
@@ -30,7 +30,7 @@ dependencies:
     git:
       url: git@github.com:camrongiuliani/configurator.git
       path: configurator
-      ref: 0.0.35
+      ref: 0.0.36
 
 dev_dependencies:
   flutter_test:
