@@ -48,7 +48,7 @@ class YamlParser {
       padding: _processSettings(configNode, 'paddings', ns),
       margins: _processSettings(configNode, 'margins', ns),
       misc: _processSettings(configNode, 'misc', ns),
-      textStyles: _processTextStyles(configNode, ns),
+      textStyles: _processTextStyles(configNode),
       routes: _processRoutes(configNode, 'routes'),
       strings: _processTranslations(configNode, 'strings', ns),
       i18n: _processTranslations(configNode, 'i18n', ns),
