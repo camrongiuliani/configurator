@@ -81,6 +81,17 @@ class Configuration {
     _scopes.removeWhere((scope) => predicate(scope));
   }
 
+  Future<void> removeLastScopeWhere(
+      PopScopePredicate predicate, {
+        bool notify = true,
+      }) async {
+    var idx = _scopes.lastIndexWhere((scope) => predicate(scope));
+    
+    if (idx > -1) {
+      _scopes.removeAt(idx);
+    }
+  }
+
   Future<void> removeScopesOfType<T extends ConfigScope>() async {
     _scopes.removeWhere((s) => s is T);
 
