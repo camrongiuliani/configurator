@@ -160,9 +160,17 @@ class YamlParser {
 
         routes.add(processed);
 
-        for (var c in _getChildren(processed, [])) {
-          routes.add(c);
+        void addChildrenRecursive(YamlRoute route) {
+          for (YamlRoute c in route.children) {
+            routes.add(c);
+
+            if (c.children.isNotEmpty) {
+              addChildrenRecursive(c);
+            }
+          }
         }
+
+        addChildrenRecursive(processed);
       }
     } catch (e) {
       print(e);
@@ -211,18 +219,6 @@ class YamlParser {
             },
           ),
         );
-      }
-    }
-
-    return result;
-  }
-
-  static List<YamlRoute> _getChildren(YamlRoute route, List<YamlRoute> result) {
-    for (YamlRoute c in route.children) {
-      result.add(c);
-
-      if (c.children.isNotEmpty) {
-        return _getChildren(c, result);
       }
     }
 
@@ -449,7 +445,6 @@ class I18nParser {
     List<String> path,
   ) {
     for (var entry in input.entries) {
-
       var translations = visitTranslations(
         locale,
         entry.value,
