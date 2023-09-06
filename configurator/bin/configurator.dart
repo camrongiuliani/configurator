@@ -97,7 +97,11 @@ Future<void> applyDefinitions({
     final YamlDocument document = loadYamlDocument(def.readAsStringSync());
     final YamlNode rootDefsNode = document.contents;
 
-    final String id = rootDefsNode.value['id'];
+    final String? id = rootDefsNode.value['id'];
+
+    if (id == null) {
+      continue;
+    }
 
     for (var config in configs) {
       var configSource = config.readAsLinesSync();
