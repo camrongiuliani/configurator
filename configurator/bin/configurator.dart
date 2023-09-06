@@ -32,24 +32,12 @@ Future<void> main(List<String> args) async {
   print('\n*****Configurator Starting!*****');
 
   List<FileSystemEntity> files = findConfigurations(filters);
+  List<FileSystemEntity> definitions = findDefinitions(filters);
 
-  if (applyDefs) {
-    var idx = args.indexOf('-i');
-    var input = args[idx + 1];
-
-    if (input.isEmpty) {
-      throw Exception('Input not specified for definitions');
-    }
-
-    if (!input.contains('.defs.yaml')) {
-      throw Exception('Invalid file extension for definitions');
-    }
-
-    await applyDefinitions(
-      files: files,
-      inputFile: input,
-    );
-  }
+  await applyDefinitions(
+    configFiles: files,
+    defFiles: definitions,
+  );
 
   configure(
     files: files,
@@ -80,31 +68,58 @@ List<FileSystemEntity> findConfigurations(List<String> filters) {
   }).toList();
 }
 
+List<FileSystemEntity> findDefinitions(List<String> filters) {
+  return FileUtils.getFilesBreadthFirst(
+    rootDirectory: Directory.current,
+    extension: '.defs.yaml',
+    ignoreTopLevelDirectories: {
+      '.fvm',
+      '.flutter.git',
+      '.dart_tool',
+      '.idea',
+      '.gitignore',
+      'build',
+      'ios',
+      'android',
+      'web',
+    },
+  ).where((file) => file.path.endsWith('.defs.yaml')).toList();
+}
+
 Future<void> applyDefinitions({
-  required List<FileSystemEntity> files,
-  required String inputFile,
+  required List<FileSystemEntity> configFiles,
+  required List<FileSystemEntity> defFiles,
 }) async {
-  final List<File> configFiles = files.map((e) => File(e.path)).toList();
+  final List<File> configs = configFiles.map((e) => File(e.path)).toList();
+  final List<File> defs = defFiles.map((e) => File(e.path)).toList();
 
-  final File definitionsFile = File(inputFile);
+  for (var def in defs) {
+    final YamlDocument document = loadYamlDocument(def.readAsStringSync());
+    final YamlNode rootDefsNode = document.contents;
 
-  final YamlDocument document =
-      loadYamlDocument(definitionsFile.readAsStringSync());
-  final YamlNode rootNode = document.contents;
+    final String id = rootDefsNode.value['id'];
 
-  final YamlNode definitions = rootNode.value['definitions'];
-  final YamlMap? colors = definitions.value['colors'];
-  final YamlMap? sizes = definitions.value['sizes'];
-  final YamlMap? flags = definitions.value['flags'];
+    for (var config in configs) {
+      var configSource = config.readAsLinesSync();
 
-  final Map colorsMap = Map.fromEntries(colors?.entries ?? {});
-  final Map sizesMap = Map.fromEntries(sizes?.entries ?? {});
-  final Map flagsMap = Map.fromEntries(flags?.entries ?? {});
+      if (configSource.contains('def_source: $id')) {
+        print('Writings definitions ($id) to ${config.path}');
 
-  for (var file in configFiles) {
-    writeDefsToFile(file, colorsMap, 'colors', true);
-    writeDefsToFile(file, sizesMap, 'sizes');
-    writeDefsToFile(file, flagsMap, 'flags');
+        final YamlNode definitions = rootDefsNode.value['definitions'];
+        final YamlMap? colors = definitions.value['colors'];
+        final YamlMap? sizes = definitions.value['sizes'];
+        final YamlMap? flags = definitions.value['flags'];
+
+        final Map colorsMap = Map.fromEntries(colors?.entries ?? {});
+        final Map sizesMap = Map.fromEntries(sizes?.entries ?? {});
+        final Map flagsMap = Map.fromEntries(flags?.entries ?? {});
+
+        writeDefsToFile(config, colorsMap, 'colors', true);
+        writeDefsToFile(config, sizesMap, 'sizes');
+        writeDefsToFile(config, flagsMap, 'flags');
+      }
+    }
+
   }
 }
 
