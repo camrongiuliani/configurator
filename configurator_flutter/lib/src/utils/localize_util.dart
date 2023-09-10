@@ -12,3 +12,10 @@ class LocalizeUtil {
     );
   }
 }
+
+extension LocalizationExt on String {
+  String translate(Configuration config) => LocalizeUtil.localize(
+        config,
+        this,
+      );
+}

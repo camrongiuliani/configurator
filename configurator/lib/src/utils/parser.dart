@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:collection/collection.dart';
 import 'package:configurator/configurator.dart';
 import 'package:configurator/src/utils/string_ext.dart';
 import 'package:yaml/yaml.dart';
@@ -182,13 +183,33 @@ class YamlParser {
   static List<YamlSetting> _getSettingNamespaces(
       Map<String, dynamic> setting, List<YamlSetting> result, String path) {
     for (var es in setting.entries) {
-      if (es.value is Map) {
-        result.addAll(_getSettingNamespaces(es.value, [],
-            '${path.capitalized}_${es.key.capitalized}'.canonicalize));
-      } else {
-        result.add(YamlSetting(
+      //  if (es.value is List) {
+      //    print('SHES A LIST');
+      //
+      //    for (var i = 0; i < es.value.length; i++) {
+      //      result.add(
+      //        YamlSetting(
+      //          '${path.capitalized}_${es.key.capitalized}_i_$i'.canonicalize,
+      //          es.value[i],
+      //        ),
+      //      );
+      //    }
+      // } else
+        if (es.value is Map) {
+         result.addAll(
+           _getSettingNamespaces(
+             es.value,
+             [],
+             '${path.capitalized}_${es.key.capitalized}'.canonicalize,
+           ),
+         );
+       } else {
+        result.add(
+          YamlSetting(
             '${path.capitalized}_${es.key.capitalized}'.canonicalize,
-            es.value));
+            es.value,
+          ),
+        );
       }
     }
 

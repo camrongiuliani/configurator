@@ -40,6 +40,20 @@ class MiscWriter extends Writer {
               return 'double';
             } else if (e.value is bool) {
               return 'bool';
+            } else if (e.value is List) {
+              var types = (e.value as List).map((e) {
+                return e.runtimeType.toString();
+              }).toSet().toList();
+
+              if (types.length == 1) {
+                if (types.first.contains('_Map')) {
+                  return 'List<Map<String, dynamic>>';
+                }
+
+                return 'List<${types.first}>';
+              }
+
+              return 'List<dynamic>';
             }
 
             return 'dynamic';

@@ -19,6 +19,7 @@ class ConfigWriter extends Writer {
   late final List<YamlSetting<String, dynamic>> images;
   late final List<YamlSetting<String, double>> margins;
   late final List<YamlSetting<String, double>> padding;
+  late final Map<String, dynamic> translations;
 
   ConfigWriter({
     required this.name,
@@ -41,6 +42,10 @@ class ConfigWriter extends Writer {
     this.margins = margins.convert<String, double>();
     this.padding = padding.convert<String, double>();
     this.images = images.convert<String, dynamic>();
+
+    translations = I18nParser.parse(
+      strings: strings,
+    );
   }
 
   @override
@@ -198,7 +203,29 @@ class ConfigWriter extends Writer {
                 map[key] = () {
                   if (f.value is String) {
                     return '\'${f.value}\'';
+                  } else if (f.value is List) {
+                    return '[${(f.value as List).map((v) {
+
+                      dynamic tryFindTranslation(dynamic input) {
+                        if (input is List) {
+                          return input.map((e) => tryFindTranslation(e)).toList();
+                        } else if (input is Map) {
+                          return input.map((key, value) {
+                            return MapEntry(key, tryFindTranslation(value));
+                          });
+                        } else if (input is String) {
+                          return findTranslationKeyForString(input);
+                        } else {
+                          return input;
+                        }
+                      }
+
+                      v = tryFindTranslation(v);
+
+                      return jsonEncode(v).replaceAll('\\\\', '\\');
+                    }).join(',')}]';
                   }
+
                   return f.value;
                 }();
               }
@@ -261,19 +288,11 @@ class ConfigWriter extends Writer {
             name: 'translations',
             returnType: 'Map<String, Map<String, String>>',
             assignment: Code(() {
-              Map<String, dynamic> parsed = I18nParser.parse(
-                strings: strings,
-              );
+              var data = jsonEncode(translations).replaceAll(r'\\', r'\');
 
-              var data = jsonEncode(parsed).replaceAll(r'\\', r'\');
+              var v = data.replaceAll(r'+$', r'+\$');
 
-              // while (data.contains(r'\\')) {
-              //   data = data.replaceAll(r'\\', r'\');
-              // }
-
-              data = data.replaceAll(r'+$', r'+\$');
-
-              return 'const $data';
+              return 'const $v';
             }()),
           ),
         ]);
@@ -304,5 +323,43 @@ class ConfigWriter extends Writer {
         ..type = refer(returnType)
         ..assignment = assignment;
     });
+  }
+
+  String? findTranslationKeyForString(String input) {
+    try {
+      String? result;
+
+      bool checkTranslationsForString(Map i) {
+        for (var entry in i.entries) {
+          if (entry.value is String && entry.value == input) {
+            return true;
+          } else if (entry.value is Map) {
+            return checkTranslationsForString(entry.value);
+          }
+        }
+
+        return false;
+      }
+
+      for (var entry in translations.entries) {
+        var translationKey = entry.key;
+
+        if (entry.value is Map){
+          bool deepCheck = checkTranslationsForString(entry.value);
+
+          if (deepCheck) {
+            result = translationKey;
+          }
+        } else if (entry.value is String && entry.value == input) {
+          result = translationKey;
+        }
+      }
+
+      return result ?? input;
+    } catch(e) {
+      print(e);
+    }
+
+    return null;
   }
 }
