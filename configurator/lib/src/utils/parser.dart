@@ -401,6 +401,10 @@ class I18nParser {
   }) {
     Map<String, dynamic> map = {};
 
+    if (strings.isEmpty) {
+      return map;
+    }
+
     for (var f in strings) {
       map[f.locale] ??= {};
       map[f.locale][f.name] ??= f.value;
