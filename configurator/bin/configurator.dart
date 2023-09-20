@@ -20,6 +20,8 @@ Future<void> main(List<String> args) async {
 
   final bool watch = args.contains('-w') || args.contains('--watch');
 
+  final bool pureDart = args.contains('--pure-dart');
+
   List<String> filters = args.join('///').contains('--id-filter=')
       ? args
           .where((a) => a.startsWith('--id-filter='))
@@ -42,6 +44,7 @@ Future<void> main(List<String> args) async {
   configure(
     files: files,
     watch: watch,
+    pureDart: pureDart,
   );
 }
 
@@ -318,6 +321,7 @@ void writeDefsToFile(
 Future<void> configure({
   required List<FileSystemEntity> files,
   bool watch = false,
+  bool pureDart = false,
 }) async {
   final stopwatch = Stopwatch();
 
@@ -336,6 +340,7 @@ Future<void> configure({
     await generateConfigurations(
       files: files,
       stopwatch: stopwatch,
+      pureDart: pureDart,
     );
   }
 }
@@ -343,6 +348,7 @@ Future<void> configure({
 Future<void> generateConfigurations({
   required List<FileSystemEntity> files,
   bool verbose = false,
+  bool pureDart = false,
   Stopwatch? stopwatch,
 }) async {
   // Read yaml paths from annotation

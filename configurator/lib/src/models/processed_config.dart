@@ -22,56 +22,49 @@ class ProcessedConfig {
 
   ProcessedConfig(this.frameworkName, this.yamlConfiguration);
 
-  Future write() async {
+  Future write(bool pureDart) async {
     LibraryBuilder builder = LibraryBuilder();
 
     builder.directives.addAll([
-      Directive.import('dart:ui'),
-      Directive.import('package:flutter/material.dart'),
-      Directive.import(
-          'package:configurator_flutter/configurator_flutter.dart'),
-      Directive.import('package:collection/collection.dart'),
+      if (pureDart) ...[
+        Directive.import('package:configurator/configurator.dart'),
+      ] else ...[
+        Directive.import('dart:ui'),
+        Directive.import('package:flutter/material.dart'),
+        Directive.import('package:collection/collection.dart'),
+        Directive.import(
+            'package:configurator_flutter/configurator_flutter.dart'),
+      ]
     ]);
 
     builder.body.addAll([
       TitleWriter('ignore_for_file: type=lint').write(),
-
       TitleWriter('Keys').write(),
       KeyWriter(frameworkName, yamlConfiguration).write(),
-
-      TitleWriter('Theme').write(),
-      ThemeWriter(frameworkName, yamlConfiguration).write(),
-
+      if (!pureDart) ...[
+        TitleWriter('Theme').write(),
+        ThemeWriter(frameworkName, yamlConfiguration).write(),
+      ],
       TitleWriter('Flags').write(),
       FlagWriter(frameworkName, yamlConfiguration.flags).write(),
-
       TitleWriter('Images').write(),
       ImageWriter(frameworkName, yamlConfiguration.images).write(),
-
       TitleWriter('Routes').write(),
       RouteWriter(frameworkName, yamlConfiguration.routes).write(),
-
       TitleWriter('Colors').write(),
       ColorWriter(frameworkName, yamlConfiguration.colors).write(),
-
       TitleWriter('Sizes').write(),
       SizeWriter(frameworkName, yamlConfiguration.sizes).write(),
-
       TitleWriter('Padding').write(),
       PaddingWriter(frameworkName, yamlConfiguration.padding).write(),
-
       TitleWriter('Margins').write(),
       MarginWriter(frameworkName, yamlConfiguration.margins).write(),
-
       TitleWriter('Misc').write(),
       MiscWriter(frameworkName, yamlConfiguration.misc).write(),
-
       TitleWriter('TextStyles').write(),
       TextStyleWriter(frameworkName, yamlConfiguration.textStyles).write(),
-
       TitleWriter('Strings').write(),
       SlangWriter(yamlConfiguration.i18n).write(),
-
       TitleWriter('Configuration').write(),
       ConfigWriter(
         name: frameworkName,
@@ -87,7 +80,6 @@ class ProcessedConfig {
         padding: yamlConfiguration.padding,
         images: yamlConfiguration.images,
       ).write(),
-
       TitleWriter('Configuration Extension').write(),
       ConfigExtWriter().write(),
     ]);
