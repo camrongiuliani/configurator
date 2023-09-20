@@ -431,10 +431,10 @@ Future<void> generateConfigurations({
 
     var builtContent = await () async {
       try {
-        return DartFormatter().format(await result.write());
+        return DartFormatter().format(await result.write(pureDart));
       } catch (e) {
         print(e);
-        return await result.write();
+        return await result.write(pureDart);
       }
     }();
 
