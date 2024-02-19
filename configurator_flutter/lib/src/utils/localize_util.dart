@@ -5,10 +5,7 @@ class LocalizeUtil {
   static String localize(Configuration config, String input) {
     return i18n.localize(
       input,
-      i18n.Translations.from(
-        "en_us",
-        config.currentTranslations(input),
-      ),
+      i18n.Translations.byLocale('en_us') + config.currentTranslations(input),
     );
   }
 }
