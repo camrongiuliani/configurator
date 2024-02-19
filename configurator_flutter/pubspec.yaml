@@ -1,6 +1,6 @@
 name: configurator_flutter
 description: A new Flutter package project.
-version: 1.0.1
+version: 1.0.2
 homepage:
 
 environment:
@@ -8,6 +8,7 @@ environment:
   flutter: ">=1.17.0"
 
 dependency_overrides:
+  intl: ^0.19.0
   configurator:
     path: ../configurator
 
