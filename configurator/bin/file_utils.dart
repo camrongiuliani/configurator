@@ -35,7 +35,14 @@ class FileUtils {
     queue.add(rootDirectory);
 
     do {
-      final dirList = queue.removeFirst().listSync(recursive: false);
+      final entry = queue.removeFirst();
+
+      if (entry.path.contains('dart_tool/')) {
+        continue;
+      }
+
+      final dirList = entry.listSync(recursive: false);
+
       for (final FileSystemEntity entity in dirList) {
         if (entity is File && ( extension.isEmpty || entity.path.contains( extension ) ) ) {
           result.add(entity);
