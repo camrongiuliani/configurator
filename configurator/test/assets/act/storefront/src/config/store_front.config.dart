@@ -367,7 +367,7 @@ class GeneratedStoreFrontScope extends ConfigScope {
   };
 
   @override
-  final Map<String, Map<String, String>> translations = const {};
+  final Map<String, Map<String, dynamic>> translations = const {};
 }
 
 // ********************************

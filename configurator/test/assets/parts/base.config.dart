@@ -213,7 +213,7 @@ class GeneratedBaseScope extends ConfigScope {
   final Map<int, String> routes = const {};
 
   @override
-  final Map<String, Map<String, String>> translations = const {};
+  final Map<String, Map<String, dynamic>> translations = const {};
 }
 
 // ********************************
