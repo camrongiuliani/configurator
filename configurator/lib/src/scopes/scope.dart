@@ -40,7 +40,11 @@ abstract class ConfigScope {
       padding: {for (var e in config.padding) e.name: e.value},
       margins: {for (var e in config.margins) e.name: e.value},
       colors: {for (var e in config.colors) e.name: e.value},
-      translations: {for (var e in config.i18n) e.name: e.value},
+      translations: Map.from(
+        I18nParser.parse(
+          strings: config.i18n,
+        ),
+      ),
     );
   }
 
