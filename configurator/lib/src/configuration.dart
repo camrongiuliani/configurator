@@ -170,7 +170,7 @@ class Configuration {
         0.0;
   }
 
-  Map<String, Map<String, dynamic>> currentTranslations(String key) {
+  Map<String, Map<String, String>> currentTranslations(String key) {
     return _scopesSorted.reversed.firstWhereOrNull((s) {
           return s.translations.isNotEmpty && s.translations.containsKey(key);
         })?.translations ??

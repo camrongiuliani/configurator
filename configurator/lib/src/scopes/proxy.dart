@@ -39,7 +39,7 @@ class ProxyScope extends ConfigScope {
   Map<String, dynamic> textStyles;
 
   @override
-  Map<String, Map<String, dynamic>> translations;
+  Map<String, Map<String, String>> translations;
 
   ProxyScope({
     required this.name,

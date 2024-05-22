@@ -226,7 +226,7 @@ class GeneratedImageArray extends ConfigScope {
   final Map<int, String> routes = const {1: '/master', 4: 'test'};
 
   @override
-  final Map<String, Map<String, dynamic>> translations = const {};
+  final Map<String, Map<String, String>> translations = const {};
 }
 
 // ********************************

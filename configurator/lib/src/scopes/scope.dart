@@ -18,7 +18,7 @@ abstract class ConfigScope {
   final Map<String, double> radius = const {};
   final Map<String, dynamic> textStyles = const {};
   final Map<int, String?> routes = const {};
-  final Map<String, Map<String, dynamic>> translations = const {};
+  final Map<String, Map<String, String>> translations = const {};
 
   static ConfigScope empty({required String name}) {
     return ProxyScope(name: name);

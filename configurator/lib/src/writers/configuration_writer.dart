@@ -286,7 +286,7 @@ class ConfigWriter extends Writer {
           ),
           _valueGetter(
             name: 'translations',
-            returnType: 'Map<String, Map<String, dynamic>>',
+            returnType: 'Map<String, Map<String, String>>',
             assignment: Code(() {
               var data = jsonEncode(translations).replaceAll(r'\\', r'\');
 
