@@ -7,6 +7,9 @@ typedef ThemeExtensionBuilder = ThemeExtension Function( Configuration );
 
 extension ThemeF on Configuration {
 
+  List<ConfigScope> get _scopesSorted =>
+      scopes.sorted((a, b) => a.weight.compareTo(b.weight));
+
   ThemeData buildTheme({
     ThemeData? baseTheme,
     List<ThemeExtension> extensions = const [],
@@ -21,7 +24,7 @@ extension ThemeF on Configuration {
   }
 
   Color colorValue( String id ) {
-    String? colorValue = scopes.reversed.firstWhereOrNull( ( s ) {
+    String? colorValue = _scopesSorted.reversed.firstWhereOrNull( ( s ) {
       return s.colors.containsKey( id );
     })?.colors[ id ];
 
