@@ -1,8 +1,10 @@
 import 'package:configurator/configurator.dart';
-import 'package:configurator/src/models/config_access_log.dart';
 import 'package:configurator/src/utils/change_notifier.dart';
 import 'package:collection/collection.dart';
 import 'package:rxdart/rxdart.dart';
+
+export 'package:configurator/src/models/config_access_log.dart';
+
 
 typedef VoidCallback = void Function();
 
