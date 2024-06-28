@@ -247,7 +247,7 @@ class Configuration {
 
     if (scope != null) {
       publisher.sink.add(
-        ConfigKeyLog(KeyType.string, key, value),
+        ConfigKeyLog(KeyType.string, scope, key, value),
       );
     }
     
