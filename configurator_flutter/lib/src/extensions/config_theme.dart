@@ -24,11 +24,19 @@ extension ThemeF on Configuration {
   }
 
   Color colorValue( String id ) {
-    String? colorValue = _scopesSorted.reversed.firstWhereOrNull( ( s ) {
+    final ConfigScope? scope = _scopesSorted.reversed.firstWhereOrNull((s) {
       return s.colors.containsKey( id );
-    })?.colors[ id ];
+    });
 
-    return UIColor( colorValue ?? const Color( 0xFF000000 ) );
+    final value = scope?.colors[ id ];
+
+    if (scope != null) {
+      publisher.sink.add(
+        ConfigKeyLog(KeyType.flag, id, value),
+      );
+    }
+
+    return UIColor( value ?? const Color( 0xFF000000 ) );
   }
 
 }

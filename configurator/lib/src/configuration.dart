@@ -1,6 +1,8 @@
 import 'package:configurator/configurator.dart';
+import 'package:configurator/src/models/config_access_log.dart';
 import 'package:configurator/src/utils/change_notifier.dart';
 import 'package:collection/collection.dart';
+import 'package:rxdart/rxdart.dart';
 
 typedef VoidCallback = void Function();
 
@@ -82,11 +84,11 @@ class Configuration {
   }
 
   Future<void> removeLastScopeWhere(
-      PopScopePredicate predicate, {
-        bool notify = true,
-      }) async {
+    PopScopePredicate predicate, {
+    bool notify = true,
+  }) async {
     var idx = _scopes.lastIndexWhere((scope) => predicate(scope));
-    
+
     if (idx > -1) {
       _scopes.removeAt(idx);
     }
@@ -97,32 +99,69 @@ class Configuration {
 
     notifyListeners();
   }
-
+  
   bool flag(String id) {
-    return _scopesSorted.reversed.firstWhereOrNull((s) {
-          return s.flags.containsKey(id);
-        })?.flags[id] == true;
+    final ConfigScope? scope = _scopesSorted.reversed.firstWhereOrNull((s) {
+      return s.flags.containsKey(id);
+    });
+    
+    final value = scope?.flags[id] == true;
+
+    if (scope != null) {
+      publisher.sink.add(
+        ConfigKeyLog(KeyType.flag, id, value),
+      );
+    }
+
+    return value;
   }
 
   String color(String id) {
-    return _scopesSorted.reversed.firstWhereOrNull((s) {
-          return s.colors.containsKey(id);
-        })?.colors[id] ??
-        '';
+    final ConfigScope? scope = _scopesSorted.reversed.firstWhereOrNull((s) {
+      return s.colors.containsKey(id);
+    });
+    
+    final value = scope?.colors[id] ?? '';
+
+    if (scope != null) {
+      publisher.sink.add(
+        ConfigKeyLog(KeyType.color, id, value),
+      );
+    }
+
+    return value;
   }
 
   String route(int id) {
-    return _scopesSorted.reversed.firstWhereOrNull((s) {
-          return s.routes.containsKey(id);
-        })?.routes[id] ??
-        '';
+    final ConfigScope? scope = _scopesSorted.reversed.firstWhereOrNull((s) {
+      return s.routes.containsKey(id);
+    });
+    
+    final value = scope?.routes[id] ?? '';
+
+    if (scope != null) {
+      publisher.sink.add(
+        ConfigKeyLog(KeyType.route, id, value),
+      );
+    }
+
+    return value;
   }
 
   String image(String id) {
-    return _scopesSorted.reversed.firstWhereOrNull((s) {
-          return s.images.containsKey(id);
-        })?.images[id] ??
-        '';
+    final ConfigScope? scope = _scopesSorted.reversed.firstWhereOrNull((s) {
+      return s.images.containsKey(id);
+    });
+
+    final value = scope?.images[id] ?? '';
+    
+    if (scope != null) {
+      publisher.sink.add(
+        ConfigKeyLog(KeyType.image, id, value),
+      );
+    }
+
+    return value;
   }
 
   List<String> imageList(String id) {
@@ -138,22 +177,51 @@ class Configuration {
   }
 
   dynamic misc(String id) {
-    return _scopesSorted.reversed.firstWhereOrNull((s) {
+    final ConfigScope? scope = _scopesSorted.reversed.firstWhereOrNull((s) {
       return s.misc.containsKey(id);
-    })?.misc[id];
+    });
+    
+    final value = scope?.misc[id];
+
+    if (scope != null) {
+      publisher.sink.add(
+        ConfigKeyLog(KeyType.misc, id, value),
+      );
+    }
+
+    return value;
   }
 
   Map<String, dynamic> textStyle(String id) {
-    return _scopesSorted.reversed.firstWhereOrNull((s) {
+    final ConfigScope? scope = _scopesSorted.reversed.firstWhereOrNull((s) {
       return s.textStyles.containsKey(id);
-    })?.textStyles[id];
+    });
+
+    final value = scope?.textStyles[id];
+
+    if (scope != null) {
+      publisher.sink.add(
+        ConfigKeyLog(KeyType.textStyle, id, value),
+      );
+    }
+
+    return value;
   }
 
   double size(String id) {
-    return _scopesSorted.reversed.firstWhereOrNull((s) {
-          return s.sizes.containsKey(id);
-        })?.sizes[id] ??
-        14.0;
+    final ConfigScope? scope = _scopesSorted.reversed.firstWhereOrNull((s) {
+      return s.sizes.containsKey(id);
+    });
+
+    final value = scope?.sizes[id] ?? 14.0;
+
+    if (scope != null) {
+      publisher.sink.add(
+        ConfigKeyLog(KeyType.size, id, value),
+      );
+    }
+
+    return value;
   }
 
   double padding(String id) {
@@ -171,10 +239,19 @@ class Configuration {
   }
 
   Map<String, Map<String, String>> currentTranslations(String key) {
-    return _scopesSorted.reversed.firstWhereOrNull((s) {
-          return s.translations.isNotEmpty && s.translations.containsKey(key);
-        })?.translations ??
-        {};
+    final ConfigScope? scope = _scopesSorted.reversed.firstWhereOrNull((s) {
+      return s.translations.isNotEmpty && s.translations.containsKey(key);
+    });
+    
+    final value = scope?.translations ?? {};
+
+    if (scope != null) {
+      publisher.sink.add(
+        ConfigKeyLog(KeyType.string, key, value),
+      );
+    }
+    
+    return value;
   }
 
   Map<String, dynamic> get themeMap {
@@ -215,6 +292,10 @@ class Configuration {
 
   /// Not part of public API
   Stream<Configuration> watch() => changeNotifier.watch();
+
+  final publisher = PublishSubject<ConfigKeyLog>();
+
+  Stream<ConfigKeyLog> get accessStream => publisher.stream;
 
   void notifyListeners() {
     changeNotifier.notify(this);
