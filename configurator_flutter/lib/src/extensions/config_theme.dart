@@ -32,7 +32,7 @@ extension ThemeF on Configuration {
 
     if (scope != null) {
       publisher.sink.add(
-        ConfigKeyLog(KeyType.flag, id, value),
+        ConfigKeyLog(KeyType.flag, scope, id, value),
       );
     }
 

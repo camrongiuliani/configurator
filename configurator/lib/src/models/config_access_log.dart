@@ -1,4 +1,6 @@
 
+import 'package:configurator/configurator.dart';
+
 enum KeyType {
   flag,
   string,
@@ -14,6 +16,7 @@ class ConfigKeyLog<K, V> {
   final KeyType type;
   final K key;
   final V value;
+  final ConfigScope scope;
 
-  ConfigKeyLog(this.type, this.key, this.value);
+  ConfigKeyLog(this.type, this.scope, this.key, this.value);
 }

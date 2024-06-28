@@ -109,7 +109,7 @@ class Configuration {
 
     if (scope != null) {
       publisher.sink.add(
-        ConfigKeyLog(KeyType.flag, id, value),
+        ConfigKeyLog(KeyType.flag, scope, id, value),
       );
     }
 
@@ -125,7 +125,7 @@ class Configuration {
 
     if (scope != null) {
       publisher.sink.add(
-        ConfigKeyLog(KeyType.color, id, value),
+        ConfigKeyLog(KeyType.color, scope, id, value),
       );
     }
 
@@ -141,7 +141,7 @@ class Configuration {
 
     if (scope != null) {
       publisher.sink.add(
-        ConfigKeyLog(KeyType.route, id, value),
+        ConfigKeyLog(KeyType.route, scope, id, value),
       );
     }
 
@@ -157,7 +157,7 @@ class Configuration {
     
     if (scope != null) {
       publisher.sink.add(
-        ConfigKeyLog(KeyType.image, id, value),
+        ConfigKeyLog(KeyType.image, scope, id, value),
       );
     }
 
@@ -185,7 +185,7 @@ class Configuration {
 
     if (scope != null) {
       publisher.sink.add(
-        ConfigKeyLog(KeyType.misc, id, value),
+        ConfigKeyLog(KeyType.misc, scope, id, value),
       );
     }
 
@@ -201,7 +201,7 @@ class Configuration {
 
     if (scope != null) {
       publisher.sink.add(
-        ConfigKeyLog(KeyType.textStyle, id, value),
+        ConfigKeyLog(KeyType.textStyle, scope, id, value),
       );
     }
 
@@ -217,7 +217,7 @@ class Configuration {
 
     if (scope != null) {
       publisher.sink.add(
-        ConfigKeyLog(KeyType.size, id, value),
+        ConfigKeyLog(KeyType.size, scope, id, value),
       );
     }
 
