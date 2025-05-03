@@ -6,21 +6,95 @@ import 'package:configurator/src/utils/string_ext.dart';
 import 'package:configurator/src/utils/type_ext.dart';
 import 'package:configurator/src/writers/writer.dart';
 
+/// A code generator that creates a configuration scope class from various configuration settings.
+///
+/// This writer generates a Dart class that extends [ConfigScope] and contains all the
+/// configuration values loaded from YAML files. The generated class includes:
+/// * Flags (boolean values)
+/// * Colors (color values in hex or RGB format)
+/// * Text styles (font styles and properties)
+/// * Routes (application navigation routes)
+/// * Images (asset paths or URLs)
+/// * Sizes (numeric dimensions)
+/// * Margins and padding (spacing values)
+/// * Miscellaneous values
+/// * Internationalization strings
+///
+/// Example of generated code:
+/// ```dart
+/// class GeneratedMyConfig extends ConfigScope {
+///   const GeneratedMyConfig();
+///
+///   @override
+///   String get name => 'my_config';
+///
+///   @override
+///   int get weight => 100;
+///
+///   @override
+///   Map<String, bool> get flags => const {
+///     'isDarkMode': true,
+///     'isDebug': false,
+///   };
+///
+///   // ... other getters for colors, text styles, etc.
+/// }
+/// ```
 class ConfigWriter extends Writer {
+  /// The name of the configuration scope
   final String name;
+
+  /// The weight of this configuration scope (determines precedence)
   final int weight;
+
+  /// The list of internationalization strings
   final List<YamlI18n> strings;
+
+  /// The list of route configurations
   final List<YamlRoute> routes;
+
+  /// The list of text style configurations
   final List<YamlTextStyle> textStyles;
+
+  /// The list of boolean flag settings
   late final List<YamlSetting<String, bool>> flags;
+
+  /// The list of color settings (in hex or RGB format)
   late final List<YamlSetting<String, String>> colors;
+
+  /// The list of miscellaneous settings
   late final List<YamlSetting<String, dynamic>> misc;
+
+  /// The list of size settings
   late final List<YamlSetting> sizes;
+
+  /// The list of image settings (asset paths or URLs)
   late final List<YamlSetting<String, dynamic>> images;
+
+  /// The list of margin settings
   late final List<YamlSetting<String, double>> margins;
+
+  /// The list of padding settings
   late final List<YamlSetting<String, double>> padding;
+
+  /// The parsed translations map
   late final Map<String, dynamic> translations;
 
+  /// Creates a new [ConfigWriter] instance.
+  ///
+  /// Parameters:
+  /// * [name] - The name of the configuration scope
+  /// * [weight] - The weight of this configuration scope
+  /// * [strings] - The list of internationalization strings
+  /// * [textStyles] - The list of text style configurations
+  /// * [routes] - The list of route configurations
+  /// * [flags] - The list of boolean flag settings
+  /// * [sizes] - The list of size settings
+  /// * [colors] - The list of color settings
+  /// * [misc] - The list of miscellaneous settings
+  /// * [images] - The list of image settings
+  /// * [margins] - The list of margin settings
+  /// * [padding] - The list of padding settings
   ConfigWriter({
     required this.name,
     required this.weight,
@@ -49,6 +123,14 @@ class ConfigWriter extends Writer {
   }
 
   @override
+  /// Generates the configuration scope class.
+  ///
+  /// This method creates a Dart class that extends [ConfigScope] and includes
+  /// all the configuration values as getters. The class is generated using the
+  /// code_builder package.
+  ///
+  /// Returns:
+  /// * A [Spec] object representing the generated class
   Spec write() {
     return Class((builder) {
       builder

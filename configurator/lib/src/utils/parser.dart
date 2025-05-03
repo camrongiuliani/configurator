@@ -4,9 +4,15 @@ import 'package:configurator/configurator.dart';
 import 'package:configurator/src/utils/string_ext.dart';
 import 'package:yaml/yaml.dart';
 
+/// Exception thrown when YAML parsing fails.
+///
+/// This exception is thrown when the YAML content is invalid or cannot be
+/// parsed into the expected configuration format.
 class InvalidYamlException implements Exception {
+  /// The error message describing the parsing failure
   final dynamic message;
 
+  /// Creates a new [InvalidYamlException] with an optional error message.
   InvalidYamlException([this.message]);
 
   @override
@@ -17,7 +23,40 @@ class InvalidYamlException implements Exception {
   }
 }
 
+/// A utility class for parsing YAML configuration files.
+///
+/// This class provides methods to parse YAML strings into structured configuration
+/// objects. It handles various configuration sections including:
+/// * Flags
+/// * Colors
+/// * Images
+/// * Text styles
+/// * Routes
+/// * Internationalization strings
+/// * Sizes and dimensions
+///
+/// Example:
+/// ```yaml
+/// id: my_config
+/// namespace: app
+/// weight: 100
+/// configuration:
+///   flags:
+///     isDarkMode: true
+///   colors:
+///     primary: '#FF0000'
+/// ```
 class YamlParser {
+  /// Attempts to parse a YAML string into a [YamlConfiguration] object.
+  ///
+  /// This method catches any parsing errors and returns null if parsing fails.
+  ///
+  /// Parameters:
+  /// * [yamlString] - The YAML string to parse
+  ///
+  /// Returns:
+  /// * A [YamlConfiguration] object if parsing succeeds
+  /// * null if parsing fails
   static YamlConfiguration? tryParse(String? yamlString) {
     try {
       return fromYamlString(yamlString);
@@ -27,6 +66,19 @@ class YamlParser {
     return null;
   }
 
+  /// Parses a YAML string into a [YamlConfiguration] object.
+  ///
+  /// This method validates and parses the YAML string, extracting all configuration
+  /// sections into a structured object.
+  ///
+  /// Parameters:
+  /// * [yamlString] - The YAML string to parse
+  ///
+  /// Returns:
+  /// * A [YamlConfiguration] object containing the parsed configuration
+  ///
+  /// Throws:
+  /// * [InvalidYamlException] if the YAML is invalid or missing required sections
   static YamlConfiguration fromYamlString(String? yamlString) {
     // Convert to YamlDocument (with validation)
     final YamlDocument document = _validate(yamlString)!;
@@ -58,6 +110,15 @@ class YamlParser {
     return yamlConfig;
   }
 
+  /// Processes the 'parts' section of the configuration.
+  ///
+  /// Parts are additional configuration files that should be included.
+  ///
+  /// Parameters:
+  /// * [node] - The YAML node containing the parts list
+  ///
+  /// Returns:
+  /// * A list of part file paths
   static List<String> _processParts(YamlNode node) {
     List<String> parts = [];
 
@@ -80,6 +141,16 @@ class YamlParser {
     return parts;
   }
 
+  /// Processes the configuration weight.
+  ///
+  /// The weight determines the precedence of this configuration when multiple
+  /// configurations are merged.
+  ///
+  /// Parameters:
+  /// * [configNode] - The YAML node containing the weight value
+  ///
+  /// Returns:
+  /// * The weight as an integer, defaulting to 0 if not specified
   static int _processWeight(YamlNode configNode) {
     try {
       final node = configNode.value['weight'];
@@ -96,6 +167,16 @@ class YamlParser {
     return 0;
   }
 
+  /// Processes text style configurations.
+  ///
+  /// Text styles define the typography settings for the application.
+  ///
+  /// Parameters:
+  /// * [configNode] - The YAML node containing text style definitions
+  /// * [namespace] - Optional namespace for the text styles
+  ///
+  /// Returns:
+  /// * A list of [YamlTextStyle] objects
   static List<YamlTextStyle> _processTextStyles(YamlNode configNode,
       [String? namespace]) {
     List<YamlTextStyle> textStyles = [];
@@ -119,6 +200,15 @@ class YamlParser {
     return textStyles;
   }
 
+  /// Processes general settings sections (flags, colors, images, etc.).
+  ///
+  /// Parameters:
+  /// * [configNode] - The YAML node containing the settings
+  /// * [type] - The type of settings to process (e.g., 'flags', 'colors')
+  /// * [namespace] - Optional namespace for the settings
+  ///
+  /// Returns:
+  /// * A list of [YamlSetting] objects
   static List<YamlSetting> _processSettings(YamlNode configNode, String type,
       [String? namespace]) {
     List<YamlSetting> settings = [];
@@ -142,6 +232,16 @@ class YamlParser {
     return settings;
   }
 
+  /// Processes route configurations.
+  ///
+  /// Routes define the navigation structure of the application.
+  ///
+  /// Parameters:
+  /// * [configNode] - The YAML node containing route definitions
+  /// * [type] - The type of routes to process
+  ///
+  /// Returns:
+  /// * A list of [YamlRoute] objects
   static List<YamlRoute> _processRoutes(YamlNode configNode, String type) {
     List<YamlRoute> routes = [];
 
@@ -180,6 +280,18 @@ class YamlParser {
     return routes;
   }
 
+  /// Recursively processes settings with namespaces.
+  ///
+  /// This method handles nested settings by creating appropriate namespaces
+  /// for each level.
+  ///
+  /// Parameters:
+  /// * [setting] - The map of settings to process
+  /// * [result] - The list to store processed settings
+  /// * [path] - The current namespace path
+  ///
+  /// Returns:
+  /// * A list of [YamlSetting] objects with namespaced names
   static List<YamlSetting> _getSettingNamespaces(
       Map<String, dynamic> setting, List<YamlSetting> result, String path) {
     for (var es in setting.entries) {
@@ -216,6 +328,18 @@ class YamlParser {
     return result;
   }
 
+  /// Processes text style configurations with namespaces.
+  ///
+  /// This method handles nested text style definitions by creating appropriate
+  /// namespaces for each level.
+  ///
+  /// Parameters:
+  /// * [setting] - The map of text style definitions to process
+  /// * [result] - The list to store processed text styles
+  /// * [path] - The current namespace path
+  ///
+  /// Returns:
+  /// * A list of [YamlTextStyle] objects with namespaced names
   static List<YamlTextStyle> _getTextStyleNamespaces(
       Map<String, dynamic> setting, List<YamlTextStyle> result, String path) {
     for (var es in setting.entries) {

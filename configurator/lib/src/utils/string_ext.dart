@@ -1,15 +1,32 @@
+/// Extension methods for the [String] class.
+///
+/// This extension provides utility methods for string manipulation and formatting,
+/// including capitalization, camel case conversion, and URL detection.
 extension StringExtension on String {
 
-  /// Capitalize the first character in a [String]
+  /// Capitalizes the first character of the string.
+  ///
+  /// Returns:
+  /// * The string with its first character capitalized
+  /// * The original string if capitalization fails
   String get capitalized {
     try {
-      return "${this[0].toUpperCase()}${ substring(1) }";
+      return "${this[0].toUpperCase()}${substring(1)}";
     } catch (e) {
       return this;
     }
   }
 
-  /// Converts a [String] into camel case using regex.
+  /// Converts the string to camel case format.
+  ///
+  /// This method:
+  /// 1. Capitalizes words separated by spaces, hyphens, or underscores
+  /// 2. Removes all spaces, hyphens, and underscores
+  /// 3. Makes the first character lowercase
+  ///
+  /// Returns:
+  /// * The string in camel case format
+  /// * The original string if conversion fails
   String get camelCase {
     try {
       String s = replaceAllMapped(
@@ -25,7 +42,21 @@ extension StringExtension on String {
     }
   }
 
+  /// Canonicalizes the string by:
+  /// 1. Splitting on dots
+  /// 2. Capitalizing each part
+  /// 3. Joining with underscores
+  /// 4. Removing non-word characters
+  /// 5. Converting to camel case
+  ///
+  /// Returns:
+  /// * The canonicalized string
   String get canonicalize => split('.').map((e) => e.capitalized).join('_').replaceAll(RegExp(r'[^\w\s]+'), '_').replaceFirst('_', '').camelCase;
 
-  bool get isUrl => startsWith( 'http' ) && Uri.tryParse( this )?.isAbsolute == true;
+  /// Checks if the string is a valid URL.
+  ///
+  /// Returns:
+  /// * `true` if the string is a valid absolute URL starting with 'http'
+  /// * `false` otherwise
+  bool get isUrl => startsWith('http') && Uri.tryParse(this)?.isAbsolute == true;
 }

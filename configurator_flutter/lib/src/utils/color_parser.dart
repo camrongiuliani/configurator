@@ -1,8 +1,26 @@
-
-
 import 'package:flutter/material.dart';
 
+/// A utility class for parsing color values into Flutter [Color] objects.
+///
+/// This class provides functionality to convert various color formats into
+/// Flutter's [Color] objects, including:
+/// * Hex color codes (e.g., "#FF0000" or "#FFFF0000")
+/// * RGB and RGBA strings (e.g., "rgb(255, 0, 0)" or "rgba(255, 0, 0, 0.5)")
+/// * Flutter [Color] objects
 class ColorParser {
+  /// Converts a hex color code string into a [Color] object.
+  ///
+  /// The hex string can be in the following formats:
+  /// * 6 digits (e.g., "FF0000")
+  /// * 8 digits (e.g., "FFFF0000")
+  /// * With or without a "#" prefix
+  ///
+  /// Parameters:
+  /// * [input] - The hex color code string
+  ///
+  /// Returns:
+  /// * A [Color] object representing the hex color
+  /// * [Colors.transparent] if the input is invalid
   static Color _colorFromHex(String input) {
     String c = input.toUpperCase().replaceAll("#", "");
     if (![6, 8].contains(c.length)) {
@@ -18,6 +36,18 @@ class ColorParser {
     return Colors.transparent;
   }
 
+  /// Converts an RGB or RGBA string into a [Color] object.
+  ///
+  /// The string should be in one of these formats:
+  /// * "rgb(r, g, b)"
+  /// * "rgba(r, g, b, a)"
+  ///
+  /// Parameters:
+  /// * [color] - The RGB or RGBA color string
+  ///
+  /// Returns:
+  /// * A [Color] object representing the RGB/RGBA color
+  /// * [Colors.transparent] if the input is invalid
   static Color _colorFromRGBString(String color) {
     try {
       bool hasAlpha = color.toLowerCase().startsWith('rgba');
@@ -37,6 +67,13 @@ class ColorParser {
     }
   }
 
+  /// Converts a [Color] object into an RGBA string.
+  ///
+  /// Parameters:
+  /// * [color] - The color to convert
+  ///
+  /// Returns:
+  /// * A string in the format "rgba(r, g, b, a)"
   static String colorToString(Color color) {
     var r = color.red;
     var g = color.green;
@@ -45,6 +82,19 @@ class ColorParser {
     return 'rgba($r,$g,$b,$o)';
   }
 
+  /// Parses a color value into a [Color] object.
+  ///
+  /// This method can handle various input types:
+  /// * [Color] objects (returned as-is)
+  /// * Hex color strings (e.g., "#FF0000")
+  /// * RGB/RGBA strings (e.g., "rgb(255, 0, 0)")
+  ///
+  /// Parameters:
+  /// * [input] - The color value to parse
+  ///
+  /// Returns:
+  /// * A [Color] object representing the input color
+  /// * [Colors.transparent] if the input is invalid
   static Color parse(dynamic input) {
     if (input is Color) {
       return input;

@@ -8,8 +8,36 @@ import 'package:slang/builder/builder/build_model_config_builder.dart';
 import 'package:slang/builder/builder/generate_config_builder.dart';
 import 'package:slang/builder/model/i18n_data.dart';
 
+/// A utility class for generating internationalization (i18n) code using the slang package.
+///
+/// This class provides functionality to generate Dart code for internationalization
+/// from YAML configuration and i18n nodes. It uses the slang package to build
+/// translation models and generate the final code.
+///
+/// Example usage:
+/// ```dart
+/// final translations = SlangUtil.generateTranslations(
+///   rawConfig: config,
+///   i18nNodes: nodes,
+///   verbose: true,
+/// );
+/// ```
 class SlangUtil {
 
+  /// Generates translation code from the given configuration and i18n nodes.
+  ///
+  /// This method takes a raw configuration map and a list of i18n nodes, and
+  /// generates Dart code for internationalization using the slang package.
+  ///
+  /// Parameters:
+  /// * [rawConfig] - The raw configuration map containing i18n settings
+  /// * [i18nNodes] - List of YAML i18n nodes containing translations
+  /// * [verbose] - Whether to enable verbose logging
+  /// * [stopwatch] - Optional stopwatch for timing the generation
+  /// * [statsMode] - Whether to run in statistics mode
+  ///
+  /// Returns:
+  /// * A string containing the generated Dart code for translations
   static String generateTranslations({
     required Map<String, dynamic> rawConfig,
     required List<YamlI18n> i18nNodes,

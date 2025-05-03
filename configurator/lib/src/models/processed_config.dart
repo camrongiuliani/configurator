@@ -16,12 +16,46 @@ import 'package:configurator/src/writers/slang_writer.dart';
 import 'package:configurator/src/writers/theme_writer.dart';
 import 'package:configurator/src/writers/text_style_writer.dart';
 
+/// A class that processes YAML configuration and generates Dart code.
+///
+/// This class takes a YAML configuration and a framework name, then generates
+/// Dart code that can be used to access the configuration values. It supports
+/// both pure Dart and Flutter-specific code generation.
+///
+/// The generated code includes:
+/// * Configuration keys
+/// * Theme definitions (for Flutter)
+/// * Flags
+/// * Images
+/// * Colors
+/// * Sizes
+/// * Text styles
+/// * Routes
+/// * Padding and margin values
+/// * Miscellaneous configuration values
+/// * String translations
 class ProcessedConfig {
+  /// The YAML configuration to process
   final YamlConfiguration yamlConfiguration;
+
+  /// The name of the framework (e.g., 'flutter' or 'dart')
   final String frameworkName;
 
+  /// Creates a new ProcessedConfig instance.
+  ///
+  /// Parameters:
+  /// * [frameworkName] - The name of the framework to generate code for
+  /// * [yamlConfiguration] - The YAML configuration to process
   ProcessedConfig(this.frameworkName, this.yamlConfiguration);
 
+  /// Generates and writes the Dart code for the configuration.
+  ///
+  /// This method creates a Dart library containing all the necessary code to
+  /// access the configuration values. It can generate either pure Dart code or
+  /// Flutter-specific code depending on the [pureDart] parameter.
+  ///
+  /// Parameters:
+  /// * [pureDart] - If true, generates pure Dart code without Flutter dependencies
   Future write(bool pureDart) async {
     LibraryBuilder builder = LibraryBuilder();
 

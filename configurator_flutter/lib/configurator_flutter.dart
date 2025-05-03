@@ -1,3 +1,24 @@
+/// A Flutter package that provides configuration management and UI components.
+///
+/// This package extends the core [configurator] package with Flutter-specific
+/// functionality, including:
+/// * Widgets for configuration-aware UI components
+/// * Providers for accessing configuration in the widget tree
+/// * Theme support for Flutter applications
+/// * Utilities for parsing and handling Flutter-specific types
+/// * Extensions for working with configuration in Flutter
+///
+/// Example usage:
+/// ```dart
+/// import 'package:configurator_flutter/configurator_flutter.dart';
+///
+/// void main() {
+///   runApp(ConfigProvider(
+///     configuration: myConfiguration,
+///     child: MyApp(),
+///   ));
+/// }
+/// ```
 library configurator_flutter;
 
 export 'src/widgets/configured_widget.dart';
