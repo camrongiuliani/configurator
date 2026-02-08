@@ -1,6 +1,7 @@
+// ignore_for_file: avoid_print
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 import 'package:collection/collection.dart';
 import 'package:configurator/configurator.dart';
 import 'package:configurator/src/models/processed_config.dart';
@@ -16,19 +17,23 @@ import 'graph.dart';
 /// To run this:
 /// -> flutter pub run configurator
 Future<void> main(List<String> args) async {
-  final bool applyDefs = args.contains('--apply-defs') && args.contains('-i');
+  final bool recursive = args.contains('--recursive');
+  final bool pureDart = args.contains('--pure-dart');
+
+  if (recursive) {
+    await _runRecursive(pureDart: pureDart);
+    return;
+  }
 
   final bool watch = args.contains('-w') || args.contains('--watch');
 
-  final bool pureDart = args.contains('--pure-dart');
-
   List<String> filters = args.join('///').contains('--id-filter=')
       ? args
-          .where((a) => a.startsWith('--id-filter='))
-          .first
-          .split('=')
-          .last
-          .split(',')
+      .where((a) => a.startsWith('--id-filter='))
+      .first
+      .split('=')
+      .last
+      .split(',')
       : [];
 
   print('\n*****Configurator Starting!*****');
@@ -131,11 +136,11 @@ Future<void> applyDefinitions({
 }
 
 void writeDefsToFile(
-  File file,
-  Map defs,
-  String node, [
-  bool quoteWrap = false,
-]) {
+    File file,
+    Map defs,
+    String node, [
+      bool quoteWrap = false,
+    ]) {
   if (defs.isEmpty) {
     return;
   }
@@ -207,12 +212,12 @@ void writeDefsToFile(
   }
 
   List<String> expandDefMap(
-    Map map,
-    List<String> result,
-    List<String> keys,
-    int depth,
-    bool quoteWrap,
-  ) {
+      Map map,
+      List<String> result,
+      List<String> keys,
+      int depth,
+      bool quoteWrap,
+      ) {
     List<String> result = [];
 
     for (var entry in map.entries) {
@@ -427,7 +432,7 @@ Future<void> generateConfigurations({
         '${file.directory}${Platform.pathSeparator}${file.name}.config.dart';
 
     var result =
-        ProcessedConfig(file.config.name.camelCase.capitalized, file.config);
+    ProcessedConfig(file.config.name.camelCase.capitalized, file.config);
 
     var builtContent = await () async {
       try {
@@ -441,7 +446,6 @@ Future<void> generateConfigurations({
     FileUtils.writeFile(
       path: outputFilePath,
       content: builtContent,
-      // content: await result.write(),
     );
 
     print(outputFilePath);
@@ -477,7 +481,7 @@ Future<void> watchConfiguration({
       stdout.write('\r -> Generating For ${event.path}\r');
 
       final newFiles =
-          Directory.current.listSync(recursive: true).where((item) {
+      Directory.current.listSync(recursive: true).where((item) {
         return item is File && item.path.endsWith('.config.yaml');
       }).toList();
 
@@ -500,4 +504,83 @@ extension on String {
   String getFileNameNoExtension() {
     return PathUtils.getFileNameNoExtension(this);
   }
+}
+
+Future<void> _runRecursive({bool pureDart = false}) async {
+  final sep = Platform.pathSeparator;
+
+  final projectDir = Directory.current;
+  final List<Directory> roots = [];
+
+  final List<FileSystemEntity> entities = projectDir.listSync(
+    recursive: true,
+    followLinks: false,
+  );
+
+  for (final entity in entities) {
+    if (entity is File && entity.path.endsWith('pubspec.yaml')) {
+      roots.add(entity.parent);
+    }
+  }
+
+  final List<Future<int>> tasks = [];
+
+  for (final root in roots) {
+    final configFiles = Directory(
+      root.path,
+    ).listSync(recursive: true).where((e) => e.path.endsWith('.config.yaml'));
+
+    if (configFiles.isNotEmpty) {
+      final pubspecContent =
+      File('${root.path}${sep}pubspec.yaml').readAsStringSync();
+
+      if (pubspecContent.contains('configurator:')) {
+        print('Processing: ${root.path}');
+        tasks.add(_runConfiguratorInIsolate(root.path, pureDart));
+      }
+    }
+  }
+
+  // 3. Wait for all processes to finish
+  final exitCodes = await Future.wait(tasks);
+
+  if (exitCodes.any((code) => code != 0)) {
+    print('One or more configurations failed.');
+    exit(1);
+  }
+  print('All configurations completed successfully.');
+}
+
+/// Helper to wrap the Isolate communication in a Future
+Future<int> _runConfiguratorInIsolate(String path, bool pureDart) async {
+  final p = ReceivePort();
+  await Isolate.spawn(_configTask, [p.sendPort, path, pureDart]);
+  return await p.first as int;
+}
+
+Future<void> _configTask(List<dynamic> args) async {
+  final SendPort sendPort = args[0];
+  final String path = args[1];
+  final bool pureDart = args[2];
+
+  const String command = 'flutter';
+  final List<String> arguments = [
+    'pub',
+    'run',
+    'configurator',
+    if (pureDart) '--pure-dart',
+  ];
+
+  final result = await Process.run(
+    command,
+    arguments,
+    workingDirectory: path,
+    runInShell: true,
+  );
+
+  if (result.stdout.toString().isNotEmpty) print(result.stdout);
+
+  if (result.stderr.toString().isNotEmpty) print(result.stderr);
+
+  Isolate.exit(sendPort, result.exitCode);
 }
