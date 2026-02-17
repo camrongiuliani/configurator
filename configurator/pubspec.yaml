@@ -1,6 +1,6 @@
 name: configurator
 description: A new Flutter package project.
-version: 1.0.16
+version: 1.0.17
 homepage:
 
 environment:
@@ -22,7 +22,7 @@ dependencies:
 
   source_gen: ">=2.0.0 <5.0.0"
   code_builder: ^4.5.0
-  dart_style: 3.1.2
+  dart_style: ">=2.3.6 <3.2.0"
 
 dev_dependencies:
   flutter_lints: ^2.0.0
