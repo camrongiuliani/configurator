@@ -436,7 +436,9 @@ Future<void> generateConfigurations({
 
     var builtContent = await () async {
       try {
-        return DartFormatter().format(await result.write(pureDart));
+        return DartFormatter(
+          languageVersion: DartFormatter.latestLanguageVersion,
+        ).format(await result.write(pureDart));
       } catch (e) {
         print(e);
         return await result.write(pureDart);
