@@ -36,6 +36,9 @@ class ProxyScope extends ConfigScope {
   final Map<int, String> routes;
 
   @override
+  final Map<String, String> enums;
+
+  @override
   Map<String, String> colors;
 
   @override
@@ -68,6 +71,7 @@ class ProxyScope extends ConfigScope {
   /// * [flags] - Map of boolean flag settings
   /// * [images] - Map of image asset settings
   /// * [routes] - Map of route configurations
+  /// * [enums] - Map of enum settings
   /// * [colors] - Map of color settings
   /// * [sizes] - Map of size settings
   /// * [padding] - Map of padding settings
@@ -82,6 +86,7 @@ class ProxyScope extends ConfigScope {
     this.flags = const {},
     this.images = const {},
     this.routes = const {},
+    this.enums = const {},
     this.colors = const {},
     this.sizes = const {},
     this.padding = const {},

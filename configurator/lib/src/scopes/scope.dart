@@ -60,6 +60,9 @@ abstract class ConfigScope {
   /// Map of route configurations
   final Map<int, String?> routes = const {};
 
+  /// Map of enum settings
+  final Map<String, String> enums = const {};
+
   /// Map of string translations
   final Map<String, Map<String, String>> translations = const {};
 
@@ -94,6 +97,7 @@ abstract class ConfigScope {
       misc: {for (var e in config.misc) e.name: e.value},
       textStyles: {for (var e in config.textStyles) e.key: e},
       routes: {for (var e in config.routes) e.id: e.path},
+      enums: {for (var e in config.enums) e.name: e.value},
       sizes: {for (var e in config.sizes) e.name: e.value},
       padding: {for (var e in config.padding) e.name: e.value},
       margins: {for (var e in config.margins) e.name: e.value},
@@ -109,6 +113,7 @@ abstract class ConfigScope {
   Map<String, dynamic> toJson() {
     return {
       'partFiles': partFiles,
+      'weight': weight,
       'flags': {for (var e in flags.entries) e.key: e.value},
       'images': {for (var e in images.entries) e.key: e.value},
       'misc': {for (var e in misc.entries) e.key: e.value},
@@ -117,6 +122,7 @@ abstract class ConfigScope {
       'padding': {for (var e in padding.entries) e.key: e.value},
       'margins': {for (var e in margins.entries) e.key: e.value},
       'colors': {for (var e in colors.entries) e.key: e.value},
+      'enums': {for (var e in enums.entries) e.key: e.value},
       'translations': {for (var e in translations.entries) e.key: e.value},
       'routes': {for (var e in routes.entries) e.key: e.value},
     };
@@ -133,6 +139,7 @@ abstract class ConfigScope {
           const MapEquality().equals(misc, other.misc) &&
           const MapEquality().equals(textStyles, other.textStyles) &&
           const MapEquality().equals(routes, other.routes) &&
+          const MapEquality().equals(enums, other.enums) &&
           const MapEquality().equals(colors, other.colors) &&
           const MapEquality().equals(padding, other.padding) &&
           const MapEquality().equals(margins, other.margins) &&
@@ -149,6 +156,7 @@ abstract class ConfigScope {
       padding.hashCode ^
       margins.hashCode ^
       routes.hashCode ^
+      enums.hashCode ^
       colors.hashCode ^
       sizes.hashCode;
 }

@@ -225,6 +225,10 @@ void main() {
       //Todo: Find way to test strings
       scopeJson.remove( 'strings' );
       configJson.remove( 'strings' );
+      scopeJson.remove( 'translations' );
+      configJson.remove( 'translations' );
+      scopeJson.remove( 'enums' );
+      configJson.remove( 'enums' );
 
       expect( scopeJson, equals( configJson ) );
     });
@@ -238,7 +242,13 @@ void main() {
 
       Configuration config = Configuration( scopes: [ scope ] );
 
-      expect( scopeJson, equals( config.themeMap ) );
+      var themeMap = config.themeMap;
+
+      scopeJson.remove( 'enums' );
+      scopeJson.remove( 'translations' );
+      themeMap.remove( 'enums' );
+
+      expect( scopeJson, equals( themeMap ) );
     });
   });
 

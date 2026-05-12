@@ -15,6 +15,8 @@ import 'package:configurator/src/writers/size_writer.dart';
 import 'package:configurator/src/writers/slang_writer.dart';
 import 'package:configurator/src/writers/theme_writer.dart';
 import 'package:configurator/src/writers/text_style_writer.dart';
+import 'package:configurator/src/writers/enum_definition_writer.dart';
+import 'package:configurator/src/writers/enum_accessor_writer.dart';
 
 /// A class that processes YAML configuration and generates Dart code.
 ///
@@ -75,6 +77,8 @@ class ProcessedConfig {
 
     builder.body.addAll([
       TitleWriter('ignore_for_file: type=lint').write(),
+      TitleWriter('Enums').write(),
+      EnumDefinitionWriter(yamlConfiguration.enumDefinitions).write(),
       TitleWriter('Keys').write(),
       KeyWriter(frameworkName, yamlConfiguration).write(),
       if (!pureDart) ...[
@@ -83,6 +87,8 @@ class ProcessedConfig {
       ],
       TitleWriter('Flags').write(),
       FlagWriter(frameworkName, yamlConfiguration.flags).write(),
+      TitleWriter('Enums').write(),
+      EnumAccessorWriter(frameworkName, yamlConfiguration.enums).write(),
       TitleWriter('Images').write(),
       ImageWriter(frameworkName, yamlConfiguration.images).write(),
       TitleWriter('Routes').write(),
@@ -115,6 +121,7 @@ class ProcessedConfig {
         margins: yamlConfiguration.margins,
         padding: yamlConfiguration.padding,
         images: yamlConfiguration.images,
+        enums: yamlConfiguration.enums,
       ).write(),
       TitleWriter('Configuration Extension').write(),
       ConfigExtWriter().write(),

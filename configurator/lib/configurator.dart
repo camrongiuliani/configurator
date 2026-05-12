@@ -40,3 +40,7 @@ export 'src/models/yaml_route.dart';
 
 /// Internationalization string models.
 export 'src/models/yaml_i18n_string.dart';
+
+/// Enum configuration models.
+export 'src/models/yaml_enum_definition.dart';
+export 'src/models/yaml_enum_setting.dart';

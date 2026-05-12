@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:collection/collection.dart';
 import 'package:configurator/configurator.dart';
+import 'package:configurator/src/models/yaml_enum_definition.dart';
+import 'package:configurator/src/models/yaml_enum_setting.dart';
 import 'package:configurator/src/utils/string_ext.dart';
 import 'package:yaml/yaml.dart';
 
@@ -105,6 +107,8 @@ class YamlParser {
       routes: _processRoutes(configNode, 'routes'),
       strings: _processTranslations(configNode, 'strings', ns),
       i18n: _processTranslations(configNode, 'i18n', ns),
+      enums: _processEnums(configNode, ns),
+      enumDefinitions: _processEnumDefinitions(rootNode),
     );
 
     return yamlConfig;
@@ -326,6 +330,79 @@ class YamlParser {
     }
 
     return result;
+  }
+
+  static List<YamlEnumSetting> _processEnums(YamlNode configNode,
+      [String? namespace]) {
+    List<YamlEnumSetting> enums = [];
+
+    try {
+      final enumsNode = configNode.value['enums'];
+
+      if (enumsNode is! YamlMap) {
+        return enums;
+      }
+
+      var str = jsonEncode(enumsNode);
+
+      Map<String, dynamic> map = json.decode(str);
+
+      enums.addAll(_getEnumNamespaces(map, [], namespace ?? ''));
+    } catch (e) {
+      print(e);
+    }
+
+    return enums;
+  }
+
+  static List<YamlEnumSetting> _getEnumNamespaces(
+      Map<String, dynamic> setting, List<YamlEnumSetting> result, String path) {
+    for (var es in setting.entries) {
+      if (es.value is Map && !es.value.containsKey('type')) {
+        result.addAll(
+          _getEnumNamespaces(
+            es.value,
+            [],
+            '${path.capitalized}_${es.key.capitalized}'.canonicalize,
+          ),
+        );
+      } else if (es.value is Map) {
+        result.add(
+          YamlEnumSetting(
+            '${path.capitalized}_${es.key.capitalized}'.canonicalize,
+            es.value['type'],
+            es.value['value'],
+          ),
+        );
+      }
+    }
+
+    return result;
+  }
+
+  static List<YamlEnumDefinition> _processEnumDefinitions(YamlNode rootNode) {
+    List<YamlEnumDefinition> definitions = [];
+
+    try {
+      final enumsNode = rootNode.value['enums'];
+
+      if (enumsNode is! YamlMap) {
+        return definitions;
+      }
+
+      for (var entry in enumsNode.entries) {
+        if (entry.value is YamlList) {
+          definitions.add(YamlEnumDefinition(
+            entry.key.toString(),
+            (entry.value as YamlList).map((e) => e.toString()).toList(),
+          ));
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+
+    return definitions;
   }
 
   /// Processes text style configurations with namespaces.

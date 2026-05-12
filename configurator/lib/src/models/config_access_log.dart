@@ -28,6 +28,9 @@ enum KeyType {
   
   /// Text style configurations
   textStyle,
+
+  /// Enum configuration values
+  enumType,
 }
 
 /// A log entry representing access to a configuration value.
