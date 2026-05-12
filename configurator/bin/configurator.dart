@@ -46,7 +46,7 @@ Future<void> main(List<String> args) async {
     defFiles: definitions,
   );
 
-  configure(
+  await configure(
     files: files,
     watch: watch,
     pureDart: pureDart,
@@ -121,14 +121,17 @@ Future<void> applyDefinitions({
         final YamlMap? colors = definitions.value['colors'];
         final YamlMap? sizes = definitions.value['sizes'];
         final YamlMap? flags = definitions.value['flags'];
+        final YamlMap? enums = definitions.value['enums'];
 
         final Map colorsMap = Map.fromEntries(colors?.entries ?? {});
         final Map sizesMap = Map.fromEntries(sizes?.entries ?? {});
         final Map flagsMap = Map.fromEntries(flags?.entries ?? {});
+        final Map enumsMap = Map.fromEntries(enums?.entries ?? {});
 
         writeDefsToFile(config, colorsMap, 'colors', true);
         writeDefsToFile(config, sizesMap, 'sizes');
         writeDefsToFile(config, flagsMap, 'flags');
+        writeDefsToFile(config, enumsMap, 'enums');
       }
     }
 

@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:configurator/configurator.dart';
+import 'package:configurator/src/models/yaml_enum_definition.dart';
+import 'package:configurator/src/models/yaml_enum_setting.dart';
 
 /// A model class representing a complete YAML configuration.
 ///
@@ -71,6 +73,12 @@ class YamlConfiguration {
   /// List of internationalization strings
   final List<YamlI18n> i18n;
 
+  /// List of enum definitions
+  final List<YamlEnumDefinition> enumDefinitions;
+
+  /// List of enum settings
+  final List<YamlEnumSetting> enums;
+
   /// Creates a new YamlConfiguration instance.
   ///
   /// Parameters:
@@ -88,22 +96,38 @@ class YamlConfiguration {
   /// * [padding] - List of padding settings
   /// * [margins] - List of margin settings
   /// * [i18n] - List of internationalization strings
+  /// * [enumDefinitions] - List of enum definitions
+  /// * [enums] - List of enum settings
   YamlConfiguration({
     required this.name,
     this.weight = 0,
     this.partFiles = const [],
-    this.flags = const [],
-    this.colors = const [],
-    this.images = const [],
-    this.misc = const [],
-    this.textStyles = const [],
-    this.sizes = const [],
-    this.routes = const [],
-    this.strings = const [],
-    this.padding = const [],
-    this.margins = const [],
-    this.i18n = const [],
-  });
+    List<YamlSetting>? flags,
+    List<YamlSetting>? colors,
+    List<YamlSetting>? images,
+    List<YamlSetting>? misc,
+    List<YamlSetting>? sizes,
+    List<YamlSetting>? padding,
+    List<YamlSetting>? margins,
+    List<YamlTextStyle>? textStyles,
+    List<YamlRoute>? routes,
+    List<YamlI18n>? strings,
+    List<YamlI18n>? i18n,
+    List<YamlEnumDefinition>? enumDefinitions,
+    List<YamlEnumSetting>? enums,
+  })  : this.flags = flags ?? [],
+        this.colors = colors ?? [],
+        this.images = images ?? [],
+        this.misc = misc ?? [],
+        this.sizes = sizes ?? [],
+        this.padding = padding ?? [],
+        this.margins = margins ?? [],
+        this.textStyles = textStyles ?? [],
+        this.routes = routes ?? [],
+        this.strings = strings ?? [],
+        this.i18n = i18n ?? [],
+        this.enumDefinitions = enumDefinitions ?? [],
+        this.enums = enums ?? [];
 
   /// Converts this YamlConfiguration instance to a JSON map.
   ///
@@ -123,6 +147,7 @@ class YamlConfiguration {
       'strings': { for (var e in strings) e.name : e.value },
       'padding': { for (var e in padding) e.name : e.value },
       'margins': { for (var e in margins) e.name : e.value },
+      'enums': { for (var e in enums) e.name : { 'type': e.type, 'value': e.value } },
     };
   }
 
@@ -160,6 +185,11 @@ class YamlConfiguration {
     i18n.removeWhere(( e ) => t.i18n.contains( e ));
     i18n.addAll( t.i18n );
 
+    enums.removeWhere(( e ) => t.enums.contains( e ));
+    enums.addAll( t.enums );
+
+    enumDefinitions.removeWhere(( e ) => t.enumDefinitions.contains( e ));
+    enumDefinitions.addAll( t.enumDefinitions );
 
     return this;
   }

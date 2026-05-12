@@ -367,6 +367,31 @@ class Configuration {
         0.0;
   }
 
+  /// Gets an enum value from the configuration scopes.
+  ///
+  /// The value is retrieved from the highest weight scope that contains it.
+  /// If no scope contains the value, an empty string is returned.
+  ///
+  /// Parameters:
+  /// * [id] - The identifier of the enum value to retrieve
+  /// Returns:
+  /// * The enum value as a string, or an empty string if not found
+  String enumValue(String id) {
+    final ConfigScope? scope = _scopesSorted.reversed.firstWhereOrNull((s) {
+      return s.enums.containsKey(id);
+    });
+
+    final value = scope?.enums[id] ?? '';
+
+    if (scope != null) {
+      publisher.sink.add(
+        ConfigKeyLog(KeyType.enumType, scope, id, value),
+      );
+    }
+
+    return value;
+  }
+
   Map<String, Map<String, String>> currentTranslations(String key) {
     final ConfigScope? scope = _scopesSorted.reversed.firstWhereOrNull((s) {
       return s.translations.isNotEmpty && s.translations.containsKey(key);
@@ -385,17 +410,21 @@ class Configuration {
 
   Map<String, dynamic> get themeMap {
     List<String> partFiles = [];
+    int weight = 0;
     Map<String, String> colors = {};
     Map<String, dynamic> images = {};
     Map<String, double> sizes = {};
     Map<String, double> padding = {};
     Map<String, double> margins = {};
     Map<String, bool> flags = {};
+    Map<String, String> enums = {};
     Map<String, dynamic> misc = {};
+    Map<String, dynamic> textStyles = {};
     // Map<int, String?> routes = {};
 
     for (var s in _scopes) {
       partFiles.addAll(s.partFiles);
+      weight += s.weight;
       images.addAll(s.images);
       colors.addAll(s.colors);
       sizes.addAll(s.sizes);
@@ -403,18 +432,23 @@ class Configuration {
       margins.addAll(s.margins);
       misc.addAll(s.misc);
       flags.addAll(s.flags);
+      enums.addAll(s.enums);
+      textStyles.addAll(s.textStyles);
       // routes.addAll( s.routes );
     }
 
     return {
       'partFiles': partFiles,
+      'weight': weight,
       'colors': colors,
       'sizes': sizes,
       'padding': padding,
       'margins': margins,
       'misc': misc,
+      'textStyles': textStyles,
       'images': images,
       'flags': flags,
+      'enums': enums,
       // 'routes': routes,
     };
   }

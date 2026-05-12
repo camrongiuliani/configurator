@@ -77,6 +77,9 @@ class ConfigWriter extends Writer {
   /// The list of padding settings
   late final List<YamlSetting<String, double>> padding;
 
+  /// The list of enum settings
+  late final List<YamlEnumSetting> enums;
+
   /// The parsed translations map
   late final Map<String, dynamic> translations;
 
@@ -108,6 +111,7 @@ class ConfigWriter extends Writer {
     required List<YamlSetting> images,
     required List<YamlSetting> margins,
     required List<YamlSetting> padding,
+    required List<YamlEnumSetting> enums,
   }) {
     this.flags = flags.convert<String, bool>();
     this.colors = colors.convert<String, String>();
@@ -116,6 +120,7 @@ class ConfigWriter extends Writer {
     this.margins = margins.convert<String, double>();
     this.padding = padding.convert<String, double>();
     this.images = images.convert<String, dynamic>();
+    this.enums = enums;
 
     translations = I18nParser.parse(
       strings: strings,
@@ -361,6 +366,25 @@ class ConfigWriter extends Writer {
                   throw Exception('Duplicate Route ID Detected: (${f.id} : ${f.path})');
                 }
                 map[f.id] = '\'${f.path}\'';
+              }
+
+              return 'const ${map.toString()}';
+            }()),
+          ),
+          _valueGetter(
+            name: 'enums',
+            returnType: 'Map<String, String>',
+            assignment: Code(() {
+              Map<String, String> map = {};
+
+              for (var f in enums) {
+                var key = '"${f.name.canonicalize}"';
+
+                if (map.containsKey(key) && map[key] != f.value) {
+                  throw Exception('Duplicate Enum Key Detected: $key');
+                }
+
+                map[key] = '\'${f.value}\'';
               }
 
               return 'const ${map.toString()}';

@@ -95,6 +95,15 @@ class KeyWriter extends Writer {
         ]);
     });
 
+    Class enumKeys = Class( ( builder ) {
+      builder
+        ..name = '_EnumKeys'
+        ..constructors.add( Constructor( ( b ) => b..constant = true ) )
+        ..fields.addAll([
+          ..._yamlConfiguration.enums.map((e) => _buildField( e.name )),
+        ]);
+    });
+
     Class configKeys = Class( ( builder ) {
       builder
         ..name = '${name}ConfigKeys'
@@ -109,6 +118,7 @@ class KeyWriter extends Writer {
           _buildKeyAccessor( 'textStyles', 'const _TextStyleKeys()' ),
           _buildKeyAccessor( 'colors', 'const _ColorKeys()' ),
           _buildKeyAccessor( 'images', 'const _ImageKeys()' ),
+          _buildKeyAccessor( 'enums', 'const _EnumKeys()' ),
         ]);
     });
 
@@ -122,6 +132,7 @@ class KeyWriter extends Writer {
       paddingKeys,
       marginKeys,
       colorKeys,
+      enumKeys,
       configKeys,
     ]);
 
