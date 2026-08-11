@@ -41,6 +41,96 @@ key, such as `brandPrimary` above.
 Higher-weight scopes take precedence. When two scopes have the same weight,
 the scope added later wins.
 
+## FastAPI
+
+Generated configuration modules can be loaded once at application startup and
+provided to FastAPI routes as a dependency. Given an `app.config.yaml` whose
+`id` is `app_scope`, Configurator generates `app_config.py` with
+`GENERATED_APP_SCOPE` and `AppScopeConfig`:
+
+```python
+from fastapi import Depends, FastAPI
+
+from configurator import Configuration
+from app_config import AppScopeConfig, GENERATED_APP_SCOPE
+
+
+runtime = Configuration([GENERATED_APP_SCOPE])
+app_config = AppScopeConfig(runtime)
+
+
+def get_config() -> AppScopeConfig:
+    return app_config
+
+
+app = FastAPI()
+
+
+@app.get("/features")
+def features(config: AppScopeConfig = Depends(get_config)) -> dict[str, bool]:
+    return {"checkoutEnabled": config.flags.checkout_enabled}
+```
+
+Keeping one application-level `Configuration` preserves weighted scope
+resolution and avoids rebuilding the configuration for every request. If
+scopes change at runtime, the generated accessors continue to resolve values
+from the current scope stack.
+
+### Optional Pydantic boundary
+
+The Configurator runtime uses standard Python type annotations and deliberately
+has no runtime dependencies. Those annotations provide editor and static type
+checking, but Python does not enforce them at runtime.
+
+For a FastAPI service, Pydantic is useful at the application boundary for
+runtime validation, serialization, and generated OpenAPI schemas. Keep the
+weighted `Configuration` as the resolution engine, and build a frozen Pydantic
+snapshot for API input or output instead of making `Configuration` itself a
+Pydantic model:
+
+```python
+from pydantic import BaseModel, ConfigDict
+
+from app_config import AppScopeConfig
+
+
+class FeatureFlags(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid", strict=True)
+
+    checkout_enabled: bool
+
+
+class ServiceConfig(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid", strict=True)
+
+    flags: FeatureFlags
+
+
+def config_snapshot(config: AppScopeConfig) -> ServiceConfig:
+    return ServiceConfig(
+        flags=FeatureFlags(
+            checkout_enabled=config.flags.checkout_enabled,
+        ),
+    )
+```
+
+The snapshot can then be used as a FastAPI response model:
+
+```python
+@app.get("/internal/config", response_model=ServiceConfig)
+def read_config(config: AppScopeConfig = Depends(get_config)) -> ServiceConfig:
+    return config_snapshot(config)
+```
+
+Only expose configuration values that are safe for clients. Environment
+variables and secrets should remain outside the shared YAML; use a dedicated
+settings layer such as
+[Pydantic Settings](https://pydantic.dev/docs/validation/latest/concepts/pydantic_settings/)
+for those values. See FastAPI's
+[request-body documentation](https://fastapi.tiangolo.com/tutorial/body/) and
+the [Pydantic model documentation](https://pydantic.dev/docs/validation/latest/concepts/models/)
+for validation and schema behavior.
+
 ## Changes and access events
 
 Subscriptions return an idempotent function that removes the listener:
