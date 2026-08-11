@@ -16,7 +16,6 @@ import 'package:configurator/configurator.dart';
 /// );
 /// ```
 class ProxyScope extends ConfigScope {
-
   @override
   final String name;
 
@@ -46,6 +45,9 @@ class ProxyScope extends ConfigScope {
 
   @override
   Map<String, double> margins;
+
+  @override
+  Map<String, double> radius;
 
   @override
   Map<String, dynamic> misc;
@@ -86,9 +88,9 @@ class ProxyScope extends ConfigScope {
     this.sizes = const {},
     this.padding = const {},
     this.margins = const {},
+    this.radius = const {},
     this.misc = const {},
     this.textStyles = const {},
     this.translations = const {},
   });
-
 }
