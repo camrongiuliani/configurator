@@ -17,11 +17,20 @@ import 'graph.dart';
 /// To run this:
 /// -> flutter pub run configurator
 Future<void> main(List<String> args) async {
+  if (args.contains('-h') || args.contains('--help')) {
+    print(_usage);
+    return;
+  }
+
   final bool recursive = args.contains('--recursive');
   final bool pureDart = args.contains('--pure-dart');
+  final Set<ConfigTarget> targets = ConfigTarget.fromArguments(args);
 
   if (recursive) {
-    await _runRecursive(pureDart: pureDart);
+    await _runRecursive(
+      pureDart: pureDart,
+      targets: targets,
+    );
     return;
   }
 
@@ -29,11 +38,11 @@ Future<void> main(List<String> args) async {
 
   List<String> filters = args.join('///').contains('--id-filter=')
       ? args
-      .where((a) => a.startsWith('--id-filter='))
-      .first
-      .split('=')
-      .last
-      .split(',')
+          .where((a) => a.startsWith('--id-filter='))
+          .first
+          .split('=')
+          .last
+          .split(',')
       : [];
 
   print('\n*****Configurator Starting!*****');
@@ -46,12 +55,29 @@ Future<void> main(List<String> args) async {
     defFiles: definitions,
   );
 
-  configure(
+  await configure(
     files: files,
+    filters: filters,
     watch: watch,
     pureDart: pureDart,
+    targets: targets,
   );
 }
+
+const String _usage = '''
+Configurator
+
+Generates native configuration code from *.config.yaml files.
+
+Options:
+  --targets=dart,python,typescript  Output languages (default: dart)
+  --target=<language>              Repeatable single-target form
+  --id-filter=id1,id2              Generate only matching file basenames
+  -w, --watch                      Regenerate when YAML files change
+  --recursive                      Generate in nested package roots
+  --pure-dart                      Omit Flutter theme generation for Dart
+  -h, --help                       Show this help
+''';
 
 List<FileSystemEntity> findConfigurations(List<String> filters) {
   return FileUtils.getFilesBreadthFirst(
@@ -131,16 +157,15 @@ Future<void> applyDefinitions({
         writeDefsToFile(config, flagsMap, 'flags');
       }
     }
-
   }
 }
 
 void writeDefsToFile(
-    File file,
-    Map defs,
-    String node, [
-      bool quoteWrap = false,
-    ]) {
+  File file,
+  Map defs,
+  String node, [
+  bool quoteWrap = false,
+]) {
   if (defs.isEmpty) {
     return;
   }
@@ -212,17 +237,17 @@ void writeDefsToFile(
   }
 
   List<String> expandDefMap(
-      Map map,
-      List<String> result,
-      List<String> keys,
-      int depth,
-      bool quoteWrap,
-      ) {
+    Map map,
+    List<String> result,
+    List<String> keys,
+    int depth,
+    bool quoteWrap,
+  ) {
     List<String> result = [];
 
     for (var entry in map.entries) {
-      List<String> _keys = List.from(keys);
-      _keys.add(entry.key);
+      List<String> nestedKeys = List.from(keys);
+      nestedKeys.add(entry.key);
 
       if (entry.value is Map) {
         var padding = List.filled(2 * depth, ' ').join();
@@ -239,7 +264,7 @@ void writeDefsToFile(
           expandDefMap(
             entry.value,
             result,
-            _keys,
+            nestedKeys,
             depth + 1,
             quoteWrap,
           ),
@@ -250,7 +275,7 @@ void writeDefsToFile(
 
         var oldLine = getCurrentLineIfExists('$padding${entry.key}');
 
-        var keyPart = '&${_keys.join('.').canonicalize}';
+        var keyPart = '&${nestedKeys.join('.').canonicalize}';
         var newLine = '$padding${entry.key}: $keyPart $value';
 
         if (oldLine == null) {
@@ -325,8 +350,10 @@ void writeDefsToFile(
 
 Future<void> configure({
   required List<FileSystemEntity> files,
+  List<String> filters = const [],
   bool watch = false,
   bool pureDart = false,
+  Set<ConfigTarget> targets = const {ConfigTarget.dart},
 }) async {
   final stopwatch = Stopwatch();
 
@@ -340,12 +367,16 @@ Future<void> configure({
   if (watch) {
     await watchConfiguration(
       files: files,
+      filters: filters,
+      pureDart: pureDart,
+      targets: targets,
     );
   } else {
     await generateConfigurations(
       files: files,
       stopwatch: stopwatch,
       pureDart: pureDart,
+      targets: targets,
     );
   }
 }
@@ -354,6 +385,7 @@ Future<void> generateConfigurations({
   required List<FileSystemEntity> files,
   bool verbose = false,
   bool pureDart = false,
+  Set<ConfigTarget> targets = const {ConfigTarget.dart},
   Stopwatch? stopwatch,
 }) async {
   // Read yaml paths from annotation
@@ -426,38 +458,69 @@ Future<void> generateConfigurations({
     mergeConfigs(graph.from(node), track);
   }
 
-  print('\n---Generating Dart Classes---');
+  print(
+    '\n---Generating ${targets.map((target) => target.name).join(', ')} Configurations---',
+  );
   for (var file in configs.where((c) => !track.contains(c.config.name))) {
-    String outputFilePath =
-        '${file.directory}${Platform.pathSeparator}${file.name}.config.dart';
+    final generatedName = file.config.name.camelCase.capitalized;
 
-    var result =
-    ProcessedConfig(file.config.name.camelCase.capitalized, file.config);
+    for (final target in ConfigTarget.values.where(targets.contains)) {
+      final outputFilePath = [
+        file.directory,
+        target.outputFileName(file.name),
+      ].join(Platform.pathSeparator);
 
-    var builtContent = await () async {
-      try {
-        return DartFormatter(
-          languageVersion: DartFormatter.latestLanguageVersion,
-        ).format(await result.write(pureDart));
-      } catch (e) {
-        print(e);
-        return await result.write(pureDart);
-      }
-    }();
+      final builtContent = switch (target) {
+        ConfigTarget.dart => await _generateDartConfiguration(
+            name: generatedName,
+            config: file.config,
+            pureDart: pureDart,
+          ),
+        ConfigTarget.python => const PythonConfigGenerator().generate(
+            name: generatedName,
+            configuration: file.config,
+          ),
+        ConfigTarget.typescript => const TypeScriptConfigGenerator().generate(
+            name: generatedName,
+            configuration: file.config,
+          ),
+      };
 
-    FileUtils.writeFile(
-      path: outputFilePath,
-      content: builtContent,
-    );
+      FileUtils.writeFile(
+        path: outputFilePath,
+        content: builtContent,
+      );
 
-    print(outputFilePath);
+      print(outputFilePath);
+    }
   }
 
   print('\n*****Configurator Has Configured!*****');
 }
 
+Future<String> _generateDartConfiguration({
+  required String name,
+  required YamlConfiguration config,
+  required bool pureDart,
+}) async {
+  final result = ProcessedConfig(name, config);
+  final generated = await result.write(pureDart) as String;
+
+  try {
+    return DartFormatter(
+      languageVersion: DartFormatter.latestLanguageVersion,
+    ).format(generated);
+  } catch (error) {
+    print(error);
+    return generated;
+  }
+}
+
 Future<void> watchConfiguration({
   required List<FileSystemEntity> files,
+  List<String> filters = const [],
+  bool pureDart = false,
+  Set<ConfigTarget> targets = const {ConfigTarget.dart},
 }) async {
   StreamController sc = StreamController<FileSystemEvent>();
 
@@ -473,6 +536,8 @@ Future<void> watchConfiguration({
 
   await generateConfigurations(
     files: files,
+    pureDart: pureDart,
+    targets: targets,
   );
 
   print('\n\nLast Updated: $currentTime.');
@@ -483,12 +548,17 @@ Future<void> watchConfiguration({
       stdout.write('\r -> Generating For ${event.path}\r');
 
       final newFiles =
-      Directory.current.listSync(recursive: true).where((item) {
-        return item is File && item.path.endsWith('.config.yaml');
+          Directory.current.listSync(recursive: true).where((item) {
+        return item is File &&
+            item.path.endsWith('.config.yaml') &&
+            (filters.isEmpty ||
+                filters.contains(item.path.getFileNameNoExtension()));
       }).toList();
 
       await generateConfigurations(
         files: newFiles,
+        pureDart: pureDart,
+        targets: targets,
       );
 
       stdout.write('\r -> Last Updated: $currentTime.\r');
@@ -508,7 +578,10 @@ extension on String {
   }
 }
 
-Future<void> _runRecursive({bool pureDart = false}) async {
+Future<void> _runRecursive({
+  bool pureDart = false,
+  Set<ConfigTarget> targets = const {ConfigTarget.dart},
+}) async {
   final sep = Platform.pathSeparator;
 
   final projectDir = Directory.current;
@@ -534,11 +607,17 @@ Future<void> _runRecursive({bool pureDart = false}) async {
 
     if (configFiles.isNotEmpty) {
       final pubspecContent =
-      File('${root.path}${sep}pubspec.yaml').readAsStringSync();
+          File('${root.path}${sep}pubspec.yaml').readAsStringSync();
 
       if (pubspecContent.contains('configurator:')) {
         print('Processing: ${root.path}');
-        tasks.add(_runConfiguratorInIsolate(root.path, pureDart));
+        tasks.add(
+          _runConfiguratorInIsolate(
+            root.path,
+            pureDart,
+            targets,
+          ),
+        );
       }
     }
   }
@@ -554,9 +633,18 @@ Future<void> _runRecursive({bool pureDart = false}) async {
 }
 
 /// Helper to wrap the Isolate communication in a Future
-Future<int> _runConfiguratorInIsolate(String path, bool pureDart) async {
+Future<int> _runConfiguratorInIsolate(
+  String path,
+  bool pureDart,
+  Set<ConfigTarget> targets,
+) async {
   final p = ReceivePort();
-  await Isolate.spawn(_configTask, [p.sendPort, path, pureDart]);
+  await Isolate.spawn(_configTask, [
+    p.sendPort,
+    path,
+    pureDart,
+    targets.map((target) => target.name).join(','),
+  ]);
   return await p.first as int;
 }
 
@@ -564,6 +652,7 @@ Future<void> _configTask(List<dynamic> args) async {
   final SendPort sendPort = args[0];
   final String path = args[1];
   final bool pureDart = args[2];
+  final String targets = args[3];
 
   const String command = 'flutter';
   final List<String> arguments = [
@@ -571,6 +660,7 @@ Future<void> _configTask(List<dynamic> args) async {
     'run',
     'configurator',
     if (pureDart) '--pure-dart',
+    '--targets=$targets',
   ];
 
   final result = await Process.run(

@@ -2,7 +2,7 @@
 
 <img src="https://raw.githubusercontent.com/camrongiuliani/configurator/1fc199ce30803e86226cb7fb975f352372a6280e/configurator/badge.svg">
 
-A powerful, flexible configuration management package for Flutter applications that enables dynamic theming, internationalization, and feature management through YAML configuration files.
+A configuration compiler and runtime family for Dart, Flutter, Python, and TypeScript, with YAML as the shared source of truth.
 
 ## Purpose
 
@@ -15,7 +15,7 @@ Configurator solves several common challenges in Flutter application development
 5. **Asset Management**: Organize and access images and other assets through configuration
 6. **Hierarchical Configuration**: Support multiple configuration layers with different priorities
 7. **Configuration Precedence**: Override values based on scope weights
-8. **Type-Safe Configuration**: Generate type-safe Dart code from YAML definitions
+8. **Type-Safe Configuration**: Generate type-safe Dart, Python, and TypeScript code from YAML definitions
 
 ## Features
 
@@ -265,6 +265,65 @@ def_source: extended_defs  # Uses extended definitions
 parts:
   - theme_config
 ```
+
+### Multi-language generation
+
+One configuration file can generate native Dart, Python, and TypeScript modules
+after parts, definitions, namespaces, and routes have been resolved once:
+
+```bash
+dart run configurator --targets=dart,python,typescript
+```
+
+For `app.config.yaml`, the generator writes sibling outputs by default:
+
+```text
+app.config.dart
+app_config.py
+app.config.ts
+```
+
+Dart remains the default target for backwards compatibility. Targets may also
+be supplied individually with repeatable flags such as `--target=python` and
+`--target=typescript`. Generated Python modules use the runtime in
+`configurator_python`; generated TypeScript modules use the runtime in
+`configurator_typescript`.
+
+The YAML remains language-neutral. Native property names follow each language's
+conventions while retaining the same canonical configuration keys underneath.
+
+The generated modules export both the resolved scope and typed accessors. For an
+`app.config.yaml` whose `id` is `app_scope`:
+
+```python
+from configurator import Configuration
+from app_config import GENERATED_APP_SCOPE, AppScopeConfig
+
+app = AppScopeConfig(Configuration([GENERATED_APP_SCOPE]))
+enabled = app.flags.is_dark_mode
+```
+
+```ts
+import { Configuration } from "configurator-typescript";
+import { AppScopeConfig, generatedAppScope } from "./app.config.js";
+
+const app = new AppScopeConfig(new Configuration([generatedAppScope]));
+const enabled = app.flags.isDarkMode;
+```
+
+The initial runtime packages live in `configurator_python` and
+`configurator_typescript`. See [the multi-target contract](docs/multi_target_contract.md)
+for the portable behavior and current translation boundary.
+
+They are workspace packages for now. From a consuming project, link them with:
+
+```bash
+python -m pip install -e /path/to/configurator/configurator_python
+npm install /path/to/configurator/configurator_typescript
+```
+
+Publishing to PyPI or npm should wait until the repository's placeholder
+license is replaced with the intended license.
 
 ### Generated Code
 
@@ -518,4 +577,3 @@ class OverrideButton extends StatelessWidget {
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
-

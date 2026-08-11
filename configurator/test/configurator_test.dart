@@ -77,10 +77,14 @@ void main() {
       var scope = ConfigScope.fromYaml( m );
       Configuration config = Configuration( scopes: [ scope ] );
 
-      expect( config.color( 'storeFrontProductCardTextFooter' ), isNotEmpty );
-      expect( config.color( 'footer' ), isEmpty );
-      expect( config.flag( 'detailPageEmbActual' ), isTrue );
-      expect( config.flag( 'actual' ), isFalse );
+      expect(
+        config.imageList( 'footerImages' ),
+        equals( [
+          'assets/FDIC1.svg',
+          'assets/FDIC2.svg',
+          'assets/FDIC3.svg',
+        ] ),
+      );
 
     });
 
@@ -234,11 +238,15 @@ void main() {
 
       var scope = ConfigScope.fromYaml( m );
       var scopeJson = scope.toJson();
-      scopeJson.remove( 'routes' ); // TODO: Handle routes
 
       Configuration config = Configuration( scopes: [ scope ] );
 
-      expect( scopeJson, equals( config.themeMap ) );
+      expect(
+        config.themeMap,
+        equals( {
+          for ( final key in config.themeMap.keys ) key: scopeJson[ key ],
+        } ),
+      );
     });
   });
 

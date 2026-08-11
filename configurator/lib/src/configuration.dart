@@ -118,14 +118,18 @@ class Configuration {
   /// * [test] - A function that determines when to stop popping scopes
   Future<void> popScopeUntil(bool Function(ConfigScope) test) async {
     int it = 0;
+    bool changed = false;
     while (test(_scopes.last) == false &&
         _scopes.length > 1 &&
         it < _scopes.length) {
       _scopes.removeLast();
+      changed = true;
       it++;
     }
 
-    notifyListeners();
+    if (changed) {
+      notifyListeners();
+    }
   }
 
   /// Removes all scopes that match the given predicate.
@@ -137,7 +141,14 @@ class Configuration {
     PopScopePredicate predicate, {
     bool notify = true,
   }) async {
+    final previousLength = _scopes.length;
     _scopes.removeWhere((scope) => predicate(scope));
+    final changed = _scopes.length != previousLength;
+    _ensureScope();
+
+    if (notify && changed) {
+      notifyListeners();
+    }
   }
 
   /// Removes the last scope that matches the given predicate.
@@ -153,6 +164,11 @@ class Configuration {
 
     if (idx > -1) {
       _scopes.removeAt(idx);
+      _ensureScope();
+
+      if (notify) {
+        notifyListeners();
+      }
     }
   }
 
@@ -161,11 +177,16 @@ class Configuration {
   /// Parameters:
   /// * [T] - The type of scopes to remove
   Future<void> removeScopesOfType<T extends ConfigScope>() async {
+    final previousLength = _scopes.length;
     _scopes.removeWhere((s) => s is T);
+    final changed = _scopes.length != previousLength;
+    _ensureScope();
 
-    notifyListeners();
+    if (changed) {
+      notifyListeners();
+    }
   }
-  
+
   /// Checks if a flag is set in any of the scopes.
   ///
   /// The flag is checked in reverse order of scope weight, so higher weight
@@ -179,7 +200,7 @@ class Configuration {
     final ConfigScope? scope = _scopesSorted.reversed.firstWhereOrNull((s) {
       return s.flags.containsKey(id);
     });
-    
+
     final value = scope?.flags[id] == true;
 
     if (scope != null) {
@@ -204,7 +225,7 @@ class Configuration {
     final ConfigScope? scope = _scopesSorted.reversed.firstWhereOrNull((s) {
       return s.colors.containsKey(id);
     });
-    
+
     final value = scope?.colors[id] ?? '';
 
     if (scope != null) {
@@ -229,7 +250,7 @@ class Configuration {
     final ConfigScope? scope = _scopesSorted.reversed.firstWhereOrNull((s) {
       return s.routes.containsKey(id);
     });
-    
+
     final value = scope?.routes[id] ?? '';
 
     if (scope != null) {
@@ -255,8 +276,9 @@ class Configuration {
       return s.images.containsKey(id);
     });
 
-    final value = scope?.images[id] ?? '';
-    
+    final configuredValue = scope?.images[id];
+    final value = configuredValue is String ? configuredValue : '';
+
     if (scope != null) {
       publisher.sink.add(
         ConfigKeyLog(KeyType.image, scope, id, value),
@@ -276,15 +298,33 @@ class Configuration {
   /// Returns:
   /// * A list of image values, or an empty list if not found
   List<String> imageList(String id) {
-    dynamic i = _scopesSorted.reversed.firstWhereOrNull((s) {
+    final scope = _scopesSorted.reversed.firstWhereOrNull((s) {
       return s.images.containsKey(id);
-    })?.images[id];
+    });
+    final configuredValue = scope?.images[id];
 
-    if (i is String) {
-      return [i];
+    final List<String> value;
+
+    if (configuredValue is String) {
+      value = [configuredValue];
+    } else if (configuredValue is Iterable) {
+      value = configuredValue.map((item) {
+        if (item is! String) {
+          throw StateError('Image list "$id" contains a non-string value.');
+        }
+        return item;
+      }).toList(growable: false);
+    } else {
+      value = const [];
     }
 
-    return i;
+    if (scope != null) {
+      publisher.sink.add(
+        ConfigKeyLog(KeyType.image, scope, id, value),
+      );
+    }
+
+    return value;
   }
 
   /// Gets a miscellaneous value from the configuration scopes.
@@ -300,7 +340,7 @@ class Configuration {
     final ConfigScope? scope = _scopesSorted.reversed.firstWhereOrNull((s) {
       return s.misc.containsKey(id);
     });
-    
+
     final value = scope?.misc[id];
 
     if (scope != null) {
@@ -326,7 +366,7 @@ class Configuration {
       return s.textStyles.containsKey(id);
     });
 
-    final value = scope?.textStyles[id];
+    final value = scope?.textStyles[id] ?? <String, dynamic>{};
 
     if (scope != null) {
       publisher.sink.add(
@@ -371,7 +411,7 @@ class Configuration {
     final ConfigScope? scope = _scopesSorted.reversed.firstWhereOrNull((s) {
       return s.translations.isNotEmpty && s.translations.containsKey(key);
     });
-    
+
     final value = scope?.translations ?? {};
 
     if (scope != null) {
@@ -379,7 +419,7 @@ class Configuration {
         ConfigKeyLog(KeyType.string, scope, key, value),
       );
     }
-    
+
     return value;
   }
 
@@ -428,5 +468,12 @@ class Configuration {
 
   void notifyListeners() {
     changeNotifier.notify(this);
+  }
+
+  void _ensureScope() {
+    if (_scopes.isEmpty) {
+      final now = DateTime.now().millisecondsSinceEpoch;
+      _scopes.add(ConfigScope.empty(name: '$now'));
+    }
   }
 }

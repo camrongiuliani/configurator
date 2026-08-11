@@ -1,6 +1,25 @@
-import 'dart:math';
-
+import 'package:collection/collection.dart';
 import 'package:configurator/configurator.dart';
+
+void _mergeByKey<T, K>(
+  List<T> target,
+  Iterable<T> later,
+  K Function(T value) keyOf,
+) {
+  final merged = <K, T>{};
+
+  for (final value in [...target, ...later]) {
+    final key = keyOf(value);
+
+    // Reinsert matching keys so the later value also keeps later ordering.
+    merged.remove(key);
+    merged[key] = value;
+  }
+
+  target
+    ..clear()
+    ..addAll(merged.values);
+}
 
 /// A model class representing a complete YAML configuration.
 ///
@@ -71,6 +90,35 @@ class YamlConfiguration {
   /// List of internationalization strings
   final List<YamlI18n> i18n;
 
+  /// Returns the single translation collection used by every output target.
+  ///
+  /// `strings` is the established YAML field used by existing configurations,
+  /// while `i18n` is also accepted by the parser. Identical entries may appear
+  /// in both fields, but conflicting values are rejected rather than silently
+  /// producing language-specific results.
+  List<YamlI18n> get resolvedTranslations {
+    final translations = <String, YamlI18n>{};
+
+    for (final translation in [...strings, ...i18n]) {
+      final identity = '${translation.locale}\u0000${translation.name}';
+      final existing = translations[identity];
+
+      if (existing != null &&
+          !const DeepCollectionEquality().equals(
+            existing.value,
+            translation.value,
+          )) {
+        throw StateError(
+          'Conflicting translation for ${translation.locale}.${translation.name}',
+        );
+      }
+
+      translations[identity] = translation;
+    }
+
+    return List.unmodifiable(translations.values);
+  }
+
   /// Creates a new YamlConfiguration instance.
   ///
   /// Parameters:
@@ -91,75 +139,95 @@ class YamlConfiguration {
   YamlConfiguration({
     required this.name,
     this.weight = 0,
-    this.partFiles = const [],
-    this.flags = const [],
-    this.colors = const [],
-    this.images = const [],
-    this.misc = const [],
-    this.textStyles = const [],
-    this.sizes = const [],
-    this.routes = const [],
-    this.strings = const [],
-    this.padding = const [],
-    this.margins = const [],
-    this.i18n = const [],
-  });
+    List<String> partFiles = const [],
+    List<YamlSetting> flags = const [],
+    List<YamlSetting> colors = const [],
+    List<YamlSetting> images = const [],
+    List<YamlSetting> misc = const [],
+    List<YamlTextStyle> textStyles = const [],
+    List<YamlSetting> sizes = const [],
+    List<YamlRoute> routes = const [],
+    List<YamlI18n> strings = const [],
+    List<YamlSetting> padding = const [],
+    List<YamlSetting> margins = const [],
+    List<YamlI18n> i18n = const [],
+  })  : partFiles = List.of(partFiles),
+        flags = List.of(flags),
+        colors = List.of(colors),
+        images = List.of(images),
+        misc = List.of(misc),
+        textStyles = List.of(textStyles),
+        sizes = List.of(sizes),
+        routes = List.of(routes),
+        strings = List.of(strings),
+        padding = List.of(padding),
+        margins = List.of(margins),
+        i18n = List.of(i18n);
 
   /// Converts this YamlConfiguration instance to a JSON map.
   ///
   /// Returns:
   /// * A map containing all the configuration values
-  Map<dynamic, dynamic> toJson() {
+  Map<String, dynamic> toJson() {
     return {
+      'name': name,
       'partFiles': partFiles,
       'weight': weight,
-      'flags': { for (var e in flags) e.name: e.value},
-      'images': { for (var e in images) e.name: e.value},
-      'misc': { for (var e in misc) e.name: e.value},
-      'textStyles': { for (var e in textStyles) e.key: e.toJson()},
-      'sizes': { for (var e in sizes) e.name: e.value},
-      'colors': { for (var e in colors) e.name: e.value},
-      'routes': { for (var e in routes) e.id : e.path },
-      'strings': { for (var e in strings) e.name : e.value },
-      'padding': { for (var e in padding) e.name : e.value },
-      'margins': { for (var e in margins) e.name : e.value },
+      'flags': {for (var e in flags) e.name: e.value},
+      'images': {for (var e in images) e.name: e.value},
+      'misc': {for (var e in misc) e.name: e.value},
+      'textStyles': {for (var e in textStyles) e.key: e.toJson()},
+      'sizes': {for (var e in sizes) e.name: e.value},
+      'colors': {for (var e in colors) e.name: e.value},
+      'routes': {for (var e in routes) e.id: e.path},
+      // Retain the legacy field while exposing the normalized portable shape.
+      'strings': {for (var e in strings) e.name: e.value},
+      'translations': I18nParser.parse(strings: resolvedTranslations),
+      'padding': {for (var e in padding) e.name: e.value},
+      'margins': {for (var e in margins) e.name: e.value},
     };
   }
 
-  operator +( YamlConfiguration t ) {
-    misc.removeWhere(( e ) => t.misc.contains( e ));
-    misc.addAll( t.misc );
+  YamlConfiguration operator +(YamlConfiguration t) {
+    _mergeByKey(misc, t.misc, (setting) => setting.name);
+    _mergeByKey(textStyles, t.textStyles, (style) => style.key);
+    _mergeByKey(padding, t.padding, (setting) => setting.name);
+    _mergeByKey(margins, t.margins, (setting) => setting.name);
+    _mergeByKey(colors, t.colors, (setting) => setting.name);
+    _mergeByKey(sizes, t.sizes, (setting) => setting.name);
+    _mergeByKey(images, t.images, (setting) => setting.name);
+    _mergeByKey(flags, t.flags, (setting) => setting.name);
+    _mergeByKey(routes, t.routes, (route) => route.id);
 
-    textStyles.removeWhere(( e ) => t.textStyles.contains( e ));
-    textStyles.addAll( t.textStyles );
+    final laterStrings = List<YamlI18n>.of(t.strings);
+    final laterI18n = List<YamlI18n>.of(t.i18n);
+    final laterTranslationKeys = {
+      for (final translation in [...laterStrings, ...laterI18n])
+        (translation.locale, translation.name),
+    };
 
-    padding.removeWhere(( e ) => t.padding.contains( e ));
-    padding.addAll( t.padding );
-
-    margins.removeWhere(( e ) => t.margins.contains( e ));
-    margins.addAll( t.margins );
-
-    colors.removeWhere(( e ) => t.colors.contains( e ));
-    colors.addAll( t.colors );
-
-    sizes.removeWhere(( e ) => t.sizes.contains( e ));
-    sizes.addAll( t.sizes );
-
-    images.removeWhere(( e ) => t.images.contains( e ));
-    images.addAll( t.images );
-
-    flags.removeWhere(( e ) => t.flags.contains( e ));
-    flags.addAll( t.flags );
-
-    routes.removeWhere(( e ) => t.routes.contains( e ));
-    routes.addAll( t.routes );
-
-    strings.removeWhere(( e ) => t.strings.contains( e ));
-    strings.addAll( t.strings );
-
-    i18n.removeWhere(( e ) => t.i18n.contains( e ));
-    i18n.addAll( t.i18n );
-
+    // `strings` and `i18n` are aliases. A later part overrides an earlier
+    // translation even when the two parts use different field names.
+    strings.removeWhere(
+      (translation) => laterTranslationKeys.contains(
+        (translation.locale, translation.name),
+      ),
+    );
+    i18n.removeWhere(
+      (translation) => laterTranslationKeys.contains(
+        (translation.locale, translation.name),
+      ),
+    );
+    _mergeByKey(
+      strings,
+      laterStrings,
+      (translation) => (translation.locale, translation.name),
+    );
+    _mergeByKey(
+      i18n,
+      laterI18n,
+      (translation) => (translation.locale, translation.name),
+    );
 
     return this;
   }

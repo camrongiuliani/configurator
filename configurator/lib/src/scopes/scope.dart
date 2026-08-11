@@ -92,7 +92,7 @@ abstract class ConfigScope {
       flags: {for (var e in config.flags) e.name: e.value},
       images: {for (var e in config.images) e.name: e.value},
       misc: {for (var e in config.misc) e.name: e.value},
-      textStyles: {for (var e in config.textStyles) e.key: e},
+      textStyles: {for (var e in config.textStyles) e.key: e.toJson()},
       routes: {for (var e in config.routes) e.id: e.path},
       sizes: {for (var e in config.sizes) e.name: e.value},
       padding: {for (var e in config.padding) e.name: e.value},
@@ -100,7 +100,7 @@ abstract class ConfigScope {
       colors: {for (var e in config.colors) e.name: e.value},
       translations: Map.from(
         I18nParser.parse(
-          strings: config.i18n,
+          strings: config.resolvedTranslations,
         ),
       ),
     );
@@ -108,11 +108,18 @@ abstract class ConfigScope {
 
   Map<String, dynamic> toJson() {
     return {
+      'name': name,
       'partFiles': partFiles,
+      'weight': weight,
       'flags': {for (var e in flags.entries) e.key: e.value},
       'images': {for (var e in images.entries) e.key: e.value},
       'misc': {for (var e in misc.entries) e.key: e.value},
-      'textStyles': {for (var e in textStyles.entries) e.key: e.value},
+      'textStyles': {
+        for (var e in textStyles.entries)
+          e.key: e.value is YamlTextStyle
+              ? (e.value as YamlTextStyle).toJson()
+              : e.value,
+      },
       'sizes': {for (var e in sizes.entries) e.key: e.value},
       'padding': {for (var e in padding.entries) e.key: e.value},
       'margins': {for (var e in margins.entries) e.key: e.value},
@@ -127,6 +134,7 @@ abstract class ConfigScope {
       identical(this, other) ||
       other is ConfigScope &&
           name == other.name &&
+          weight == other.weight &&
           const MapEquality().equals(flags, other.flags) &&
           const ListEquality().equals(partFiles, other.partFiles) &&
           const MapEquality().equals(images, other.images) &&
@@ -136,11 +144,14 @@ abstract class ConfigScope {
           const MapEquality().equals(colors, other.colors) &&
           const MapEquality().equals(padding, other.padding) &&
           const MapEquality().equals(margins, other.margins) &&
+          const MapEquality().equals(radius, other.radius) &&
+          const MapEquality().equals(translations, other.translations) &&
           const MapEquality().equals(sizes, other.sizes);
 
   @override
   int get hashCode =>
       name.hashCode ^
+      weight.hashCode ^
       flags.hashCode ^
       partFiles.hashCode ^
       images.hashCode ^
@@ -148,7 +159,9 @@ abstract class ConfigScope {
       textStyles.hashCode ^
       padding.hashCode ^
       margins.hashCode ^
+      radius.hashCode ^
       routes.hashCode ^
       colors.hashCode ^
+      translations.hashCode ^
       sizes.hashCode;
 }

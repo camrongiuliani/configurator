@@ -1,0 +1,32 @@
+{
+  "name": "configurator-typescript",
+  "version": "0.1.0",
+  "description": "Browser-safe TypeScript runtime for generated Configurator scopes",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "compile": "tsc --project tsconfig.json",
+    "test": "npm run compile && node --test test/*.test.js"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  },
+  "license": "UNLICENSED"
+}
+
