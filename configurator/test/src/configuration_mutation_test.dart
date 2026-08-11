@@ -3,6 +3,39 @@ import 'package:test/test.dart';
 
 void main() {
   group('Configuration mutation contract', () {
+    test('higher weight wins and later insertion breaks equal-weight ties', () {
+      final config = Configuration(
+        scopes: [
+          ProxyScope(
+            name: 'low',
+            weight: 1,
+            colors: {'choice': 'low'},
+          ),
+          ProxyScope(
+            name: 'first-tie',
+            weight: 5,
+            colors: {'choice': 'first'},
+          ),
+          ProxyScope(
+            name: 'later-tie',
+            weight: 5,
+            colors: {'choice': 'later'},
+          ),
+        ],
+      );
+
+      expect(config.color('choice'), 'later');
+
+      config.pushScope(
+        ProxyScope(
+          name: 'latest-tie',
+          weight: 5,
+          colors: {'choice': 'latest'},
+        ),
+      );
+      expect(config.color('choice'), 'latest');
+    });
+
     test('removing every scope preserves the non-empty invariant', () async {
       final first = ProxyScope(name: 'first');
       final second = ProxyScope(name: 'second');

@@ -7,25 +7,25 @@ import 'package:configurator/configurator.dart';
 enum KeyType {
   /// Boolean flag values
   flag,
-  
+
   /// String values, typically used for translations
   string,
-  
+
   /// Route identifiers
   route,
-  
+
   /// Image asset identifiers
   image,
-  
+
   /// Color values
   color,
-  
+
   /// Size values (typically in logical pixels)
   size,
-  
+
   /// Miscellaneous configuration values
   misc,
-  
+
   /// Text style configurations
   textStyle,
 }

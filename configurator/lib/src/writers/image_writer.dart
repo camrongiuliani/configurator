@@ -1,7 +1,6 @@
 import 'package:code_builder/code_builder.dart';
 import 'package:configurator/configurator.dart';
 import 'package:configurator/src/utils/string_ext.dart';
-import 'package:configurator/src/utils/type_ext.dart';
 import 'package:configurator/src/writers/writer.dart';
 
 /// A writer that generates code for accessing image configuration values.
@@ -27,8 +26,7 @@ class ImageWriter extends Writer {
   /// Parameters:
   /// * [name] - The name of the image accessor
   /// * [_images] - The list of image settings to generate accessors for
-  ImageWriter(String name, this._images)
-      : name = name.canonicalize.capitalized;
+  ImageWriter(String name, this._images) : name = name.canonicalize.capitalized;
 
   @override
   Spec write() {

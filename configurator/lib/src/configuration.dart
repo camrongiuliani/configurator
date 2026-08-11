@@ -34,9 +34,18 @@ class Configuration {
   /// Returns a copy of the current scopes list.
   List<ConfigScope> get scopes => List.from(_scopes);
 
-  /// Returns the scopes sorted by their weight in ascending order.
-  List<ConfigScope> get _scopesSorted =>
-      _scopes.sorted((a, b) => a.weight.compareTo(b.weight));
+  /// Returns scopes by ascending weight, then ascending insertion order.
+  ///
+  /// Lookup walks this list in reverse, so a later scope deterministically
+  /// wins when weights are equal.
+  List<ConfigScope> get _scopesSorted {
+    final indexedScopes = _scopes.asMap().entries.toList()
+      ..sort((a, b) {
+        final byWeight = a.value.weight.compareTo(b.value.weight);
+        return byWeight != 0 ? byWeight : a.key.compareTo(b.key);
+      });
+    return indexedScopes.map((entry) => entry.value).toList();
+  }
 
   /// Returns the current active scope (the last one in the stack).
   ConfigScope get _currentScope => _scopes.last;

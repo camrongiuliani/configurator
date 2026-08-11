@@ -25,11 +25,7 @@ class Configurator extends StatefulWidget {
   /// * [config] - The current configuration instance
   final Widget Function(BuildContext, Configuration) builder;
 
-  const Configurator({
-    required this.config,
-    required this.builder,
-    super.key,
-  });
+  const Configurator({required this.config, required this.builder, super.key});
 
   @override
   State<Configurator> createState() => _ConfigurationProviderState();
@@ -59,9 +55,7 @@ class _ConfigurationProviderState extends State<Configurator> {
   Widget build(BuildContext context) {
     return ConfigurationProvider(
       config: widget.config,
-      child: Builder(
-        builder: (ctx) => widget.builder(ctx, widget.config),
-      ),
+      child: Builder(builder: (ctx) => widget.builder(ctx, widget.config)),
     );
   }
 }
@@ -99,7 +93,8 @@ class ConfigurationProvider extends InheritedWidget {
   /// Throws:
   /// * [AssertionError] if no [ConfigurationProvider] is found in the widget tree
   static ConfigurationProvider of(BuildContext context, {bool listen = true}) {
-    final ConfigurationProvider? result = context.findAncestorWidgetOfExactType();
+    final ConfigurationProvider? result =
+        context.findAncestorWidgetOfExactType();
 
     if (listen) {
       context.dependOnInheritedWidgetOfExactType<ConfigurationProvider>();
@@ -117,8 +112,12 @@ class ConfigurationProvider extends InheritedWidget {
   ///
   /// Returns:
   /// * The nearest [ConfigurationProvider] instance, or null if none is found
-  static ConfigurationProvider? maybeOf(BuildContext context, {bool listen = true}) {
-    final ConfigurationProvider? result = context.findAncestorWidgetOfExactType();
+  static ConfigurationProvider? maybeOf(
+    BuildContext context, {
+    bool listen = true,
+  }) {
+    final ConfigurationProvider? result =
+        context.findAncestorWidgetOfExactType();
 
     if (result != null && listen) {
       context.dependOnInheritedWidgetOfExactType<ConfigurationProvider>();

@@ -5,7 +5,7 @@ class ConfigFile {
   final String name;
   YamlConfiguration config;
 
-  ConfigFile( this.name, this.directory, this.config );
+  ConfigFile(this.name, this.directory, this.config);
 
   @override
   String toString() {
@@ -14,13 +14,11 @@ class ConfigFile {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is ConfigFile
-          && other.name == name
-          && other.config.name == other.config.name;
+      identical(this, other) ||
+      other is ConfigFile &&
+          other.name == name &&
+          other.config.name == other.config.name;
 
   @override
-  int get hashCode =>
-      directory.hashCode ^
-      name.hashCode ^
-      config.hashCode;
+  int get hashCode => directory.hashCode ^ name.hashCode ^ config.hashCode;
 }

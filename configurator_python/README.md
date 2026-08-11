@@ -12,6 +12,20 @@ YAML.
 
 - Python 3.10 or newer
 
+The runtime has no third-party dependencies:
+
+```shell
+pip install configurator-python
+```
+
+Install an optional extra when you want generated Pydantic snapshots or
+FastAPI integration:
+
+```shell
+pip install "configurator-python[pydantic]"
+pip install "configurator-python[fastapi]"
+```
+
 ## Example
 
 ```python
@@ -76,59 +90,74 @@ resolution and avoids rebuilding the configuration for every request. If
 scopes change at runtime, the generated accessors continue to resolve values
 from the current scope stack.
 
-### Optional Pydantic boundary
+### Generated Pydantic snapshots
 
 The Configurator runtime uses standard Python type annotations and deliberately
 has no runtime dependencies. Those annotations provide editor and static type
 checking, but Python does not enforce them at runtime.
 
-For a FastAPI service, Pydantic is useful at the application boundary for
-runtime validation, serialization, and generated OpenAPI schemas. Keep the
-weighted `Configuration` as the resolution engine, and build a frozen Pydantic
-snapshot for API input or output instead of making `Configuration` itself a
-Pydantic model:
+The generated module also includes nested Pydantic models for every group and
+a root model such as `AppScopeConfigModel`. Calling `snapshot()` (or its
+`to_model()` alias) resolves every field through the current weighted scope
+stack, validates the result, and returns a point-in-time model:
 
 ```python
-from pydantic import BaseModel, ConfigDict
+from configurator import ConfigScope, Configuration
 
-from app_config import AppScopeConfig
+from app_config import (
+    AppScopeConfig,
+    AppScopeConfigModel,
+    GENERATED_APP_SCOPE,
+)
 
+runtime = Configuration([GENERATED_APP_SCOPE])
+config = AppScopeConfig(runtime)
 
-class FeatureFlags(BaseModel):
-    model_config = ConfigDict(frozen=True, extra="forbid", strict=True)
-
-    checkout_enabled: bool
-
-
-class ServiceConfig(BaseModel):
-    model_config = ConfigDict(frozen=True, extra="forbid", strict=True)
-
-    flags: FeatureFlags
-
-
-def config_snapshot(config: AppScopeConfig) -> ServiceConfig:
-    return ServiceConfig(
-        flags=FeatureFlags(
-            checkout_enabled=config.flags.checkout_enabled,
-        ),
+runtime.push_scope(
+    ConfigScope(
+        name="production",
+        weight=100,
+        flags={"checkoutEnabled": True},
     )
+)
+
+snapshot: AppScopeConfigModel = config.snapshot()
+assert snapshot.flags.checkout_enabled is True
 ```
 
-The snapshot can then be used as a FastAPI response model:
+Generated models are strict, frozen, and reject extra fields. They provide
+runtime validation, serialization, JSON Schema, and FastAPI response-model
+support without moving scope mutation or precedence behavior into Pydantic.
+Create a new snapshot after changing scopes; an existing snapshot remains
+immutable and does not change with the runtime.
+
+Generated modules remain importable when Pydantic is not installed, and all
+ordinary accessors continue to work. Calling `snapshot()` or constructing a
+generated model without the `pydantic` extra raises an error with the required
+installation command.
+
+The generated model can be used directly as a FastAPI response model:
 
 ```python
-@app.get("/internal/config", response_model=ServiceConfig)
-def read_config(config: AppScopeConfig = Depends(get_config)) -> ServiceConfig:
-    return config_snapshot(config)
+from fastapi import Depends
+
+from app_config import AppScopeConfig, AppScopeConfigModel
+
+
+@app.get("/internal/config", response_model=AppScopeConfigModel)
+def read_config(
+    config: AppScopeConfig = Depends(get_config),
+) -> AppScopeConfigModel:
+    return config.snapshot()
 ```
 
 Only expose configuration values that are safe for clients. Environment
 variables and secrets should remain outside the shared YAML; use a dedicated
 settings layer such as
-[Pydantic Settings](https://pydantic.dev/docs/validation/latest/concepts/pydantic_settings/)
+[Pydantic Settings](https://docs.pydantic.dev/latest/concepts/pydantic_settings/)
 for those values. See FastAPI's
 [request-body documentation](https://fastapi.tiangolo.com/tutorial/body/) and
-the [Pydantic model documentation](https://pydantic.dev/docs/validation/latest/concepts/models/)
+the [Pydantic model documentation](https://docs.pydantic.dev/latest/concepts/models/)
 for validation and schema behavior.
 
 ## Changes and access events
@@ -174,3 +203,18 @@ The tests run without installing the package:
 ```shell
 python3 -m unittest discover -s tests -v
 ```
+
+Install the test extra to also exercise real Pydantic validation and the
+FastAPI response-model integration:
+
+```shell
+pip install -e ".[test]"
+python3 -m unittest discover -s tests -v
+```
+
+## Release status
+
+This package is currently blocked from PyPI with the
+`Private :: Do Not Upload` classifier pending confirmation of rights to the
+upstream Configurator work. Do not remove that gate until the repository
+license review has been resolved.

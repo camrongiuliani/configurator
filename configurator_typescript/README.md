@@ -7,6 +7,18 @@ the same scope behavior in Node.js or a browser.
 
 ## Install and build
 
+Until the package is published, build the local checkout first:
+
+```sh
+cd /path/to/configurator/configurator_typescript
+npm ci
+npm run compile
+cd /path/to/your/consumer
+npm install /path/to/configurator/configurator_typescript
+```
+
+For runtime development inside the package:
+
 ```sh
 npm install
 npm run compile
@@ -90,3 +102,9 @@ stopAccess();
 Only successful key lookups emit access events. `popScope` preserves the final
 scope; removing every scope installs a fresh empty fallback so a Configuration
 always remains usable.
+
+## Release status
+
+This package is currently `UNLICENSED` and marked `private` pending confirmation
+of rights to the upstream Configurator work. Do not remove those gates until the
+repository license review has been resolved.

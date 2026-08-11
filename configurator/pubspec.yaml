@@ -1,31 +1,25 @@
 name: configurator
-description: A new Flutter package project.
+description: Type-safe weighted configuration runtime and YAML compiler with Dart, Python, and TypeScript code generation.
 version: 1.0.20
-homepage:
+publish_to: none
+homepage: https://github.com/david-k-williams/configurator
+repository: https://github.com/david-k-williams/configurator/tree/develop/configurator
+issue_tracker: https://github.com/david-k-williams/configurator/issues
 
 environment:
   sdk: '>=3.0.5 <4.0.0'
-
-dependency_overrides:
-  intl: ^0.19.0
 
 dependencies:
 #  parse_color: ^0.0.1
   collection: ^1.17.1
   yaml: ^3.1.2
-  yaml_edit: ^2.1.1
   meta: ^1.9.1
-  slang: 3.0.0
+  slang: ">=3.0.0 <3.1.0"
   rxdart: ^0.27.7
 
-  i18n_extension: ^11.0.11
-
-  source_gen: ">=2.0.0 <5.0.0"
   code_builder: ^4.5.0
   dart_style: ">=2.3.6 <=3.1.2"
 
 dev_dependencies:
   flutter_lints: ^2.0.0
   test: ^1.24.4
-
-flutter:

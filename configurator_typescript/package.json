@@ -1,7 +1,23 @@
 {
   "name": "configurator-typescript",
   "version": "0.1.0",
+  "private": true,
   "description": "Browser-safe TypeScript runtime for generated Configurator scopes",
+  "keywords": [
+    "configuration",
+    "feature-flags",
+    "typescript",
+    "yaml"
+  ],
+  "homepage": "https://github.com/david-k-williams/configurator#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/david-k-williams/configurator.git",
+    "directory": "configurator_typescript"
+  },
+  "bugs": {
+    "url": "https://github.com/david-k-williams/configurator/issues"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,6 +30,8 @@
   },
   "files": [
     "dist",
+    "CHANGELOG.md",
+    "LICENSE",
     "README.md"
   ],
   "sideEffects": false,
@@ -22,11 +40,11 @@
   },
   "scripts": {
     "compile": "tsc --project tsconfig.json",
-    "test": "npm run compile && node --test test/*.test.js"
+    "test": "npm run compile && node --test test/*.test.js",
+    "prepack": "npm test"
   },
   "devDependencies": {
     "typescript": "^5.9.2"
   },
   "license": "UNLICENSED"
 }
-

@@ -29,6 +29,10 @@ void main() {
         output,
         contains('from configurator import ConfigScope, Configuration'),
       );
+      expect(
+        output,
+        contains('from configurator.pydantic_support import ('),
+      );
       expect(output, contains('GENERATED_APP_SCOPE = ConfigScope('));
       expect(output, contains('name="__GeneratedAppScope"'));
       expect(output, contains('weight=42'));
@@ -75,6 +79,39 @@ void main() {
       expect(output, contains('self.translations: AppScopeTranslations'));
     });
 
+    test('emits optional frozen strict Pydantic snapshots', () {
+      final output = generator.generate(
+        name: 'app_scope',
+        configuration: generatorFixture(),
+      );
+
+      expect(output, contains('frozen=True'));
+      expect(output, contains('strict=True'));
+      expect(output, contains('extra="forbid"'));
+      expect(
+        output,
+        contains('class AppScopeFlagsModel(PydanticBaseModel):'),
+      );
+      expect(output, contains('    feature_enabled: bool'));
+      expect(
+        output,
+        contains('class AppScopeConfigModel(PydanticBaseModel):'),
+      );
+      expect(output, contains('    flags: AppScopeFlagsModel'));
+      expect(output, contains('def snapshot(self) -> AppScopeConfigModel:'));
+      expect(output, contains('        require_pydantic()'));
+      expect(
+        output,
+        contains('feature_enabled=self.flags.feature_enabled'),
+      );
+      expect(output, contains('retry_count=self.misc.retry_count'));
+      expect(
+        output,
+        contains('def to_model(self) -> AppScopeConfigModel:'),
+      );
+      expect(output, contains('return self.snapshot()'));
+    });
+
     test('escapes portable values without changing canonical keys', () {
       final output = generator.generate(
         name: 'app_scope',
@@ -102,6 +139,40 @@ void main() {
           ),
         ),
       );
+    });
+
+    test('rejects normalized Pydantic BaseModel member names', () {
+      const reservedMembers = {
+        'modelConfig': 'model_config',
+        'modelDump': 'model_dump',
+        'json': 'json',
+      };
+
+      for (final entry in reservedMembers.entries) {
+        expect(
+          () => generator.generate(
+            name: 'reserved',
+            configuration: YamlConfiguration(
+              name: 'reserved',
+              misc: [YamlSetting(entry.key, true)],
+            ),
+          ),
+          throwsA(
+            isA<StateError>()
+                .having(
+                  (error) => error.message,
+                  'message',
+                  contains('Python misc key "${entry.key}"'),
+                )
+                .having(
+                  (error) => error.message,
+                  'message',
+                  contains('reserved Pydantic member "${entry.value}"'),
+                ),
+          ),
+          reason: entry.key,
+        );
+      }
     });
 
     test('rejects unsupported image values', () {

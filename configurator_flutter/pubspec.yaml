@@ -1,16 +1,14 @@
 name: configurator_flutter
-description: A new Flutter package project.
+description: Flutter adapters, theming, and widgets for the Configurator weighted configuration runtime.
 version: 1.0.20
-homepage:
+publish_to: none
+homepage: https://github.com/david-k-williams/configurator
+repository: https://github.com/david-k-williams/configurator/tree/develop/configurator_flutter
+issue_tracker: https://github.com/david-k-williams/configurator/issues
 
 environment:
-  sdk: ">=2.17.6 <3.0.0"
-  flutter: ">=1.17.0"
-
-dependency_overrides:
-  intl: ^0.19.0
-  configurator:
-    path: ../configurator
+  sdk: ">=3.7.0 <4.0.0"
+  flutter: ">=3.29.0"
 
 dependencies:
   flutter:
@@ -18,8 +16,8 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  i18n_extension: ^11.0.11
-  google_fonts: ^5.1.0
+  i18n_extension: ^15.1.1
+  google_fonts: ^6.3.2
 
   parse_color: ^0.0.1
   collection: ^1.17.1
@@ -27,11 +25,7 @@ dependencies:
 
   slang_flutter: ^3.0.0
 
-  configurator:
-    git:
-      url: git@github.com:camrongiuliani/configurator.git
-      path: configurator
-      ref: 1.0.20
+  configurator: ^1.0.20
 
 dev_dependencies:
   flutter_test:

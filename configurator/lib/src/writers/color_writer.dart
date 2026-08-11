@@ -22,13 +22,19 @@ class ColorWriter extends Writer {
   /// The list of color settings to generate accessors for
   final List<YamlSetting<String, String>> _colors;
 
+  /// Whether generated accessors must avoid Flutter-only types.
+  final bool pureDart;
+
   /// Creates a new [ColorWriter] with the given name and color settings.
   ///
   /// Parameters:
   /// * [name] - The name of the color accessor
   /// * [colors] - The list of color settings to generate accessors for
-  ColorWriter(String name, List<YamlSetting> colors)
-      : name = name.canonicalize.capitalized,
+  ColorWriter(
+    String name,
+    List<YamlSetting> colors, {
+    this.pureDart = false,
+  })  : name = name.canonicalize.capitalized,
         _colors = colors.convert<String, String>();
 
   @override
@@ -52,10 +58,12 @@ class ColorWriter extends Writer {
         builder
           ..name = e.name.canonicalize
           ..type = MethodType.getter
-          ..returns = refer('Color')
+          ..returns = refer(pureDart ? 'String' : 'Color')
           ..lambda = true
           ..body = Code(() {
-            return '_config.colorValue("${e.name}")';
+            return pureDart
+                ? '_config.color("${e.name}")'
+                : '_config.colorValue("${e.name}")';
           }());
       });
     }).toList();

@@ -20,10 +20,7 @@ class LocalizeUtil {
   static String localize(Configuration config, String input) {
     return i18n.localize(
       input,
-      i18n.Translations.byId(
-        'en_us',
-        config.currentTranslations(input),
-      ),
+      i18n.Translations.byId('en_us', config.currentTranslations(input)),
     );
   }
 }
@@ -45,8 +42,5 @@ extension LocalizationExt on String {
   ///
   /// Returns:
   /// * The translated string
-  String translate(Configuration config) => LocalizeUtil.localize(
-        config,
-        this,
-      );
+  String translate(Configuration config) => LocalizeUtil.localize(config, this);
 }

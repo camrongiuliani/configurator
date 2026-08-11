@@ -1,0 +1,140 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dart:
+    name: Dart
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: configurator
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - run: dart pub get
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed bin lib test
+      - run: dart analyze
+      - run: dart test --concurrency=1
+
+  flutter:
+    name: Flutter
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: configurator_flutter
+    steps:
+      - uses: actions/checkout@v6
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+
+  python:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.13"]
+    defaults:
+      run:
+        working-directory: configurator_python
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: configurator_python/pyproject.toml
+      - name: Test without optional dependencies
+        run: python -m unittest discover -s tests -v
+      - name: Install Pydantic and FastAPI test extras
+        run: python -m pip install -e ".[test]" build twine
+      - name: Test with Pydantic and FastAPI
+        run: python -m unittest discover -s tests -v
+      - run: python -m build
+      - run: python -m twine check dist/*
+      - name: Install wheel as an external consumer
+        shell: bash
+        run: |
+          python -m venv "${RUNNER_TEMP}/configurator-wheel"
+          "${RUNNER_TEMP}/configurator-wheel/bin/python" -m pip install --no-deps dist/*.whl
+          "${RUNNER_TEMP}/configurator-wheel/bin/python" -c "from configurator import Configuration; assert Configuration().flag('missing') is False"
+      - name: Install source distribution as an external consumer
+        shell: bash
+        run: |
+          python -m venv "${RUNNER_TEMP}/configurator-sdist"
+          "${RUNNER_TEMP}/configurator-sdist/bin/python" -m pip install --no-deps dist/*.tar.gz
+          "${RUNNER_TEMP}/configurator-sdist/bin/python" -c "from configurator import Configuration; assert Configuration().size('missing') == 14.0"
+
+  typescript:
+    name: Node ${{ matrix.node-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20, 22]
+    defaults:
+      run:
+        working-directory: configurator_typescript
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+          cache-dependency-path: configurator_typescript/package-lock.json
+          package-manager-cache: false
+      - run: npm ci
+      - run: npm test
+      - name: Build npm package archive
+        run: npm pack --pack-destination "${RUNNER_TEMP}"
+
+  conformance:
+    name: Cross-language conformance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: configurator_typescript/package-lock.json
+          package-manager-cache: false
+      - run: dart pub get
+        working-directory: configurator
+      - run: npm ci
+        working-directory: configurator_typescript
+      - name: Install Python server integration dependencies
+        run: python -m pip install -e "./configurator_python[test]" build
+      - name: Exercise generated Pydantic and FastAPI integration
+        run: dart test test/src/generators/python_pydantic_integration_test.dart
+        working-directory: configurator
+        env:
+          CONFIGURATOR_TEST_PYTHON: python
+      - run: bash tool/run_conformance.sh
+        env:
+          CONFIGURATOR_CONFORMANCE_USE_WHEEL: "1"

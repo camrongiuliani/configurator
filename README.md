@@ -62,7 +62,7 @@ Configurator solves several common challenges in Flutter application development
   - Generated type-safe accessors
   - Compile-time configuration validation
   - IDE autocompletion support
-  - YAML to Dart code generation
+  - YAML to Dart, Python, and TypeScript code generation
 
 ## Installation
 
@@ -70,201 +70,76 @@ Add the following to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  configurator: ^latest_version
-  configurator_flutter: ^latest_version  # For Flutter-specific features
+  configurator: ^1.0.20
+  configurator_flutter: ^1.0.20  # For Flutter-specific features
 ```
 
 ## Usage
 
 ### Configuration Structure
 
-Configurator uses a combination of YAML files to define your configuration:
+Configurator reads three kinds of YAML document:
 
-1. **Main Configuration File** (`*.config.yaml`):
-   - Defines the scope ID and parts
-   - Contains the main configuration values
-   - Can include other configuration files as parts
+1. A root `*.config.yaml` declares a scope ID and its values.
+2. An optional `*.defs.yaml` provides reusable YAML anchors. A configuration
+   selects one definitions document with `def_source`.
+3. Another `*.config.yaml` can be referenced by ID in `parts` and composed
+   into a root configuration.
 
-2. **Definitions File** (`*.defs.yaml`):
-   - Contains shared definitions and constants
-   - Can be referenced by multiple configuration files
-   - Useful for maintaining consistent values across configurations
-   - Definitions are resolved at compile time
-   - Values can be referenced using the `*` anchor syntax
-   - Supports inheritance and composition
+Definitions are resolved in memory; generation never rewrites the YAML source.
+Each part is a separate YAML document, so a part that uses anchors must declare
+its own `def_source` (it may select the same definitions ID as the root).
 
-3. **Part Files** (`*.config.yaml`):
-   - Modular configuration components
-   - Can be included in multiple main configurations
-   - Merged into the main configuration at compile time
-   - Follow the same structure as main configuration files
-   - Can reference definitions from the main config's def_source
-   - Identified by their config ID in the parts list of other config files
-
-Example YAML structure:
 ```yaml
-# main.config.yaml
-id: app_scope
-def_source: app_defs
-parts:
-  - theme_config
-  - features_config
-  - routes_config
+# shared.defs.yaml
+id: shared
+definitions:
+  colors:
+    brandPrimary: "3366FF"
+  flags:
+    searchDefault: false
+  sizes:
+    bodySize: 16
+  routes:
+    homePath: /
+```
 
+```yaml
+# base.config.yaml
+id: base
+def_source: shared
 configuration:
   flags:
-    isDarkMode: false
+    searchEnabled: *searchDefault
   colors:
-    primary: *primaryColor  # Reference from definitions
-    secondary: *accentColor
-
-# app.defs.yaml
-id: app_defs
-definitions:
-  colors:
-    primaryColor: "#0077E6"
-    accentColor: "#8DBF22"
+    primary: *brandPrimary
   sizes:
-    space:
-      none: 0.0
-      xs: 2.0
-      base: 8.0
+    body: *bodySize
+  routes:
+    - id: 1
+      path: *homePath
+  strings:
+    en:
+      welcome: Welcome
+```
 
-# theme.config.yaml
-id: theme_config
-configuration:
-  colors:
-    background: *backgroundColor
-    text: *textColor
-  styles:
-    heading:
-      fontSize: *headingSize
-      fontWeight: bold
-    body:
-      fontSize: *bodySize
-      lineHeight: 1.5
-
-# features.config.yaml
-id: features_config
+```yaml
+# app.config.yaml
+id: app_scope
+def_source: shared
+parts:
+  - base
 configuration:
   flags:
-    enableNewUI: true
-    showAnalytics: false
-  settings:
-    maxItems: 100
-    refreshInterval: 300
-
-# routes.config.yaml
-id: routes_config
-configuration:
-  paths:
-    home: "/"
-    profile: "/profile"
-    settings: "/settings"
+    checkoutEnabled: true
+  colors:
+    accent: "8DBF22"
 ```
 
-### Parts and Definitions in Action
-
-1. **Using Parts for Modular Configuration**:
-```yaml
-# app.config.yaml
-id: app_scope
-def_source: app_defs
-parts:
-  - theme_config
-  - features_config
-  - routes_config
-
-# The final configuration will include:
-# - All values from app.config.yaml
-# - All values from theme.config.yaml (referenced by theme_config)
-# - All values from features.config.yaml (referenced by features_config)
-# - All values from routes.config.yaml (referenced by routes_config)
-```
-
-2. **Definitions for Shared Values**:
-```yaml
-# app.defs.yaml
-id: app_defs
-definitions:
-  colors:
-    primaryColor: "#0077E6"
-    accentColor: "#8DBF22"
-    backgroundColor: "#FFFFFF"
-    textColor: "#333333"
-  sizes:
-    headingSize: 24.0
-    bodySize: 16.0
-    space:
-      none: 0.0
-      xs: 2.0
-      base: 8.0
-
-# These values can be referenced in any config or part:
-configuration:
-  colors:
-    primary: *primaryColor
-    background: *backgroundColor
-  styles:
-    heading:
-      fontSize: *headingSize
-```
-
-3. **Part Inheritance and Overrides**:
-```yaml
-# base_theme.config.yaml
-id: base_theme_config
-configuration:
-  colors:
-    primary: *primaryColor
-    secondary: *accentColor
-  styles:
-    default:
-      fontSize: *bodySize
-
-# dark_theme.config.yaml
-id: dark_theme_config
-configuration:
-  colors:
-    primary: *darkPrimaryColor  # Overrides base theme's primary
-    background: *darkBackground
-  styles:
-    default:
-      color: *lightTextColor    # Adds new property
-
-# app.config.yaml
-id: app_scope
-def_source: app_defs
-parts:
-  - base_theme_config
-  - dark_theme_config    # Values here override base_theme_config
-```
-
-4. **Definitions with Inheritance**:
-```yaml
-# base.defs.yaml
-id: base_defs
-definitions:
-  colors:
-    primary: "#0077E6"
-    secondary: "#8DBF22"
-
-# extended.defs.yaml
-id: extended_defs
-definitions:
-  colors:
-    primary: "#FF0000"    # Overrides base primary
-    accent: "#00FF00"     # New color
-  sizes:
-    large: 24.0
-    medium: 16.0
-
-# app.config.yaml
-id: app_scope
-def_source: extended_defs  # Uses extended definitions
-parts:
-  - theme_config
-```
+Parts are applied in their declared order. For a duplicate semantic key, a
+later part overrides an earlier part; part values also override values already
+present on the root. Missing parts, duplicate IDs, repeated part declarations,
+and cycles are reported before any generated output is replaced.
 
 ### Multi-language generation
 
@@ -300,7 +175,7 @@ from configurator import Configuration
 from app_config import GENERATED_APP_SCOPE, AppScopeConfig
 
 app = AppScopeConfig(Configuration([GENERATED_APP_SCOPE]))
-enabled = app.flags.is_dark_mode
+enabled = app.flags.checkout_enabled
 ```
 
 ```ts
@@ -308,7 +183,7 @@ import { Configuration } from "configurator-typescript";
 import { AppScopeConfig, generatedAppScope } from "./app.config.js";
 
 const app = new AppScopeConfig(new Configuration([generatedAppScope]));
-const enabled = app.flags.isDarkMode;
+const enabled = app.flags.checkoutEnabled;
 ```
 
 The initial runtime packages live in `configurator_python` and
@@ -319,11 +194,18 @@ They are workspace packages for now. From a consuming project, link them with:
 
 ```bash
 python -m pip install -e /path/to/configurator/configurator_python
+cd /path/to/configurator/configurator_typescript
+npm ci
+npm run compile
+cd /path/to/your/consumer
 npm install /path/to/configurator/configurator_typescript
 ```
 
-Publishing to PyPI or npm should wait until the repository's placeholder
-license is replaced with the intended license.
+Publishing to PyPI or npm should wait until rights to the upstream work are
+confirmed and the no-license notice is replaced with the intended license.
+Each registry package has an additional accidental-publish guard; the
+[release checklist](docs/releasing.md) covers removing those gates and running
+package and consumer verification.
 
 ### Generated Code
 

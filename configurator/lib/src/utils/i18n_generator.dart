@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import 'package:configurator/src/utils/string_ext.dart';
 import 'package:slang/builder/generator/helper.dart';
-import 'package:slang/builder/model/enums.dart';
 import 'package:slang/builder/model/generate_config.dart';
 import 'package:slang/builder/model/i18n_data.dart';
 import 'package:slang/builder/model/i18n_locale.dart';
@@ -88,7 +87,6 @@ void _generateClass(
   buffer.writeln('''
     final Configuration _config;
   ''');
-
 
   buffer.writeln();
   buffer.writeln();
@@ -220,7 +218,8 @@ void _generateMap({
     _addTabs(buffer, depth + 2);
     if (value is StringTextNode) {
       if (value.params.isEmpty) {
-        buffer.writeln('\'$key\': LocalizeUtil.localize(_config, \'${value.path.canonicalize}\'),');
+        buffer.writeln(
+            '\'$key\': LocalizeUtil.localize(_config, \'${value.path.canonicalize}\'),');
       } else {
         buffer.writeln(
             '\'$key\': ${_toParameterList(value.params, value.paramTypeMap)} => LocalizeUtil.localize(_config, \'${value.path.canonicalize}\'),');
@@ -316,7 +315,8 @@ void _generateList({
     _addTabs(buffer, depth + 2);
     if (value is StringTextNode) {
       if (value.params.isEmpty) {
-        buffer.writeln('LocalizeUtil.localize(_config, \'${value.path.canonicalize}\'),');
+        buffer.writeln(
+            'LocalizeUtil.localize(_config, \'${value.path.canonicalize}\'),');
       } else {
         buffer.writeln(
             '${_toParameterList(value.params, value.paramTypeMap)} => LocalizeUtil.localize(_config, \'${value.path.canonicalize}\'),');
@@ -334,7 +334,10 @@ void _generateList({
       );
     } else if (value is ObjectNode) {
       // final String key = depth.toString() + 'i' + i.toString();
-      final String key = node.path.split('.').last.canonicalize + depth.toString() + 'i' + i.toString();
+      final String key = node.path.split('.').last.canonicalize +
+          depth.toString() +
+          'i' +
+          i.toString();
       final String childClassNoLocale =
           getClassName(parentName: className, childName: key);
 
@@ -546,7 +549,8 @@ void _addRichTextCall({
   for (final span in node.spans) {
     _addTabs(buffer, depth + 2);
     if (span is FunctionSpan) {
-      buffer.write("${span.functionName}(LocalizeUtil.localize(_config, '${node.path.canonicalize}'))");
+      buffer.write(
+          "${span.functionName}(LocalizeUtil.localize(_config, '${node.path.canonicalize}'))");
     } else {
       buffer.write(span.code);
     }
