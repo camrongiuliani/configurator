@@ -14,6 +14,7 @@ class ConfiguratorCliException implements Exception {
 class ConfiguratorCliOptions {
   const ConfiguratorCliOptions({
     required this.help,
+    required this.version,
     required this.recursive,
     required this.pureDart,
     required this.watch,
@@ -22,6 +23,7 @@ class ConfiguratorCliOptions {
   });
 
   final bool help;
+  final bool version;
   final bool recursive;
   final bool pureDart;
   final bool watch;
@@ -32,6 +34,7 @@ class ConfiguratorCliOptions {
     const switches = {
       '-h',
       '--help',
+      '--version',
       '--recursive',
       '--pure-dart',
       '-w',
@@ -81,6 +84,7 @@ class ConfiguratorCliOptions {
 
     return ConfiguratorCliOptions(
       help: arguments.contains('-h') || arguments.contains('--help'),
+      version: arguments.contains('--version'),
       recursive: arguments.contains('--recursive'),
       pureDart: arguments.contains('--pure-dart'),
       watch: arguments.contains('-w') || arguments.contains('--watch'),

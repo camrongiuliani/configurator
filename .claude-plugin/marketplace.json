@@ -1,0 +1,30 @@
+{
+  "name": "configurator-tools",
+  "owner": {
+    "name": "Configurator maintainers",
+    "url": "https://github.com/camrongiuliani/configurator"
+  },
+  "description": "AI workflows for creating and compiling Configurator YAML.",
+  "version": "0.1.0",
+  "plugins": [
+    {
+      "name": "configurator",
+      "displayName": "Configurator",
+      "source": "./plugins/configurator",
+      "description": "Create shared Configurator YAML and generate type-safe Dart, Python, and TypeScript configuration.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Configurator maintainers",
+        "url": "https://github.com/camrongiuliani/configurator"
+      },
+      "homepage": "https://github.com/camrongiuliani/configurator",
+      "repository": "https://github.com/camrongiuliani/configurator",
+      "category": "development",
+      "tags": [
+        "configuration",
+        "yaml",
+        "code-generation"
+      ]
+    }
+  ]
+}

@@ -42,5 +42,12 @@ void main() {
         throwsA(isA<ConfiguratorCliException>()),
       );
     });
+
+    test('recognizes the executable version switch', () {
+      final options = ConfiguratorCliOptions.parse(const ['--version']);
+
+      expect(options.version, isTrue);
+      expect(options.help, isFalse);
+    });
   });
 }

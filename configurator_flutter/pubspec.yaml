@@ -2,9 +2,9 @@ name: configurator_flutter
 description: Flutter adapters, theming, and widgets for the Configurator weighted configuration runtime.
 version: 1.0.20
 publish_to: none
-homepage: https://github.com/david-k-williams/configurator
-repository: https://github.com/david-k-williams/configurator/tree/develop/configurator_flutter
-issue_tracker: https://github.com/david-k-williams/configurator/issues
+homepage: https://github.com/camrongiuliani/configurator
+repository: https://github.com/camrongiuliani/configurator/tree/develop/configurator_flutter
+issue_tracker: https://github.com/camrongiuliani/configurator/issues
 
 environment:
   sdk: ">=3.7.0 <4.0.0"

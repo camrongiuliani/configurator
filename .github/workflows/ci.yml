@@ -24,7 +24,7 @@ jobs:
       - uses: dart-lang/setup-dart@v1
         with:
           sdk: stable
-      - run: dart pub get
+      - run: dart pub get --enforce-lockfile
       - name: Check formatting
         run: dart format --output=none --set-exit-if-changed bin lib test
       - run: dart analyze
@@ -124,7 +124,7 @@ jobs:
           cache: npm
           cache-dependency-path: configurator_typescript/package-lock.json
           package-manager-cache: false
-      - run: dart pub get
+      - run: dart pub get --enforce-lockfile
         working-directory: configurator
       - run: npm ci
         working-directory: configurator_typescript

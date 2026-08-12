@@ -218,3 +218,35 @@ This package is currently blocked from PyPI with the
 `Private :: Do Not Upload` classifier pending confirmation of rights to the
 upstream Configurator work. Do not remove that gate until the repository
 license review has been resolved.
+
+The **Python Package** GitHub Actions workflow tests the supported Python
+versions, builds one wheel and one source distribution, checks their metadata,
+installs each artifact as an external consumer, and makes the verified
+distributions available as a workflow artifact. Pull requests, manual runs,
+and `python-v*` tags can exercise that build path without publishing.
+
+PyPI publishing is deliberately restricted to
+`camrongiuliani/configurator`. A fork cannot enter the publishing job. In the
+canonical repository, a tag must exactly match the package version: version
+`0.1.0` uses `python-v0.1.0`. Its commit must be reachable from `develop`, the
+matching changelog heading must no longer say `Unreleased`, the license notices
+and private classifier must be resolved, and a reviewer must approve the
+protected `pypi` GitHub environment.
+
+Before the first release, configure a PyPI pending Trusted Publisher (the
+project does not exist yet) with these exact values:
+
+- Owner: `camrongiuliani`
+- Repository: `configurator`
+- Workflow: `python-publish.yml`
+- Environment: `pypi`
+
+The pending publisher creates the project on first use, but it does not reserve
+the package name before that successful publication.
+
+Protect the `pypi` environment with required reviewers and allow only
+`python-v*` tags to deploy. Protect that tag pattern in the canonical
+repository as well. The workflow uses GitHub OIDC and short-lived PyPI
+credentials, so it does not require a stored PyPI API token. Trusted
+Publishing also creates PyPI attestations for the wheel and source
+distribution.

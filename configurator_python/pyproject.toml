@@ -32,10 +32,10 @@ test = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/david-k-williams/configurator"
-Repository = "https://github.com/david-k-williams/configurator/tree/develop/configurator_python"
-Issues = "https://github.com/david-k-williams/configurator/issues"
-Changelog = "https://github.com/david-k-williams/configurator/blob/develop/configurator_python/CHANGELOG.md"
+Homepage = "https://github.com/camrongiuliani/configurator"
+Repository = "https://github.com/camrongiuliani/configurator/tree/develop/configurator_python"
+Issues = "https://github.com/camrongiuliani/configurator/issues"
+Changelog = "https://github.com/camrongiuliani/configurator/blob/develop/configurator_python/CHANGELOG.md"
 
 [tool.setuptools]
 package-dir = { "" = "src" }

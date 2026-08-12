@@ -1,0 +1,244 @@
+name: npm Package
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/npm-publish.yml
+      - configurator_typescript/**
+      - tool/validate_npm_release.sh
+      - LICENSE
+  push:
+    tags:
+      - typescript-v*
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: npm-package-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: Build and test package
+    runs-on: ubuntu-22.04
+    outputs:
+      package-version: ${{ steps.package-metadata.outputs.version }}
+      package-filename: ${{ steps.package-metadata.outputs.filename }}
+      npm-dist-tag: ${{ steps.package-metadata.outputs.npm-dist-tag }}
+    defaults:
+      run:
+        working-directory: configurator_typescript
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: configurator_typescript/package-lock.json
+          package-manager-cache: false
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Test package
+        run: npm test
+      - name: Read package metadata
+        id: package-metadata
+        shell: bash
+        run: |
+          version="$(node -p 'require("./package.json").version')"
+          name="$(node -p 'require("./package.json").name')"
+          if [[ "$name" != "configurator-typescript" ]]; then
+            echo "Unexpected package name: $name" >&2
+            exit 1
+          fi
+          semver_pattern='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$'
+          if [[ ! "$version" =~ $semver_pattern ]]; then
+            echo "Invalid semantic version in package.json: $version" >&2
+            exit 1
+          fi
+          core_and_prerelease="${version%%+*}"
+          npm_dist_tag="latest"
+          if [[ "$core_and_prerelease" == *-* ]]; then
+            prerelease="${core_and_prerelease#*-}"
+            IFS='.' read -r -a prerelease_identifiers <<< "$prerelease"
+            for identifier in "${prerelease_identifiers[@]}"; do
+              if [[ "$identifier" =~ ^[0-9]+$ && ${#identifier} -gt 1 && "$identifier" == 0* ]]; then
+                echo "Numeric prerelease identifiers cannot have leading zeroes: $version" >&2
+                exit 1
+              fi
+            done
+            npm_dist_tag="next"
+          fi
+          filename="${name}-${version}.tgz"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "filename=$filename" >> "$GITHUB_OUTPUT"
+          echo "npm-dist-tag=$npm_dist_tag" >> "$GITHUB_OUTPUT"
+      - name: Build npm package archive
+        shell: bash
+        env:
+          PACKAGE_FILENAME: ${{ steps.package-metadata.outputs.filename }}
+        run: |
+          mkdir -p dist-package
+          npm pack --ignore-scripts --pack-destination dist-package
+          mapfile -t archives < <(find dist-package -maxdepth 1 -type f -name '*.tgz')
+          if [[ ${#archives[@]} -ne 1 ]]; then
+            echo "Expected exactly one npm archive, found ${#archives[@]}." >&2
+            exit 1
+          fi
+          expected="dist-package/$PACKAGE_FILENAME"
+          if [[ "${archives[0]}" != "$expected" ]]; then
+            echo "Expected npm archive $expected, got ${archives[0]}." >&2
+            exit 1
+          fi
+      - name: Verify package contents
+        shell: bash
+        env:
+          PACKAGE_FILENAME: ${{ steps.package-metadata.outputs.filename }}
+        run: |
+          archive="dist-package/$PACKAGE_FILENAME"
+          contents="$(tar -tzf "$archive")"
+          required=(
+            package/CHANGELOG.md
+            package/LICENSE
+            package/README.md
+            package/dist/index.d.ts
+            package/dist/index.js
+            package/package.json
+          )
+          for entry in "${required[@]}"; do
+            if ! grep -Fxq "$entry" <<< "$contents"; then
+              echo "npm package is missing $entry." >&2
+              exit 1
+            fi
+          done
+          if grep -Eq '^package/(node_modules|src|test)/' <<< "$contents"; then
+            echo "npm package contains development-only files." >&2
+            exit 1
+          fi
+      - name: Install archive as an external consumer
+        shell: bash
+        env:
+          PACKAGE_FILENAME: ${{ steps.package-metadata.outputs.filename }}
+        run: |
+          archive="$(pwd)/dist-package/$PACKAGE_FILENAME"
+          consumer="$(mktemp -d)"
+          trap 'rm -rf "$consumer"' EXIT
+          cd "$consumer"
+          npm init --yes >/dev/null
+          npm pkg set type=module
+          npm install --ignore-scripts --no-audit --no-fund "$archive"
+          node --input-type=module -e '
+            import { Configuration, defineScope } from "configurator-typescript";
+            const scope = defineScope({ name: "smoke", weight: 0, flags: { ready: true } });
+            const configuration = new Configuration([scope]);
+            if (configuration.flag("ready") !== true) throw new Error("runtime smoke test failed");
+          '
+          printf '%s\n' \
+            'import { Configuration, defineScope } from "configurator-typescript";' \
+            'const scope = defineScope({ name: "smoke", weight: 0, flags: { ready: true } });' \
+            'const configuration: Configuration = new Configuration([scope]);' \
+            'if (!configuration.flag("ready")) throw new Error("type smoke test failed");' \
+            > smoke.ts
+          "$GITHUB_WORKSPACE/configurator_typescript/node_modules/.bin/tsc" \
+            --noEmit \
+            --strict \
+            --target ES2022 \
+            --module NodeNext \
+            --moduleResolution NodeNext \
+            smoke.ts
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0ad # v7
+        with:
+          name: configurator-typescript-npm-package
+          path: configurator_typescript/dist-package/*.tgz
+          if-no-files-found: error
+          retention-days: 14
+
+  release-preflight:
+    name: Validate upstream release
+    if: >-
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/typescript-v') &&
+      github.repository == 'camrongiuliani/configurator'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24"
+          package-manager-cache: false
+      - name: Validate tag, metadata, and licenses
+        run: bash tool/validate_npm_release.sh "$GITHUB_REF_NAME"
+      - name: Verify tag commit is merged into upstream develop
+        shell: bash
+        run: |
+          git fetch --no-tags origin develop:refs/remotes/origin/develop
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" refs/remotes/origin/develop; then
+            echo "Tagged commit $GITHUB_SHA is not reachable from canonical upstream develop." >&2
+            exit 1
+          fi
+
+  publish:
+    name: Publish to npm
+    needs:
+      - build
+      - release-preflight
+    if: >-
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/typescript-v') &&
+      github.repository == 'camrongiuliani/configurator' &&
+      needs.build.result == 'success' &&
+      needs.release-preflight.result == 'success'
+    runs-on: ubuntu-22.04
+    environment: npm-publish
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: configurator-typescript-npm-package
+          path: dist
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "24"
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - name: Install trusted-publishing npm client
+        run: npm install --global npm@11.15.0
+      - name: Verify release archive
+        shell: bash
+        env:
+          PACKAGE_FILENAME: ${{ needs.build.outputs.package-filename }}
+          PACKAGE_VERSION: ${{ needs.build.outputs.package-version }}
+        run: |
+          archive="dist/$PACKAGE_FILENAME"
+          if [[ ! -f "$archive" ]]; then
+            echo "Missing release archive: $archive" >&2
+            exit 1
+          fi
+          actual_version="$(
+            tar -xOf "$archive" package/package.json |
+              node -e '
+                let input = "";
+                process.stdin.setEncoding("utf8");
+                process.stdin.on("data", (chunk) => { input += chunk; });
+                process.stdin.on("end", () => {
+                  process.stdout.write(JSON.parse(input).version);
+                });
+              '
+          )"
+          if [[ "$actual_version" != "$PACKAGE_VERSION" ]]; then
+            echo "Archive version $actual_version does not match $PACKAGE_VERSION." >&2
+            exit 1
+          fi
+      - name: Publish package with npm trusted publishing
+        env:
+          PACKAGE_FILENAME: ${{ needs.build.outputs.package-filename }}
+          NPM_DIST_TAG: ${{ needs.build.outputs.npm-dist-tag }}
+        run: npm publish "dist/$PACKAGE_FILENAME" --access public --tag "$NPM_DIST_TAG"

@@ -15,6 +15,11 @@ import 'definition_resolver.dart';
 import 'file_utils.dart';
 import 'part_resolver.dart';
 
+const configuratorVersion = String.fromEnvironment(
+  'CONFIGURATOR_VERSION',
+  defaultValue: 'development',
+);
+
 /// To run this:
 /// -> flutter pub run configurator
 Future<void> main(List<String> args) async {
@@ -44,6 +49,11 @@ Future<void> runConfigurator(List<String> args) async {
 
   if (options.help) {
     print(_usage);
+    return;
+  }
+
+  if (options.version) {
+    print(configuratorVersion);
     return;
   }
 
@@ -91,6 +101,7 @@ Options:
   --recursive                      Generate in nested package roots
   --pure-dart                      Omit Flutter theme generation for Dart
   -h, --help                       Show this help
+  --version                        Show the compiled CLI version
 ''';
 
 List<FileSystemEntity> findConfigurations(List<String> filters) {

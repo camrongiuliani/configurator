@@ -54,7 +54,7 @@ configuration changes. The core runtime and YAML compiler remain in the
 `configurator` package.
 
 See the
-[repository documentation](https://github.com/david-k-williams/configurator)
+[repository documentation](https://github.com/camrongiuliani/configurator)
 for generation, scope precedence, and multi-language targets.
 
 ## Release status

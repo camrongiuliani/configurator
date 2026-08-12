@@ -9,14 +9,14 @@
     "typescript",
     "yaml"
   ],
-  "homepage": "https://github.com/david-k-williams/configurator#readme",
+  "homepage": "https://github.com/camrongiuliani/configurator#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/david-k-williams/configurator.git",
+    "url": "git+https://github.com/camrongiuliani/configurator.git",
     "directory": "configurator_typescript"
   },
   "bugs": {
-    "url": "https://github.com/david-k-williams/configurator/issues"
+    "url": "https://github.com/camrongiuliani/configurator/issues"
   },
   "type": "module",
   "main": "./dist/index.js",
@@ -37,6 +37,10 @@
   "sideEffects": false,
   "engines": {
     "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
   },
   "scripts": {
     "compile": "tsc --project tsconfig.json",

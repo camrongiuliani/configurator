@@ -108,3 +108,18 @@ always remains usable.
 This package is currently `UNLICENSED` and marked `private` pending confirmation
 of rights to the upstream Configurator work. Do not remove those gates until the
 repository license review has been resolved.
+
+The **npm Package** GitHub Actions workflow can test, pack, inspect, install,
+and type-check the published shape on pull requests, manual runs, and forks. It
+uploads the verified `.tgz` as a workflow artifact, but only
+`camrongiuliani/configurator` can enter the publishing job. A canonical
+`typescript-v<version>` tag must match `package.json`, point to upstream
+`develop`, have finalized release notes and licenses, and pass approval in the
+protected `npm-publish` environment.
+
+The npm name is not registered yet. After the upstream merge and license
+review, bootstrap ownership of `configurator-typescript`, then configure its
+GitHub Actions Trusted Publisher for repository `camrongiuliani/configurator`,
+workflow `npm-publish.yml`, environment `npm-publish`, and the `npm publish`
+action. The workflow uses OIDC and stores no npm token; prereleases use the
+`next` distribution tag.

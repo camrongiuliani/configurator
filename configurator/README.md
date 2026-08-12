@@ -54,7 +54,7 @@ final color = config.color('brandPrimary');
 Higher scope weights win. A later scope wins when weights are equal.
 
 See the
-[repository documentation](https://github.com/david-k-williams/configurator)
+[repository documentation](https://github.com/camrongiuliani/configurator)
 for the YAML contract, parts and definitions, generated accessors, and the
 Python and TypeScript runtimes.
 

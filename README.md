@@ -201,11 +201,55 @@ cd /path/to/your/consumer
 npm install /path/to/configurator/configurator_typescript
 ```
 
-Publishing to PyPI or npm should wait until rights to the upstream work are
-confirmed and the no-license notice is replaced with the intended license.
-Each registry package has an additional accidental-publish guard; the
-[release checklist](docs/releasing.md) covers removing those gates and running
-package and consumer verification.
+Publish-ready GitHub Actions workflows now cover PyPI, npm, pub.dev, and the
+native CLI. They can build and validate artifacts on this fork, but registry
+uploads and GitHub Releases are hard-gated to `camrongiuliani/configurator`.
+Publishing must still wait until rights to the upstream work are confirmed and
+the no-license notices and package-specific safeguards are resolved. The
+[release checklist](docs/releasing.md) covers the one-time registry setup,
+exact tag patterns, protected environments, and consumer verification.
+
+### Codex and Claude skills
+
+The repository also includes a shared `use-configurator` Agent Skill packaged
+for both Codex and Claude Code. It can create or update Configurator YAML,
+preserve definitions and ordered parts, run the real generator for Dart,
+Python, and TypeScript, and verify the resulting modules without hand-editing
+generated code.
+
+Both repository-local marketplace catalogs point at the same skills-only
+plugin under `plugins/configurator`. See the
+[agent plugin guide](docs/agent-plugins.md) for local installation, validation,
+upstream marketplace installation, and the remaining public-submission license
+gate.
+
+### Standalone executable
+
+Maintainers can also compile the generator into a native executable. From the
+repository root:
+
+```bash
+cd configurator
+dart pub get --enforce-lockfile
+dart compile exe \
+  -DCONFIGURATOR_VERSION=local \
+  bin/configurator.dart \
+  -o ../configurator-cli
+../configurator-cli --version
+```
+
+Run the executable from the directory containing the `*.config.yaml` files:
+
+```bash
+/path/to/configurator-cli --targets=dart,python,typescript
+```
+
+The executable includes the Dart runtime, so the person running it does not
+need Dart installed. Generated Python and TypeScript modules still use their
+corresponding Configurator runtime packages. Native downloads are specific to
+an operating system and CPU architecture and are currently unsigned. See the
+[CLI release pipeline](docs/releasing.md#native-cli-release-pipeline) for the
+automated builds, checksums, and current distribution gate.
 
 ### Generated Code
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:configurator/configurator.dart';
@@ -7,6 +8,19 @@ import '../../bin/cli_options.dart';
 import '../../bin/configurator.dart';
 
 void main() {
+  test('prints the compiled version without scanning for configuration', () async {
+    final output = <String>[];
+
+    await runZoned(
+      () => runConfigurator(const ['--version']),
+      zoneSpecification: ZoneSpecification(
+        print: (_, __, ___, message) => output.add(message),
+      ),
+    );
+
+    expect(output, [configuratorVersion]);
+  });
+
   test('reports a filter that matches no configurations', () async {
     await expectLater(
       runConfigurator(const ['--id-filter=definitely_absent_918273']),

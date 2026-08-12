@@ -1,0 +1,154 @@
+name: Python Package
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/python-publish.yml
+      - configurator_python/**
+      - tool/validate_python_release.sh
+      - LICENSE
+  push:
+    tags:
+      - python-v*
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: python-package-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    name: Test Python ${{ matrix.python-version }}
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.13"]
+    defaults:
+      run:
+        working-directory: configurator_python
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: configurator_python/pyproject.toml
+      - name: Test without optional dependencies
+        run: python -m unittest discover -s tests -v
+      - name: Install test dependencies
+        run: python -m pip install -e ".[test]"
+      - name: Test with Pydantic and FastAPI
+        run: python -m unittest discover -s tests -v
+
+  build:
+    name: Build and verify distributions
+    needs: test
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: configurator_python
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: configurator_python/pyproject.toml
+      - name: Install packaging tools
+        run: python -m pip install build twine
+      - name: Build wheel and source distribution
+        run: python -m build
+      - name: Check distribution metadata
+        run: python -m twine check dist/*
+      - name: Verify distribution set
+        shell: bash
+        run: |
+          shopt -s nullglob
+          wheels=(dist/*.whl)
+          source_distributions=(dist/*.tar.gz)
+          if [[ ${#wheels[@]} -ne 1 || ${#source_distributions[@]} -ne 1 ]]; then
+            echo "Expected exactly one wheel and one source distribution." >&2
+            printf 'Found: %s\n' dist/* >&2
+            exit 1
+          fi
+      - name: Install wheel as an external consumer
+        shell: bash
+        run: |
+          python -m venv "${RUNNER_TEMP}/configurator-python-wheel"
+          "${RUNNER_TEMP}/configurator-python-wheel/bin/python" \
+            -m pip install --no-deps dist/*.whl
+          "${RUNNER_TEMP}/configurator-python-wheel/bin/python" \
+            -c "from configurator import Configuration; assert Configuration().flag('missing') is False"
+      - name: Install source distribution as an external consumer
+        shell: bash
+        run: |
+          python -m venv "${RUNNER_TEMP}/configurator-python-sdist"
+          "${RUNNER_TEMP}/configurator-python-sdist/bin/python" \
+            -m pip install --no-deps dist/*.tar.gz
+          "${RUNNER_TEMP}/configurator-python-sdist/bin/python" \
+            -c "from configurator import Configuration; assert Configuration().size('missing') == 14.0"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0ad # v7
+        with:
+          name: configurator-python-distributions
+          path: configurator_python/dist/
+          if-no-files-found: error
+          retention-days: 14
+
+  release-preflight:
+    name: Validate upstream PyPI release
+    if: >-
+      github.repository == 'camrongiuliani/configurator' &&
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/python-v')
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate tag, metadata, and licenses
+        run: bash tool/validate_python_release.sh "$GITHUB_REF_NAME"
+      - name: Verify tag commit is on develop
+        shell: bash
+        run: |
+          git fetch --no-tags origin develop:refs/remotes/origin/develop
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" refs/remotes/origin/develop; then
+            echo "Tagged commit $GITHUB_SHA is not reachable from origin/develop." >&2
+            exit 1
+          fi
+
+  publish:
+    name: Publish to PyPI
+    needs:
+      - build
+      - release-preflight
+    if: >-
+      github.repository == 'camrongiuliani/configurator' &&
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/python-v') &&
+      needs.build.result == 'success' &&
+      needs.release-preflight.result == 'success'
+    runs-on: ubuntu-22.04
+    environment:
+      name: pypi
+      url: https://pypi.org/p/configurator-python
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: configurator-python-distributions
+          path: dist/
+      - name: Publish distributions with PyPI Trusted Publishing
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
+        with:
+          packages-dir: dist/
+          attestations: true
