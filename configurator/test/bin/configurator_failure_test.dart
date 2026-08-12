@@ -8,7 +8,8 @@ import '../../bin/cli_options.dart';
 import '../../bin/configurator.dart';
 
 void main() {
-  test('prints the compiled version without scanning for configuration', () async {
+  test('prints the compiled version without scanning for configuration',
+      () async {
     final output = <String>[];
 
     await runZoned(
