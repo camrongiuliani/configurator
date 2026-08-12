@@ -1,0 +1,73 @@
+name: Agent plugin checks
+
+on:
+  pull_request:
+    paths:
+      - .agents/plugins/**
+      - .claude-plugin/**
+      - plugins/configurator/**
+      - tool/validate_agent_plugins.py
+      - docs/agent-plugins.md
+      - .github/workflows/agent-plugin-checks.yml
+  push:
+    branches:
+      - develop
+    paths:
+      - .agents/plugins/**
+      - .claude-plugin/**
+      - plugins/configurator/**
+      - tool/validate_agent_plugins.py
+      - docs/agent-plugins.md
+      - .github/workflows/agent-plugin-checks.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agent-plugin-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate shared Codex and Claude plugin
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.13"
+      - name: Validate manifests and shared skill
+        run: python tool/validate_agent_plugins.py
+      - name: Build portable plugin archive
+        shell: bash
+        run: |
+          mkdir -p build/agent-plugins
+          COPYFILE_DISABLE=1 tar -czf \
+            build/agent-plugins/configurator-agent-plugin.tar.gz \
+            -C plugins configurator
+      - name: Verify archive contents
+        shell: bash
+        run: |
+          contents="$(tar -tzf build/agent-plugins/configurator-agent-plugin.tar.gz)"
+          required=(
+            configurator/.claude-plugin/plugin.json
+            configurator/.codex-plugin/plugin.json
+            configurator/skills/use-configurator/SKILL.md
+            configurator/skills/use-configurator/references/yaml-contract.md
+            configurator/skills/use-configurator/references/cli-and-verification.md
+          )
+          for entry in "${required[@]}"; do
+            if ! grep -Fxq "$entry" <<< "$contents"; then
+              echo "Plugin archive is missing $entry." >&2
+              exit 1
+            fi
+          done
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0ad # v7
+        with:
+          name: configurator-agent-plugin
+          path: build/agent-plugins/configurator-agent-plugin.tar.gz
+          if-no-files-found: error
+          retention-days: 14

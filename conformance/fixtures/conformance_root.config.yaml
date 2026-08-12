@@ -1,0 +1,49 @@
+id: conformance_root
+def_source: conformance_definitions
+weight: 7
+
+parts:
+  - conformance_base
+
+configuration:
+  flags:
+    enabledSearch: true
+    sharedFlag: false
+  colors:
+    primary: *rootPrimary
+    rootOnly: AABBCC
+  images:
+    logo: *rootLogo
+    gallery:
+      - assets/one.png
+      - assets/two.png
+  routes:
+    - id: 1
+      path: *rootRoute
+    - id: 2
+      path: /root-only
+  sizes:
+    cardWidth: 12
+  paddings:
+    screen: 8
+  margins:
+    screen: 4
+  misc:
+    rolloutStage: root
+    retryCount: 3
+    labels:
+      - alpha
+      - beta
+  textStyles:
+    header:
+      color: FFFFFF
+      size: 24
+      weight: 700
+      height: 1
+      typeface:
+        family: Inter
+        style: normal
+  strings:
+    en:
+      greeting: Root hello
+      rootOnly: Root only

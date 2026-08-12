@@ -1,4 +1,3 @@
-
 class Graph<T> {
   Graph({this.name, this.keepAlive});
 
@@ -85,10 +84,10 @@ class Graph<T> {
     return [
       '- Out:',
       ..._out.entries.map(
-              (e) => '  - ${_name(e.key)}: {${e.value.map(_name).join(', ')}}'),
+          (e) => '  - ${_name(e.key)}: {${e.value.map(_name).join(', ')}}'),
       '- In:',
       ..._in.entries.map(
-              (e) => '  - ${_name(e.key)}: {${e.value.map(_name).join(', ')}}'),
+          (e) => '  - ${_name(e.key)}: {${e.value.map(_name).join(', ')}}'),
     ].join('\n');
   }
 }

@@ -1,0 +1,74 @@
+name: Publish configurator to pub.dev
+
+# pub.dev Admin must allow only camrongiuliani/configurator with tag pattern
+# configurator-v{{version}} and required environment pub.dev-configurator.
+
+on:
+  push:
+    tags:
+      - configurator-v*
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-configurator-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    name: Validate, build, test, and dry-run
+    if: github.repository == 'camrongiuliani/configurator'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Enforce canonical repository, tag, metadata, and license
+        run: bash tool/validate_pub_release.sh configurator "$GITHUB_REF_NAME"
+      - name: Require the tagged commit on canonical develop
+        shell: bash
+        run: |
+          git fetch --no-tags origin develop:refs/remotes/origin/develop
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" refs/remotes/origin/develop; then
+            echo "Tagged commit $GITHUB_SHA is not reachable from canonical develop." >&2
+            exit 1
+          fi
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        with:
+          sdk: "3.12.2"
+      - name: Install locked dependencies
+        run: dart pub get --enforce-lockfile
+        working-directory: configurator
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed bin lib test
+        working-directory: configurator
+      - name: Analyze
+        run: dart analyze
+        working-directory: configurator
+      - name: Test
+        run: dart test --concurrency=1
+        working-directory: configurator
+      - name: Build and smoke-test the CLI
+        shell: bash
+        working-directory: configurator
+        run: |
+          dart compile exe bin/configurator.dart -o "$RUNNER_TEMP/configurator"
+          "$RUNNER_TEMP/configurator" --help
+      - name: Publish dry-run
+        run: dart pub publish --dry-run
+        working-directory: configurator
+
+  publish:
+    name: Publish from canonical upstream with OIDC
+    needs: preflight
+    if: >-
+      needs.preflight.result == 'success' &&
+      github.repository == 'camrongiuliani/configurator'
+    permissions:
+      id-token: write
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+    with:
+      working-directory: configurator
+      environment: pub.dev-configurator

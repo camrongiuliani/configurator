@@ -1,0 +1,102 @@
+name: Pub package checks
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/pub-package-checks.yml
+      - .github/workflows/publish-configurator.yml
+      - .github/workflows/publish-configurator-flutter.yml
+      - tool/validate_pub_release.sh
+      - configurator/**
+      - configurator_flutter/**
+  push:
+    branches:
+      - develop
+    paths:
+      - .github/workflows/pub-package-checks.yml
+      - .github/workflows/publish-configurator.yml
+      - .github/workflows/publish-configurator-flutter.yml
+      - tool/validate_pub_release.sh
+      - configurator/**
+      - configurator_flutter/**
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pub-package-checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  configurator:
+    name: configurator build and publish dry-run
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: configurator
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        with:
+          sdk: "3.12.2"
+      - name: Install dependencies
+        run: dart pub get --enforce-lockfile
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed bin lib test
+      - name: Analyze
+        run: dart analyze
+      - name: Test
+        run: dart test --concurrency=1
+      - name: Build and smoke-test the CLI
+        shell: bash
+        run: |
+          dart compile exe bin/configurator.dart -o "$RUNNER_TEMP/configurator"
+          "$RUNNER_TEMP/configurator" --help
+      - name: Publish dry-run from an isolated staging copy
+        shell: bash
+        working-directory: .
+        run: |
+          stage="$RUNNER_TEMP/configurator-pub-dry-run"
+          mkdir -p "$stage"
+          cp -R configurator "$stage/configurator"
+          sed -i '/^publish_to:[[:space:]]*none[[:space:]]*$/d' "$stage/configurator/pubspec.yaml"
+          cd "$stage/configurator"
+          dart pub get
+          dart pub publish --dry-run
+
+  configurator-flutter:
+    name: configurator_flutter build and publish dry-run
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: configurator_flutter
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          cache: true
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Analyze
+        run: flutter analyze
+      - name: Test
+        run: flutter test
+      - name: Publish dry-run from an isolated staging copy
+        shell: bash
+        working-directory: .
+        run: |
+          stage="$RUNNER_TEMP/configurator-flutter-pub-dry-run"
+          mkdir -p "$stage"
+          cp -R configurator "$stage/configurator"
+          cp -R configurator_flutter "$stage/configurator_flutter"
+          sed -i '/^publish_to:[[:space:]]*none[[:space:]]*$/d' "$stage/configurator/pubspec.yaml"
+          sed -i '/^publish_to:[[:space:]]*none[[:space:]]*$/d' "$stage/configurator_flutter/pubspec.yaml"
+          cd "$stage/configurator_flutter"
+          flutter pub get
+          dart pub publish --dry-run

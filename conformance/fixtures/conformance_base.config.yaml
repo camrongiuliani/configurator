@@ -1,0 +1,23 @@
+id: conformance_base
+
+parts:
+  - conformance_override
+
+configuration:
+  flags:
+    sharedFlag: false
+    baseOnly: true
+  colors:
+    primary: '405060'
+  routes:
+    - id: 1
+      path: /base
+  sizes:
+    cardWidth: 18
+  misc:
+    rolloutStage: base
+  i18n:
+    en:
+      greeting: Base hello
+    es:
+      greeting: Hola

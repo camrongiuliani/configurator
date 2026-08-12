@@ -15,7 +15,8 @@ class ChangeNotifier {
   /// Creates a new [ChangeNotifier] with a broadcast stream controller.
   ///
   /// Note: This constructor is not part of the public API.
-  ChangeNotifier() : _streamController = StreamController<Configuration>.broadcast();
+  ChangeNotifier()
+      : _streamController = StreamController<Configuration>.broadcast();
 
   /// Creates a new [ChangeNotifier] with a custom stream controller for testing.
   ///

@@ -1,0 +1,545 @@
+name: CLI Release
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/cli-release.yml
+      - configurator/**
+      - configurator_flutter/LICENSE
+      - configurator_python/**
+      - configurator_typescript/**
+      - conformance/**
+      - tool/run_conformance.sh
+      - tool/validate_cli_release.sh
+      - LICENSE
+      - README.md
+  push:
+    tags:
+      - cli-v*
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cli-release-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  release-preflight:
+    name: Validate tagged release
+    if: >-
+      github.repository == 'camrongiuliani/configurator' &&
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/cli-v')
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate release tag and licenses
+        run: bash tool/validate_cli_release.sh "$GITHUB_REF_NAME"
+      - name: Verify tag commit is on develop
+        shell: bash
+        run: |
+          git fetch --no-tags origin develop:refs/remotes/origin/develop
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" refs/remotes/origin/develop; then
+            echo "Tagged commit $GITHUB_SHA is not reachable from origin/develop." >&2
+            exit 1
+          fi
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        with:
+          sdk: "3.12.2"
+          architecture: x64
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: configurator_typescript/package-lock.json
+          package-manager-cache: false
+      - name: Install Dart dependencies
+        run: dart pub get --enforce-lockfile
+        working-directory: configurator
+      - name: Analyze Dart CLI
+        run: dart analyze
+        working-directory: configurator
+      - name: Test Dart CLI
+        run: dart test --concurrency=1
+        working-directory: configurator
+      - name: Run cross-language conformance
+        run: bash tool/run_conformance.sh
+
+  pull-request-build:
+    name: Linux x64 smoke build
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        with:
+          sdk: "3.12.2"
+          architecture: x64
+      - name: Install dependencies
+        run: dart pub get --enforce-lockfile
+        working-directory: configurator
+      - name: Read package version
+        id: package-version
+        shell: bash
+        run: |
+          version="$(awk '$1 == "version:" { print $2; exit }' configurator/pubspec.yaml)"
+          semver_pattern='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$'
+          if [[ ! "$version" =~ $semver_pattern ]]; then
+            echo "Invalid semantic version in configurator/pubspec.yaml: $version" >&2
+            exit 1
+          fi
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+      - name: Compile executable
+        shell: bash
+        working-directory: configurator
+        env:
+          CLI_VERSION: ${{ steps.package-version.outputs.value }}
+        run: |
+          package_dir="../build/cli/configurator-${CLI_VERSION}-linux-x64"
+          mkdir -p "$package_dir"
+          dart compile exe bin/configurator.dart \
+            "-DCONFIGURATOR_VERSION=$CLI_VERSION" \
+            -o "$package_dir/configurator"
+      - name: Smoke test executable
+        shell: bash
+        env:
+          CLI_VERSION: ${{ steps.package-version.outputs.value }}
+        run: |
+          package_dir="build/cli/configurator-${CLI_VERSION}-linux-x64"
+          executable="$(cd "$package_dir" && pwd)/configurator"
+          "$executable" --help
+          actual_version="$("$executable" --version)"
+          if [[ "$actual_version" != "$CLI_VERSION" ]]; then
+            echo "Expected version $CLI_VERSION, got $actual_version" >&2
+            exit 1
+          fi
+          smoke_dir="$(mktemp -d)"
+          trap 'rm -rf "$smoke_dir"' EXIT
+          cp conformance/fixtures/*.yaml "$smoke_dir/"
+          (
+            cd "$smoke_dir"
+            "$executable" \
+              --id-filter=conformance_root \
+              --targets=python,typescript
+          )
+          test -f "$smoke_dir/conformance_root_config.py"
+          test -f "$smoke_dir/conformance_root.config.ts"
+      - name: Archive executable
+        shell: bash
+        env:
+          CLI_VERSION: ${{ steps.package-version.outputs.value }}
+        run: |
+          package_dir="build/cli/configurator-${CLI_VERSION}-linux-x64"
+          cp LICENSE README.md "$package_dir/"
+          COPYFILE_DISABLE=1 tar -czf build/cli/configurator-linux-x64.tar.gz \
+            -C build/cli "$(basename "$package_dir")"
+      - name: Verify archive
+        shell: bash
+        env:
+          CLI_VERSION: ${{ steps.package-version.outputs.value }}
+        run: |
+          verification_dir="$(mktemp -d)"
+          trap 'rm -rf "$verification_dir"' EXIT
+          tar -xzf build/cli/configurator-linux-x64.tar.gz -C "$verification_dir"
+          package_dir="$verification_dir/configurator-${CLI_VERSION}-linux-x64"
+          executable="$package_dir/configurator"
+          test -x "$executable"
+          test -f "$package_dir/LICENSE"
+          test -f "$package_dir/README.md"
+          "$executable" --help
+          actual_version="$("$executable" --version)"
+          if [[ "$actual_version" != "$CLI_VERSION" ]]; then
+            echo "Archived CLI reported $actual_version instead of $CLI_VERSION" >&2
+            exit 1
+          fi
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0ad # v7
+        with:
+          name: configurator-linux-x64
+          path: build/cli/configurator-linux-x64.tar.gz
+          if-no-files-found: error
+          retention-days: 14
+
+  build:
+    name: Build ${{ matrix.artifact }}
+    needs: release-preflight
+    if: >-
+      always() && !cancelled() &&
+      (github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/cli-v') &&
+      (github.repository != 'camrongiuliani/configurator' ||
+      needs.release-preflight.result == 'success')))
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: macos-15
+            artifact: configurator-macos-arm64
+            platform: macos-arm64
+            dart-architecture: arm64
+            executable: configurator
+            archive-extension: tar.gz
+          - runner: macos-15-intel
+            artifact: configurator-macos-x64
+            platform: macos-x64
+            dart-architecture: x64
+            executable: configurator
+            archive-extension: tar.gz
+          - runner: ubuntu-22.04-arm
+            artifact: configurator-linux-arm64
+            platform: linux-arm64
+            dart-architecture: arm64
+            executable: configurator
+            archive-extension: tar.gz
+          - runner: ubuntu-22.04
+            artifact: configurator-linux-x64
+            platform: linux-x64
+            dart-architecture: x64
+            executable: configurator
+            archive-extension: tar.gz
+          - runner: windows-2025
+            artifact: configurator-windows-x64
+            platform: windows-x64
+            dart-architecture: x64
+            executable: configurator.exe
+            archive-extension: zip
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+        with:
+          sdk: "3.12.2"
+          architecture: ${{ matrix.dart-architecture }}
+      - name: Install dependencies
+        run: dart pub get --enforce-lockfile
+        working-directory: configurator
+      - name: Read package version
+        id: package-version
+        shell: bash
+        run: |
+          version="$(awk '$1 == "version:" { print $2; exit }' configurator/pubspec.yaml)"
+          semver_pattern='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$'
+          if [[ ! "$version" =~ $semver_pattern ]]; then
+            echo "Invalid semantic version in configurator/pubspec.yaml: $version" >&2
+            exit 1
+          fi
+          echo "value=$version" >> "$GITHUB_OUTPUT"
+      - name: Compile executable
+        shell: bash
+        working-directory: configurator
+        env:
+          CLI_VERSION: ${{ steps.package-version.outputs.value }}
+        run: |
+          package_dir="../build/cli/configurator-${CLI_VERSION}-${{ matrix.platform }}"
+          mkdir -p "$package_dir"
+          dart compile exe bin/configurator.dart \
+            "-DCONFIGURATOR_VERSION=$CLI_VERSION" \
+            -o "$package_dir/${{ matrix.executable }}"
+      - name: Smoke test executable
+        shell: bash
+        env:
+          CLI_VERSION: ${{ steps.package-version.outputs.value }}
+        run: |
+          package_dir="build/cli/configurator-${CLI_VERSION}-${{ matrix.platform }}"
+          executable="$(cd "$package_dir" && pwd)/${{ matrix.executable }}"
+          "$executable" --help
+          actual_version="$("$executable" --version)"
+          if [[ "$actual_version" != "$CLI_VERSION" ]]; then
+            echo "Expected version $CLI_VERSION, got $actual_version" >&2
+            exit 1
+          fi
+          smoke_dir="$(mktemp -d)"
+          trap 'rm -rf "$smoke_dir"' EXIT
+          cp conformance/fixtures/*.yaml "$smoke_dir/"
+          (
+            cd "$smoke_dir"
+            "$executable" \
+              --id-filter=conformance_root \
+              --targets=python,typescript
+          )
+          test -f "$smoke_dir/conformance_root_config.py"
+          test -f "$smoke_dir/conformance_root.config.ts"
+      - name: Add release files
+        shell: bash
+        env:
+          CLI_VERSION: ${{ steps.package-version.outputs.value }}
+        run: |
+          package_dir="build/cli/configurator-${CLI_VERSION}-${{ matrix.platform }}"
+          cp LICENSE README.md "$package_dir/"
+      - name: Create tar archive
+        if: runner.os != 'Windows'
+        shell: bash
+        env:
+          CLI_VERSION: ${{ steps.package-version.outputs.value }}
+        run: |
+          package_dir="build/cli/configurator-${CLI_VERSION}-${{ matrix.platform }}"
+          COPYFILE_DISABLE=1 tar -czf "build/cli/${{ matrix.artifact }}.tar.gz" \
+            -C build/cli "$(basename "$package_dir")"
+      - name: Create zip archive
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          CLI_VERSION: ${{ steps.package-version.outputs.value }}
+        run: |
+          $packageDirectory = "build/cli/configurator-$env:CLI_VERSION-${{ matrix.platform }}"
+          Compress-Archive -Path $packageDirectory -DestinationPath "build/cli/${{ matrix.artifact }}.zip"
+      - name: Verify tar archive
+        if: runner.os != 'Windows'
+        shell: bash
+        env:
+          CLI_VERSION: ${{ steps.package-version.outputs.value }}
+        run: |
+          verification_dir="$(mktemp -d)"
+          trap 'rm -rf "$verification_dir"' EXIT
+          tar -xzf "build/cli/${{ matrix.artifact }}.tar.gz" -C "$verification_dir"
+          package_dir="$verification_dir/configurator-${CLI_VERSION}-${{ matrix.platform }}"
+          executable="$package_dir/${{ matrix.executable }}"
+          test -x "$executable"
+          test -f "$package_dir/LICENSE"
+          test -f "$package_dir/README.md"
+          "$executable" --help
+          actual_version="$("$executable" --version)"
+          if [[ "$actual_version" != "$CLI_VERSION" ]]; then
+            echo "Archived CLI reported $actual_version instead of $CLI_VERSION" >&2
+            exit 1
+          fi
+      - name: Verify zip archive
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          CLI_VERSION: ${{ steps.package-version.outputs.value }}
+        run: |
+          $verificationDirectory = Join-Path $env:RUNNER_TEMP ([guid]::NewGuid().ToString())
+          Expand-Archive -Path "build/cli/${{ matrix.artifact }}.zip" -DestinationPath $verificationDirectory
+          $packageDirectory = Join-Path $verificationDirectory "configurator-$env:CLI_VERSION-${{ matrix.platform }}"
+          $executable = Join-Path $packageDirectory "${{ matrix.executable }}"
+          if (-not (Test-Path $executable -PathType Leaf)) {
+            throw "Archived executable is missing: $executable"
+          }
+          if (-not (Test-Path (Join-Path $packageDirectory "LICENSE") -PathType Leaf)) {
+            throw "Archived LICENSE is missing"
+          }
+          if (-not (Test-Path (Join-Path $packageDirectory "README.md") -PathType Leaf)) {
+            throw "Archived README.md is missing"
+          }
+          & $executable --help
+          if ($LASTEXITCODE -ne 0) {
+            throw "Archived executable --help failed"
+          }
+          $actualVersion = (& $executable --version | Out-String).Trim()
+          if ($LASTEXITCODE -ne 0 -or $actualVersion -ne $env:CLI_VERSION) {
+            throw "Archived CLI reported '$actualVersion' instead of '$env:CLI_VERSION'"
+          }
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0ad # v7
+        with:
+          name: ${{ matrix.artifact }}
+          path: build/cli/${{ matrix.artifact }}.${{ matrix.archive-extension }}
+          if-no-files-found: error
+          retention-days: 14
+
+  checksums:
+    name: Generate checksums
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          pattern: configurator-*
+          path: dist
+          merge-multiple: true
+      - name: Generate SHA256SUMS
+        shell: bash
+        working-directory: dist
+        run: |
+          assets=(
+            configurator-linux-arm64.tar.gz
+            configurator-linux-x64.tar.gz
+            configurator-macos-arm64.tar.gz
+            configurator-macos-x64.tar.gz
+            configurator-windows-x64.zip
+          )
+          for asset in "${assets[@]}"; do
+            if [[ ! -f "$asset" ]]; then
+              echo "Missing release asset: $asset" >&2
+              exit 1
+            fi
+          done
+          for asset in "${assets[@]}"; do
+            sha256sum "$asset"
+          done | LC_ALL=C sort -k2 > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0ad # v7
+        with:
+          name: configurator-cli-checksums
+          path: dist/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 14
+
+  attest:
+    name: Attest ${{ matrix.artifact }}
+    if: >-
+      github.repository == 'camrongiuliani/configurator' &&
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/cli-v')
+    needs:
+      - build
+      - checksums
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - artifact: configurator-macos-arm64
+            filename: configurator-macos-arm64.tar.gz
+          - artifact: configurator-macos-x64
+            filename: configurator-macos-x64.tar.gz
+          - artifact: configurator-linux-arm64
+            filename: configurator-linux-arm64.tar.gz
+          - artifact: configurator-linux-x64
+            filename: configurator-linux-x64.tar.gz
+          - artifact: configurator-windows-x64
+            filename: configurator-windows-x64.zip
+          - artifact: configurator-cli-checksums
+            filename: SHA256SUMS
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist
+      - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4
+        with:
+          subject-path: dist/${{ matrix.filename }}
+
+  release:
+    name: Publish GitHub release
+    if: >-
+      github.repository == 'camrongiuliani/configurator' &&
+      github.event_name == 'push' &&
+      startsWith(github.ref, 'refs/tags/cli-v')
+    needs:
+      - checksums
+      - attest
+    runs-on: ubuntu-22.04
+    environment: cli-release
+    env:
+      GH_REPO: ${{ github.repository }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
+        with:
+          pattern: configurator-*
+          path: dist
+          merge-multiple: true
+      - name: Verify release files
+        shell: bash
+        run: |
+          expected=(
+            SHA256SUMS
+            configurator-linux-arm64.tar.gz
+            configurator-linux-x64.tar.gz
+            configurator-macos-arm64.tar.gz
+            configurator-macos-x64.tar.gz
+            configurator-windows-x64.zip
+          )
+          mapfile -t actual < <(
+            find dist -maxdepth 1 -type f -printf '%f\n' | LC_ALL=C sort
+          )
+          if [[ "${actual[*]}" != "${expected[*]}" ]]; then
+            echo "Expected release files: ${expected[*]}" >&2
+            echo "Actual release files:   ${actual[*]}" >&2
+            exit 1
+          fi
+      - name: Create or reuse draft GitHub release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            is_draft="$(
+              gh release view "$GITHUB_REF_NAME" --json isDraft --jq '.isDraft'
+            )"
+            if [[ "$is_draft" != "true" ]]; then
+              echo "Release $GITHUB_REF_NAME is already published; refusing to overwrite it." >&2
+              exit 1
+            fi
+          else
+            release_flags=(
+              --draft
+              --verify-tag
+              --generate-notes
+              --title "Configurator CLI $GITHUB_REF_NAME"
+            )
+            release_version="${GITHUB_REF_NAME#cli-v}"
+            if [[ "${release_version%%+*}" == *-* ]]; then
+              release_flags+=(--prerelease --latest=false)
+            fi
+            gh release create "$GITHUB_REF_NAME" "${release_flags[@]}"
+          fi
+      - name: Upload release assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "$GITHUB_REF_NAME" \
+            dist/configurator-linux-arm64.tar.gz \
+            dist/configurator-linux-x64.tar.gz \
+            dist/configurator-macos-arm64.tar.gz \
+            dist/configurator-macos-x64.tar.gz \
+            dist/configurator-windows-x64.zip \
+            dist/SHA256SUMS \
+            --clobber
+      - name: Verify assets and publish release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          expected=(
+            SHA256SUMS
+            configurator-linux-arm64.tar.gz
+            configurator-linux-x64.tar.gz
+            configurator-macos-arm64.tar.gz
+            configurator-macos-x64.tar.gz
+            configurator-windows-x64.zip
+          )
+          mapfile -t actual < <(
+            gh release view "$GITHUB_REF_NAME" \
+              --json assets \
+              --jq '.assets[].name' | LC_ALL=C sort
+          )
+          if [[ "${actual[*]}" != "${expected[*]}" ]]; then
+            echo "Expected release assets: ${expected[*]}" >&2
+            echo "Actual release assets:   ${actual[*]}" >&2
+            exit 1
+          fi
+          is_draft="$(
+            gh release view "$GITHUB_REF_NAME" --json isDraft --jq '.isDraft'
+          )"
+          if [[ "$is_draft" != "true" ]]; then
+            echo "Release must remain a draft until all assets are verified." >&2
+            exit 1
+          fi
+          verification_dir="$(mktemp -d)"
+          trap 'rm -rf "$verification_dir"' EXIT
+          gh release download "$GITHUB_REF_NAME" --dir "$verification_dir"
+          (
+            cd "$verification_dir"
+            sha256sum --check SHA256SUMS
+          )
+          gh release edit "$GITHUB_REF_NAME" --draft=false

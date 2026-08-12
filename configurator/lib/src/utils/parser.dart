@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:collection/collection.dart';
 import 'package:configurator/configurator.dart';
 import 'package:configurator/src/utils/string_ext.dart';
 import 'package:yaml/yaml.dart';
@@ -307,15 +306,15 @@ class YamlParser {
       //      );
       //    }
       // } else
-        if (es.value is Map) {
-         result.addAll(
-           _getSettingNamespaces(
-             es.value,
-             [],
-             '${path.capitalized}_${es.key.capitalized}'.canonicalize,
-           ),
-         );
-       } else {
+      if (es.value is Map) {
+        result.addAll(
+          _getSettingNamespaces(
+            es.value,
+            [],
+            '${path.capitalized}_${es.key.capitalized}'.canonicalize,
+          ),
+        );
+      } else {
         result.add(
           YamlSetting(
             '${path.capitalized}_${es.key.capitalized}'.canonicalize,
@@ -536,10 +535,10 @@ class I18nParser {
 
     List<String> locales = map.keys.toList();
 
-    Map<String, dynamic> result = {};
-
     var r = locales.map((e) {
-      return visitTranslations(e, Map.from(map[e]), null, result, []);
+      // Each locale must be visited into an independent map. Reusing one map
+      // causes a later locale to replace an earlier locale before deep merge.
+      return visitTranslations(e, Map.from(map[e]), null, {}, []);
     }).reduce((value, element) => deepMapMerge(value, element));
 
     return r;
@@ -618,12 +617,6 @@ class I18nParser {
     Map<String, dynamic> result,
     List<String> path,
   ) {
-    Map<String, List<String>> primitives = {};
-
-    String primaryKey = path.map((e) => e.capitalized).join('_').canonicalize;
-
-    List<dynamic> builtKeys = [];
-
     for (var i = 0; i < input.length; i++) {
       var entry = input[i];
       var newPath = [

@@ -12,6 +12,20 @@ YAML.
 
 - Python 3.10 or newer
 
+The runtime has no third-party dependencies:
+
+```shell
+pip install configurator-python
+```
+
+Install an optional extra when you want generated Pydantic snapshots or
+FastAPI integration:
+
+```shell
+pip install "configurator-python[pydantic]"
+pip install "configurator-python[fastapi]"
+```
+
 ## Example
 
 ```python
@@ -40,6 +54,111 @@ key, such as `brandPrimary` above.
 
 Higher-weight scopes take precedence. When two scopes have the same weight,
 the scope added later wins.
+
+## FastAPI
+
+Generated configuration modules can be loaded once at application startup and
+provided to FastAPI routes as a dependency. Given an `app.config.yaml` whose
+`id` is `app_scope`, Configurator generates `app_config.py` with
+`GENERATED_APP_SCOPE` and `AppScopeConfig`:
+
+```python
+from fastapi import Depends, FastAPI
+
+from configurator import Configuration
+from app_config import AppScopeConfig, GENERATED_APP_SCOPE
+
+
+runtime = Configuration([GENERATED_APP_SCOPE])
+app_config = AppScopeConfig(runtime)
+
+
+def get_config() -> AppScopeConfig:
+    return app_config
+
+
+app = FastAPI()
+
+
+@app.get("/features")
+def features(config: AppScopeConfig = Depends(get_config)) -> dict[str, bool]:
+    return {"checkoutEnabled": config.flags.checkout_enabled}
+```
+
+Keeping one application-level `Configuration` preserves weighted scope
+resolution and avoids rebuilding the configuration for every request. If
+scopes change at runtime, the generated accessors continue to resolve values
+from the current scope stack.
+
+### Generated Pydantic snapshots
+
+The Configurator runtime uses standard Python type annotations and deliberately
+has no runtime dependencies. Those annotations provide editor and static type
+checking, but Python does not enforce them at runtime.
+
+The generated module also includes nested Pydantic models for every group and
+a root model such as `AppScopeConfigModel`. Calling `snapshot()` (or its
+`to_model()` alias) resolves every field through the current weighted scope
+stack, validates the result, and returns a point-in-time model:
+
+```python
+from configurator import ConfigScope, Configuration
+
+from app_config import (
+    AppScopeConfig,
+    AppScopeConfigModel,
+    GENERATED_APP_SCOPE,
+)
+
+runtime = Configuration([GENERATED_APP_SCOPE])
+config = AppScopeConfig(runtime)
+
+runtime.push_scope(
+    ConfigScope(
+        name="production",
+        weight=100,
+        flags={"checkoutEnabled": True},
+    )
+)
+
+snapshot: AppScopeConfigModel = config.snapshot()
+assert snapshot.flags.checkout_enabled is True
+```
+
+Generated models are strict, frozen, and reject extra fields. They provide
+runtime validation, serialization, JSON Schema, and FastAPI response-model
+support without moving scope mutation or precedence behavior into Pydantic.
+Create a new snapshot after changing scopes; an existing snapshot remains
+immutable and does not change with the runtime.
+
+Generated modules remain importable when Pydantic is not installed, and all
+ordinary accessors continue to work. Calling `snapshot()` or constructing a
+generated model without the `pydantic` extra raises an error with the required
+installation command.
+
+The generated model can be used directly as a FastAPI response model:
+
+```python
+from fastapi import Depends
+
+from app_config import AppScopeConfig, AppScopeConfigModel
+
+
+@app.get("/internal/config", response_model=AppScopeConfigModel)
+def read_config(
+    config: AppScopeConfig = Depends(get_config),
+) -> AppScopeConfigModel:
+    return config.snapshot()
+```
+
+Only expose configuration values that are safe for clients. Environment
+variables and secrets should remain outside the shared YAML; use a dedicated
+settings layer such as
+[Pydantic Settings](https://docs.pydantic.dev/latest/concepts/pydantic_settings/)
+for those values. See FastAPI's
+[request-body documentation](https://fastapi.tiangolo.com/tutorial/body/) and
+the [Pydantic model documentation](https://docs.pydantic.dev/latest/concepts/models/)
+for validation and schema behavior.
 
 ## Changes and access events
 
@@ -84,3 +203,50 @@ The tests run without installing the package:
 ```shell
 python3 -m unittest discover -s tests -v
 ```
+
+Install the test extra to also exercise real Pydantic validation and the
+FastAPI response-model integration:
+
+```shell
+pip install -e ".[test]"
+python3 -m unittest discover -s tests -v
+```
+
+## Release status
+
+This package is currently blocked from PyPI with the
+`Private :: Do Not Upload` classifier pending confirmation of rights to the
+upstream Configurator work. Do not remove that gate until the repository
+license review has been resolved.
+
+The **Python Package** GitHub Actions workflow tests the supported Python
+versions, builds one wheel and one source distribution, checks their metadata,
+installs each artifact as an external consumer, and makes the verified
+distributions available as a workflow artifact. Pull requests, manual runs,
+and `python-v*` tags can exercise that build path without publishing.
+
+PyPI publishing is deliberately restricted to
+`camrongiuliani/configurator`. A fork cannot enter the publishing job. In the
+canonical repository, a tag must exactly match the package version: version
+`0.1.0` uses `python-v0.1.0`. Its commit must be reachable from `develop`, the
+matching changelog heading must no longer say `Unreleased`, the license notices
+and private classifier must be resolved, and a reviewer must approve the
+protected `pypi` GitHub environment.
+
+Before the first release, configure a PyPI pending Trusted Publisher (the
+project does not exist yet) with these exact values:
+
+- Owner: `camrongiuliani`
+- Repository: `configurator`
+- Workflow: `python-publish.yml`
+- Environment: `pypi`
+
+The pending publisher creates the project on first use, but it does not reserve
+the package name before that successful publication.
+
+Protect the `pypi` environment with required reviewers and allow only
+`python-v*` tags to deploy. Protect that tag pattern in the canonical
+repository as well. The workflow uses GitHub OIDC and short-lived PyPI
+credentials, so it does not require a stored PyPI API token. Trusted
+Publishing also creates PyPI attestations for the wheel and source
+distribution.

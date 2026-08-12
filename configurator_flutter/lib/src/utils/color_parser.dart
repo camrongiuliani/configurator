@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 
 /// A utility class for parsing color values into Flutter [Color] objects.
@@ -61,8 +63,7 @@ class ColorParser {
       int b = int.parse(rgbSplit[2]);
       double a = hasAlpha ? double.parse(rgbSplit[3]) : 1.0;
       return Color.fromRGBO(r, g, b, a);
-    } catch (e) {
-      print(e);
+    } on Object {
       return Colors.transparent;
     }
   }
@@ -75,10 +76,10 @@ class ColorParser {
   /// Returns:
   /// * A string in the format "rgba(r, g, b, a)"
   static String colorToString(Color color) {
-    var r = color.red;
-    var g = color.green;
-    var b = color.blue;
-    var o = color.opacity;
+    final r = color.red;
+    final g = color.green;
+    final b = color.blue;
+    final o = color.opacity;
     return 'rgba($r,$g,$b,$o)';
   }
 
@@ -100,12 +101,7 @@ class ColorParser {
       return input;
     }
     if (input is int) {
-      try {
-        return Color(input);
-      } catch (e) {
-        print(e);
-        return Colors.transparent;
-      }
+      return Color(input);
     }
     if (input is String) {
       if (input.toLowerCase().startsWith('rgb')) {

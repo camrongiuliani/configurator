@@ -31,6 +31,11 @@ extension YamlSettingList on List<YamlSetting> {
   /// Returns:
   /// * A new list of [YamlSetting] objects with the specified key and value types
   List<YamlSetting<K, V>> convert<K, V>() {
-    return map((e) => YamlSetting<K, V>(e.name as K, e.value as V)).toList();
+    return map((e) {
+      final value = V == double && e.value is num
+          ? (e.value as num).toDouble() as V
+          : e.value as V;
+      return YamlSetting<K, V>(e.name as K, value);
+    }).toList();
   }
 }

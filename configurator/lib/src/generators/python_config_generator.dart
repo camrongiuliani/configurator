@@ -1,6 +1,21 @@
 import 'package:configurator/configurator.dart';
 import 'package:configurator/src/generators/generator_support.dart';
 
+const _pydanticBaseModelMembers = {
+  'construct',
+  'copy',
+  'dict',
+  'from_orm',
+  'json',
+  'parse_file',
+  'parse_obj',
+  'parse_raw',
+  'schema',
+  'schema_json',
+  'update_forward_refs',
+  'validate',
+};
+
 /// Generates a typed Python configuration module from a resolved configuration.
 class PythonConfigGenerator {
   const PythonConfigGenerator();
@@ -20,6 +35,11 @@ class PythonConfigGenerator {
       ..writeln('from typing import Any, Mapping')
       ..writeln()
       ..writeln('from configurator import ConfigScope, Configuration')
+      ..writeln('from configurator.pydantic_support import (')
+      ..writeln('    PydanticBaseModel,')
+      ..writeln('    PydanticConfigDict,')
+      ..writeln('    require_pydantic,')
+      ..writeln(')')
       ..writeln()
       ..writeln()
       ..writeln('GENERATED_${model.constantName} = ConfigScope(')
@@ -205,6 +225,10 @@ class PythonConfigGenerator {
         ..writeln();
     }
 
+    _writePydanticModels(buffer, model, groups);
+    buffer
+      ..writeln()
+      ..writeln();
     _writeRootAccessor(buffer, model, groups);
     return '${buffer.toString().trimRight()}\n';
   }
@@ -214,19 +238,7 @@ class PythonConfigGenerator {
     GeneratedConfigModel model,
     _PythonGroup group,
   ) {
-    final members = group.accessors
-        .map(
-          (accessor) => MapEntry(
-            accessor.key,
-            pythonIdentifier(accessor.identifierSeed ?? accessor.key),
-          ),
-        )
-        .toList();
-    ensureMemberIdentifiersUnique(
-      members: members,
-      language: 'Python',
-      group: group.fieldName,
-    );
+    final members = _members(group);
 
     buffer
       ..writeln('class ${model.pascalName}${group.suffix}:')
@@ -244,6 +256,54 @@ class PythonConfigGenerator {
           '    def ${members[index].value}(self) -> ${accessor.returnType}:',
         )
         ..writeln('        return self.${accessor.expression}');
+    }
+  }
+
+  void _writePydanticModels(
+    StringBuffer buffer,
+    GeneratedConfigModel model,
+    List<_PythonGroup> groups,
+  ) {
+    buffer
+      ..writeln('_CONFIGURATOR_MODEL_CONFIG = PydanticConfigDict(')
+      ..writeln('    frozen=True,')
+      ..writeln('    strict=True,')
+      ..writeln('    extra="forbid",')
+      ..writeln(')')
+      ..writeln()
+      ..writeln();
+
+    for (final group in groups) {
+      final members = _members(group);
+      _ensurePydanticMembersAvailable(group, members);
+      buffer
+        ..writeln(
+          'class ${model.pascalName}${group.suffix}Model(PydanticBaseModel):',
+        )
+        ..writeln('    model_config = _CONFIGURATOR_MODEL_CONFIG');
+      if (group.accessors.isNotEmpty) {
+        buffer.writeln();
+        for (var index = 0; index < group.accessors.length; index++) {
+          buffer.writeln(
+            '    ${members[index].value}: '
+            '${group.accessors[index].returnType}',
+          );
+        }
+      }
+      buffer
+        ..writeln()
+        ..writeln();
+    }
+
+    buffer
+      ..writeln('class ${model.pascalName}ConfigModel(PydanticBaseModel):')
+      ..writeln('    model_config = _CONFIGURATOR_MODEL_CONFIG')
+      ..writeln();
+    for (final group in groups) {
+      buffer.writeln(
+        '    ${group.fieldName}: '
+        '${model.pascalName}${group.suffix}Model',
+      );
     }
   }
 
@@ -269,6 +329,76 @@ class PythonConfigGenerator {
         '        self.${group.fieldName}: ${model.pascalName}${group.suffix} = '
         '${model.pascalName}${group.suffix}(configuration)',
       );
+    }
+
+    buffer
+      ..writeln()
+      ..writeln('    def snapshot(self) -> ${model.pascalName}ConfigModel:')
+      ..writeln(
+        '        """Return a frozen snapshot of the currently resolved values."""',
+      )
+      ..writeln('        require_pydantic()')
+      ..writeln('        return ${model.pascalName}ConfigModel(');
+    for (final group in groups) {
+      final members = _members(group);
+      if (members.isEmpty) {
+        buffer.writeln(
+          '            ${group.fieldName}='
+          '${model.pascalName}${group.suffix}Model(),',
+        );
+        continue;
+      }
+      buffer.writeln(
+        '            ${group.fieldName}='
+        '${model.pascalName}${group.suffix}Model(',
+      );
+      for (final member in members) {
+        buffer.writeln(
+          '                ${member.value}='
+          'self.${group.fieldName}.${member.value},',
+        );
+      }
+      buffer.writeln('            ),');
+    }
+    buffer
+      ..writeln('        )')
+      ..writeln()
+      ..writeln('    def to_model(self) -> ${model.pascalName}ConfigModel:')
+      ..writeln('        """Alias for :meth:`snapshot`."""')
+      ..writeln('        return self.snapshot()');
+  }
+
+  List<MapEntry<String, String>> _members(_PythonGroup group) {
+    final members = group.accessors
+        .map(
+          (accessor) => MapEntry(
+            accessor.key,
+            pythonIdentifier(accessor.identifierSeed ?? accessor.key),
+          ),
+        )
+        .toList();
+    ensureMemberIdentifiersUnique(
+      members: members,
+      language: 'Python',
+      group: group.fieldName,
+    );
+    return members;
+  }
+
+  void _ensurePydanticMembersAvailable(
+    _PythonGroup group,
+    List<MapEntry<String, String>> members,
+  ) {
+    for (final member in members) {
+      final identifier = member.value;
+      if (identifier.startsWith('model_') ||
+          _pydanticBaseModelMembers.contains(identifier)) {
+        throw StateError(
+          'Python ${group.fieldName} key ${quotedString(member.key)} '
+          'normalizes to reserved Pydantic member '
+          '${quotedString(identifier)}. Rename the configuration key.',
+        );
+      }
     }
   }
 

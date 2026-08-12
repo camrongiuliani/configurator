@@ -1,4 +1,3 @@
-
 /// Operations on paths
 class PathUtils {
   /// converts /some/path/file.json to file.json

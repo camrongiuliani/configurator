@@ -1,0 +1,5 @@
+{
+  "name": "configurator-conformance-consumer",
+  "private": true,
+  "type": "module"
+}

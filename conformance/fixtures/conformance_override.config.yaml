@@ -1,0 +1,22 @@
+id: conformance_override
+
+configuration:
+  flags:
+    sharedFlag: true
+    deepestOnly: true
+  colors:
+    primary: '708090'
+  routes:
+    - id: 1
+      path: /override
+  sizes:
+    cardWidth: 24
+  misc:
+    rolloutStage: override
+  strings:
+    en:
+      greeting: Override hello
+      status: Ready
+  i18n:
+    en:
+      status: Ready
