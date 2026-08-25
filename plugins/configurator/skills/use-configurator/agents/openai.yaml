@@ -1,0 +1,4 @@
+interface:
+  display_name: "Use Configurator"
+  short_description: "Generate typed config from shared YAML"
+  default_prompt: "Use $use-configurator to create a shared YAML configuration and generate Dart, Python, and TypeScript outputs."

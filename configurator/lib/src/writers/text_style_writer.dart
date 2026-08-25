@@ -6,9 +6,13 @@ import 'package:configurator/src/writers/writer.dart';
 class TextStyleWriter extends Writer {
   final String name;
   final List<YamlTextStyle> _textStyles;
+  final bool pureDart;
 
-  TextStyleWriter(String name, this._textStyles)
-      : name = name.canonicalize.capitalized;
+  TextStyleWriter(
+    String name,
+    this._textStyles, {
+    this.pureDart = false,
+  }) : name = name.canonicalize.capitalized;
 
   @override
   Spec write() {
@@ -35,7 +39,7 @@ class TextStyleWriter extends Writer {
             lines.add('..._config.textStyle("${e.key}")["typeface"],');
           }
 
-          return '''                
+          return '''
             return {
               ${lines.join('\n')}
             };
@@ -50,9 +54,12 @@ class TextStyleWriter extends Writer {
         builder
           ..name = e.key.canonicalize
           ..type = MethodType.getter
-          ..returns = refer('TextStyle')
+          ..returns = refer(pureDart ? 'Map<String, dynamic>' : 'TextStyle')
           ..lambda = false
           ..body = Code(() {
+            if (pureDart) {
+              return 'return _config.textStyle("${e.key}");';
+            }
             return 'return TextStyleParser.parse(_config, ${name}ConfigKeys.textStyles.${e.key});';
           }());
       });

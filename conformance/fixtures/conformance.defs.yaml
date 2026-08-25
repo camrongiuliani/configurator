@@ -1,0 +1,9 @@
+id: conformance_definitions
+
+definitions:
+  colors:
+    rootPrimary: '102030'
+  images:
+    rootLogo: assets/root-logo.svg
+  routes:
+    rootRoute: /root

@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "configurator-python"
+version = "0.1.0"
+description = "Python runtime for generated Configurator configuration"
+readme = "README.md"
+requires-python = ">=3.10"
+license-files = ["LICENSE"]
+authors = [{ name = "David Williams" }]
+keywords = ["configuration", "fastapi", "pydantic", "type-safety", "yaml"]
+classifiers = [
+  "Private :: Do Not Upload",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Typing :: Typed",
+]
+
+[project.optional-dependencies]
+pydantic = ["pydantic>=2.8,<3"]
+fastapi = [
+  "fastapi>=0.115,<1",
+  "pydantic>=2.8,<3",
+]
+test = [
+  "fastapi>=0.115,<1",
+  "httpx>=0.27,<1",
+  "httpx2>=2,<3",
+  "pydantic>=2.8,<3",
+]
+
+[project.urls]
+Homepage = "https://github.com/camrongiuliani/configurator"
+Repository = "https://github.com/camrongiuliani/configurator/tree/develop/configurator_python"
+Issues = "https://github.com/camrongiuliani/configurator/issues"
+Changelog = "https://github.com/camrongiuliani/configurator/blob/develop/configurator_python/CHANGELOG.md"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+configurator = ["py.typed"]

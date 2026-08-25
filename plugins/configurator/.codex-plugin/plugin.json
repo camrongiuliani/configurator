@@ -1,0 +1,35 @@
+{
+  "name": "configurator",
+  "version": "0.1.0",
+  "description": "Create shared Configurator YAML and generate type-safe Dart, Python, and TypeScript configuration.",
+  "author": {
+    "name": "Configurator maintainers",
+    "url": "https://github.com/camrongiuliani/configurator"
+  },
+  "homepage": "https://github.com/camrongiuliani/configurator",
+  "repository": "https://github.com/camrongiuliani/configurator",
+  "keywords": [
+    "configuration",
+    "yaml",
+    "dart",
+    "python",
+    "typescript"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Configurator",
+    "shortDescription": "Generate typed config from shared YAML",
+    "longDescription": "Create, update, validate, and compile one language-neutral Configurator YAML source into typed Dart, Python, and TypeScript modules.",
+    "developerName": "Configurator maintainers",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Write"
+    ],
+    "websiteURL": "https://github.com/camrongiuliani/configurator",
+    "defaultPrompt": [
+      "Create shared Configurator YAML for Dart, Python, and TypeScript.",
+      "Update this Configurator YAML and regenerate its typed outputs.",
+      "Diagnose this Configurator parts or definitions error."
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+build/
+coverage/
+doc/api/
+pubspec.lock
+test/assets/*.dart
+test/assets/**/*.dart

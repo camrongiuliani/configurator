@@ -35,3 +35,4 @@ export 'src/extensions/config_theme.dart';
 export 'package:configurator/configurator.dart';
 export 'package:slang_flutter/slang_flutter.dart';
 export 'package:i18n_extension/default.i18n.dart' show Localization;
+export 'package:i18n_extension/i18n_extension.dart' show I18nMainExtension;

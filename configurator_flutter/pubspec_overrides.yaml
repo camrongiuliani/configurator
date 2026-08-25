@@ -1,0 +1,3 @@
+dependency_overrides:
+  configurator:
+    path: ../configurator

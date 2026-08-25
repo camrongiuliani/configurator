@@ -1,4 +1,4 @@
-import 'package:i18n_extension/default.i18n.dart';
+import 'package:i18n_extension/i18n_extension.dart';
 
 /// Extension methods for string interpolation.
 ///

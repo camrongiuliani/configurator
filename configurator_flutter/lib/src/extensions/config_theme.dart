@@ -3,10 +3,9 @@ import 'package:configurator/configurator.dart';
 import 'package:flutter/material.dart';
 import 'package:parse_color/parse_color.dart';
 
-typedef ThemeExtensionBuilder = ThemeExtension Function( Configuration );
+typedef ThemeExtensionBuilder = ThemeExtension Function(Configuration);
 
 extension ThemeF on Configuration {
-
   List<ConfigScope> get _scopesSorted =>
       scopes.sorted((a, b) => a.weight.compareTo(b.weight));
 
@@ -15,28 +14,22 @@ extension ThemeF on Configuration {
     List<ThemeExtension> extensions = const [],
     List<ThemeExtensionBuilder> extensionBuilders = const [],
   }) {
-    return ( baseTheme ?? ThemeData() ).copyWith(
-      extensions: [
-        ...extensionBuilders.map((e) => e( this )),
-        ...extensions,
-      ],
+    return (baseTheme ?? ThemeData()).copyWith(
+      extensions: [...extensionBuilders.map((e) => e(this)), ...extensions],
     );
   }
 
-  Color colorValue( String id ) {
+  Color colorValue(String id) {
     final ConfigScope? scope = _scopesSorted.reversed.firstWhereOrNull((s) {
-      return s.colors.containsKey( id );
+      return s.colors.containsKey(id);
     });
 
-    final value = scope?.colors[ id ];
+    final value = scope?.colors[id];
 
     if (scope != null) {
-      publisher.sink.add(
-        ConfigKeyLog(KeyType.color, scope, id, value),
-      );
+      publisher.sink.add(ConfigKeyLog(KeyType.color, scope, id, value));
     }
 
-    return UIColor( value ?? const Color( 0xFF000000 ) );
+    return UIColor(value ?? const Color(0xFF000000));
   }
-
 }

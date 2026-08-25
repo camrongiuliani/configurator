@@ -1,0 +1,67 @@
+name: Publish configurator_flutter to pub.dev
+
+# pub.dev Admin must allow only camrongiuliani/configurator with tag pattern
+# configurator_flutter-v{{version}} and required environment
+# pub.dev-configurator-flutter.
+
+on:
+  push:
+    tags:
+      - configurator_flutter-v*
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-configurator-flutter-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    name: Validate hosted core, build, test, and dry-run
+    if: github.repository == 'camrongiuliani/configurator'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Enforce canonical repository, tag, metadata, license, and hosted core
+        run: bash tool/validate_pub_release.sh configurator_flutter "$GITHUB_REF_NAME"
+      - name: Require the tagged commit on canonical develop
+        shell: bash
+        run: |
+          git fetch --no-tags origin develop:refs/remotes/origin/develop
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" refs/remotes/origin/develop; then
+            echo "Tagged commit $GITHUB_SHA is not reachable from canonical develop." >&2
+            exit 1
+          fi
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          cache: true
+      - name: Resolve hosted configurator dependency
+        run: flutter pub get
+        working-directory: configurator_flutter
+      - name: Analyze
+        run: flutter analyze
+        working-directory: configurator_flutter
+      - name: Test
+        run: flutter test
+        working-directory: configurator_flutter
+      - name: Publish dry-run
+        run: dart pub publish --dry-run
+        working-directory: configurator_flutter
+
+  publish:
+    name: Publish from canonical upstream with OIDC
+    needs: preflight
+    if: >-
+      needs.preflight.result == 'success' &&
+      github.repository == 'camrongiuliani/configurator'
+    permissions:
+      id-token: write
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
+    with:
+      working-directory: configurator_flutter
+      environment: pub.dev-configurator-flutter

@@ -2,3 +2,9 @@ include: package:flutter_lints/flutter.yaml
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
+
+# Generated golden files intentionally import both Flutter and pure-Dart
+# targets, so they are verified by tests rather than analyzed as this package.
+analyzer:
+  exclude:
+    - test/assets/**

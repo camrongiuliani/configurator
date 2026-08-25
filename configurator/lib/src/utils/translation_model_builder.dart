@@ -111,7 +111,7 @@ class TranslationModelBuilder {
                   final builderParam = '${linkedNode.paramName}Builder';
                   linkedParamSet.add(builderParam);
                   paramTypeMap[builderParam] =
-                  'InlineSpan Function(${linkedNode.context.enumName})';
+                      'InlineSpan Function(${linkedNode.context.enumName})';
                   for (final n in textNodes) {
                     paramTypeMap.addAll(n.paramTypeMap);
                   }
@@ -223,19 +223,19 @@ Map<String, Node> _parseMapNode({
       // key: 'value'
       final textNode = originalKey.endsWith('(rich)')
           ? RichTextNode(
-        path: currPath,
-        raw: value.toString(),
-        comment: comment,
-        interpolation: config.stringInterpolation,
-        paramCase: config.paramCase,
-      )
+              path: currPath,
+              raw: value.toString(),
+              comment: comment,
+              interpolation: config.stringInterpolation,
+              paramCase: config.paramCase,
+            )
           : StringTextNode(
-        path: currPath,
-        raw: value.toString(),
-        comment: comment,
-        interpolation: config.stringInterpolation,
-        paramCase: config.paramCase,
-      );
+              path: currPath,
+              raw: value.toString(),
+              comment: comment,
+              interpolation: config.stringInterpolation,
+              paramCase: config.paramCase,
+            );
       resultNodeTree[key] = textNode;
       leavesMap[currPath] = textNode;
     } else {
@@ -272,7 +272,7 @@ Map<String, Node> _parseMapNode({
           curr: value,
           config: config,
           keyCase: config.keyCase != config.keyMapCase &&
-              config.maps.contains(currPath)
+                  config.maps.contains(currPath)
               ? config.keyMapCase
               : config.keyCase,
           leavesMap: leavesMap,
@@ -282,7 +282,7 @@ Map<String, Node> _parseMapNode({
 
         Node node;
         _DetectionResult detectedType =
-        _determineNodeType(config, currPath, modifiers, children);
+            _determineNodeType(config, currPath, modifiers, children);
 
         // notify plural and split by comma if necessary
         if (detectedType.nodeType == _DetectionType.context ||
@@ -382,11 +382,11 @@ void _setParent(Node parent, Iterable<Node> children) {
 }
 
 _DetectionResult _determineNodeType(
-    BuildModelConfig config,
-    String nodePath,
-    Map<String, String> modifiers,
-    Map<String, Node> children,
-    ) {
+  BuildModelConfig config,
+  String nodePath,
+  Map<String, String> modifiers,
+  Map<String, Node> children,
+) {
   final modifierFlags = modifiers.keys.toSet();
   if (modifierFlags.contains('map') || config.maps.contains(nodePath)) {
     return _DetectionResult(_DetectionType.map);
@@ -401,14 +401,14 @@ _DetectionResult _determineNodeType(
     if (modifierFlags.contains('context')) {
       final modifier = modifiers['context'];
       final context =
-      config.contexts.firstWhereOrNull((c) => c.enumName == modifier);
+          config.contexts.firstWhereOrNull((c) => c.enumName == modifier);
       if (context != null) {
         return _DetectionResult(_DetectionType.context, context);
       }
     }
 
     final childrenSplitByComma =
-    children.keys.expand((key) => key.split(Node.KEY_DELIMITER)).toList();
+        children.keys.expand((key) => key.split(Node.KEY_DELIMITER)).toList();
 
     if (childrenSplitByComma.isEmpty) {
       // fallback: empty node is a class by default
@@ -438,7 +438,7 @@ _DetectionResult _determineNodeType(
       } else if (contextType.paths.isEmpty) {
         // empty paths => auto detection
         final isContext = childrenSplitByComma.length ==
-            contextType.enumValues.length &&
+                contextType.enumValues.length &&
             childrenSplitByComma
                 .every((key) => contextType.enumValues.any((e) => e == key));
         if (isContext) {
@@ -538,10 +538,10 @@ Interface? _determineInterfaceForContainer({
 
   // first check if the path is specified to be an interface (via build config)
   final specifiedInterface =
-  interfaceCollection.pathInterfaceContainerMap[node.path];
+      interfaceCollection.pathInterfaceContainerMap[node.path];
   if (specifiedInterface != null) {
     final existingInterface =
-    interfaceCollection.nameInterfaceMap[specifiedInterface];
+        interfaceCollection.nameInterfaceMap[specifiedInterface];
     if (existingInterface != null) {
       // user has specified path and attributes for this interface
       if (existingInterface.hasLists) {
@@ -566,11 +566,11 @@ Interface? _determineInterfaceForContainer({
   final optionalAttributes = allAttributes
       .difference(commonAttributes)
       .map((attribute) => InterfaceAttribute(
-    attributeName: attribute.attributeName,
-    returnType: attribute.returnType,
-    parameters: attribute.parameters,
-    optional: true,
-  ))
+            attributeName: attribute.attributeName,
+            returnType: attribute.returnType,
+            parameters: attribute.parameters,
+            optional: true,
+          ))
       .toSet();
 
   if (specifiedInterface != null) {
@@ -584,12 +584,12 @@ Interface? _determineInterfaceForContainer({
     // lets find the first interface that satisfy this hypothetical interface
     // only one interface is allowed because generics do not allow unions
     final potentialInterface =
-    interfaceCollection.globalInterfaces.cast<Interface?>().firstWhere(
-          (interface) => Interface.satisfyRequiredSet(
-          requiredSet: interface!.attributes,
-          testSet: commonAttributes),
-      orElse: () => null,
-    );
+        interfaceCollection.globalInterfaces.cast<Interface?>().firstWhere(
+              (interface) => Interface.satisfyRequiredSet(
+                  requiredSet: interface!.attributes,
+                  testSet: commonAttributes),
+              orElse: () => null,
+            );
     return potentialInterface;
   }
 }
@@ -602,10 +602,10 @@ Interface? _determineInterface({
 }) {
   // first check if the path is specified to be an interface (via build config)
   final specifiedInterface =
-  interfaceCollection.pathInterfaceNameMap[node.path];
+      interfaceCollection.pathInterfaceNameMap[node.path];
   if (specifiedInterface != null) {
     final existingInterface =
-    interfaceCollection.nameInterfaceMap[specifiedInterface];
+        interfaceCollection.nameInterfaceMap[specifiedInterface];
     if (existingInterface != null) {
       // user has specified path and attributes for this interface
       if (existingInterface.hasLists) {
@@ -629,11 +629,11 @@ Interface? _determineInterface({
     // lets find the first interface that satisfy this hypothetical interface
     // only one interface is allowed because generics do not allow unions
     final potentialInterface =
-    interfaceCollection.globalInterfaces.cast<Interface?>().firstWhere(
-          (interface) => Interface.satisfyRequiredSet(
-          requiredSet: interface!.attributes, testSet: attributes),
-      orElse: () => null,
-    );
+        interfaceCollection.globalInterfaces.cast<Interface?>().firstWhere(
+              (interface) => Interface.satisfyRequiredSet(
+                  requiredSet: interface!.attributes, testSet: attributes),
+              orElse: () => null,
+            );
     return potentialInterface;
   }
 }
@@ -703,7 +703,7 @@ void _fixEmptyLists({
 /// {param: gender, rich: rich)
 Map<String, String> _getModifiers(String originalKey) {
   final String? modifierSection =
-  RegexUtils.modifierRegex.firstMatch(originalKey)?.group(1);
+      RegexUtils.modifierRegex.firstMatch(originalKey)?.group(1);
   if (modifierSection == null) {
     return {};
   }

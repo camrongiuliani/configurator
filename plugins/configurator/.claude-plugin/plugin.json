@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "configurator",
+  "displayName": "Configurator",
+  "version": "0.1.0",
+  "description": "Create shared Configurator YAML and generate type-safe Dart, Python, and TypeScript configuration.",
+  "author": {
+    "name": "Configurator maintainers",
+    "url": "https://github.com/camrongiuliani/configurator"
+  },
+  "homepage": "https://github.com/camrongiuliani/configurator",
+  "repository": "https://github.com/camrongiuliani/configurator",
+  "keywords": [
+    "configuration",
+    "yaml",
+    "dart",
+    "python",
+    "typescript"
+  ]
+}
